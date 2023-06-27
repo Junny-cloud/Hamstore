@@ -15,11 +15,11 @@ User = settings.AUTH_USER_MODEL
 
 class Commandes(models.Model):
      reference = models.CharField(max_length=200, null=True, blank=True, verbose_name="reference commande")
-     client = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
-
-     date_enregistrement = models.DateTimeField(auto_now_add=True, verbose_name="Date d'enregistrement")
+     client = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
+     
+     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
-     status = models.BooleanField(default=True)
+     status = models.BooleanField(default=True, verbose_name='Etat')
      
      class Meta:
           verbose_name = "Commande"
@@ -32,12 +32,12 @@ class Commandes(models.Model):
 
 class ProduitsCommandes(models.Model):
      commande = models.ForeignKey(Commandes, null=True, blank=True, on_delete=models.CASCADE, verbose_name="commande concerné")
-     produit = models.ForeignKey(Produits, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Produit")
-     prix_produit = models.CharField(max_length=200, null=True, blank=True, verbose_name="prix produit")
+     product = models.ForeignKey(Products, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Produit")
+     price_product = models.CharField(max_length=200, null=True, blank=True, verbose_name="prix produit")
 
-     date_enregistrement = models.DateTimeField(auto_now_add=True, verbose_name="Date d'enregistrement")
+     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
-     status = models.BooleanField(default=True)
+     status = models.BooleanField(default=True, verbose_name='Etat')
      
      class Meta:
           verbose_name = "Produit Commandé"
@@ -45,7 +45,7 @@ class ProduitsCommandes(models.Model):
           ordering = ['-id']
 
      def __str__(self):
-          return f"{self.produit}"
+          return f"{self.product}"
      pass
 
 

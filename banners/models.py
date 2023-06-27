@@ -21,19 +21,19 @@ def taille_image(fieldfile_obj):
 
 def image_banners(instance, filename): 
     fpath = pathlib.Path(filename)
-    new_fname = str(instance.titre)
+    new_fname = str(instance.title)
     return f"banners_images/{new_fname}{fpath.suffix}" 
 
 
 class Banners(models.Model):
-     titre = models.CharField(max_length=200, null=True, blank=True, verbose_name="titre banner")
-     sub_titre = models.CharField(max_length=200, null=True, blank=True, verbose_name="sous titre banner")
+     title = models.CharField(max_length=200, null=True, blank=True, verbose_name="titre banner")
+     sub_title = models.CharField(max_length=200, null=True, blank=True, verbose_name="sous titre banner")
      description = models.TextField( null=True, blank=True, verbose_name="description evenement")
      images = models.ImageField(upload_to=image_banners, null=True, blank=True, verbose_name="Image")
-     categorie = models.ForeignKey(Categories, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Nom categorie")
+     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Nom categorie")
 
      user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Administrateur")
-     date_enregistrement = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
+     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=True, verbose_name='Etat')
 
@@ -43,8 +43,8 @@ class Banners(models.Model):
           ordering = ['-id']
 
      def __str__(self):
-          return f"{self.titre}"
-     pass
+          return f"{self.title}"
+
 
 
 

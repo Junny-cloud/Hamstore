@@ -234,14 +234,16 @@ GRAPHQL_JWT = {
 }
 
 GRAPHQL_AUTH = {
-    'REGISTER_MUTATION_FIELDS' : [
-        # ...
-        'username',
-        'email',
-        'first_name',
-        'last_name',
-        'date_naissance'
-        ],
+   
+    'REGISTER_MUTATION_FIELDS' : {
+    'username': "String",
+    'email': "String",
+    'first_name': "String",
+    'last_name': "String",
+    'date_naissance': "String",
+    'abonnes_newsletters': "Int"
+    },
+    
     'LOGIN_ALLOWED_FIELDS': ['email', 'username'],
 }
 

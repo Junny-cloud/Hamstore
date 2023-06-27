@@ -10,7 +10,7 @@ from config import settings
 class CustomUser(AbstractUser):
     telephone = models.CharField(max_length=30, null=True, blank=True, verbose_name="Téléphone")
     date_naissance = models.DateField(null=True, blank=True, verbose_name="Date de naissance")
-    valide = models.BooleanField(default=True)
+    abonnes_newsletters = models.BooleanField(default=False)
 
     USERNAME_FIELD = "username"  # e.g: "username", "email"
     EMAIL_FIELD = "email"

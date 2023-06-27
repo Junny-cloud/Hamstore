@@ -15,9 +15,9 @@ User = settings.AUTH_USER_MODEL
 class Newsletters(models.Model):
      email = models.EmailField(max_length=200, null=True, blank=True, verbose_name="email abonnees")
      
-     date_enregistrement = models.DateTimeField(default=timezone.now, verbose_name="Date d'enregistrement")
+     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
-     status = models.BooleanField(default=True)
+     status = models.BooleanField(default=True, verbose_name='Etat')
      
      class Meta:
           verbose_name = "Email"
@@ -31,9 +31,10 @@ class Newsletters(models.Model):
 class Mailing(models.Model):
      objet_mail = models.CharField(max_length=200, null=True, blank=True, verbose_name="Objet du mail")
      contenu = models.TextField( null=True, blank=True, verbose_name="contenu mail")
-     date_enregistrement = models.DateTimeField(default=timezone.now, verbose_name="Date d'enregistrement")
+     
+     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
-     status = models.BooleanField(default=True)
+     status = models.BooleanField(default=True, verbose_name='Etat')
      
      class Meta:
           verbose_name = "Message"

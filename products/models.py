@@ -9,6 +9,7 @@ from django.utils.text import slugify
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from users.models import *
 
 User = settings.AUTH_USER_MODEL
 
@@ -22,28 +23,28 @@ def taille_image(fieldfile_obj):
 
 def image_categories(instance, filename): 
     fpath = pathlib.Path(filename)
-    new_fname = str(instance.nom)
+    new_fname = str(instance.name)
     return f"categories_images/{new_fname}{fpath.suffix}" 
 
 def image_produits(instance, filename): 
     fpath = pathlib.Path(filename)
-    new_fname = str(instance.nom)
+    new_fname = str(instance.name)
     return f"produits_images/{new_fname}{fpath.suffix}"
 
 def image_evenements(instance, filename): 
     fpath = pathlib.Path(filename)
-    new_fname = str(instance.titre)
+    new_fname = str(instance.title)
     return f"evenements_images/{new_fname}{fpath.suffix}" 
 
 
 
-class Categories(models.Model):
-     nom = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom categorie")
+class Category(models.Model):
+     name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom categorie")
      image = models.ImageField(upload_to=image_categories, validators=[taille_image], null=True, blank=True, verbose_name="Image")
-
-     date_enregistrement = models.DateTimeField(default=timezone.now, verbose_name="Date d'enregistrement")
+     
+     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
-     status = models.BooleanField(default=True)
+     status = models.BooleanField(default=True, verbose_name='Etat')
      
      class Meta:
           verbose_name = "Categorie"
@@ -51,15 +52,15 @@ class Categories(models.Model):
           ordering = ['-id']
 
      def __str__(self):
-          return f"{self.nom}"
+          return f"{self.name}"
      
-class SousCategories(models.Model):
-     nom = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom sous-categorie")
-     categorie = models.ForeignKey(Categories, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Nom categorie")
+class SubCategory(models.Model):
+     name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom sous-categorie")
+     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Nom categorie")
 
-     date_enregistrement = models.DateTimeField(auto_now_add=True, verbose_name="Date d'enregistrement")
+     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
-     status = models.BooleanField(default=True)
+     status = models.BooleanField(default=True, verbose_name='Etat')
      
      class Meta:
           verbose_name = "Sous Categorie"
@@ -67,18 +68,18 @@ class SousCategories(models.Model):
           ordering = ['-id']
 
      def __str__(self):
-          return f"{self.nom}"
+          return f"{self.name}"
 
      pass
 
-class Evenements(models.Model):
-     titre = models.CharField(max_length=200, null=True, blank=True, verbose_name="titre evenement")
+class Event(models.Model):
+     title = models.CharField(max_length=200, null=True, blank=True, verbose_name="titre evenement")
      date_limite = models.DateField( null=True, blank=True, verbose_name="date fin evenement")
      contenu = models.TextField( null=True, blank=True, verbose_name="description evenement")
      images = models.ImageField(upload_to=image_evenements, null=True, blank=True, verbose_name="Image")
 
      user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Administrateur")
-     date_enregistrement = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
+     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=True, verbose_name='Etat')
 
@@ -88,22 +89,21 @@ class Evenements(models.Model):
           ordering = ['-id']
 
      def __str__(self):
-          return f"{self.titre}"
+          return f"{self.title}"
 
-class Produits(models.Model):
-     nom = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom produit")
-     categorie = models.ForeignKey(Categories, null=True, blank=False, on_delete=models.CASCADE, verbose_name="Nom categorie")
-     sous_categorie = models.ForeignKey(SousCategories, null=True, blank=False, on_delete=models.CASCADE, verbose_name="Nom sous categorie")
+class Products(models.Model):
+     name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom produit")
+     sub_category = models.ForeignKey(SubCategory, null=True, blank=False, on_delete=models.CASCADE, verbose_name="Nom sous categorie")
      extras = models.CharField(max_length=200, null=True, blank=True, verbose_name="Extras")
-     evenement = models.ForeignKey(Evenements, null=True, blank=False, on_delete=models.CASCADE, verbose_name="Evenement")
-     prix = models.IntegerField( null=True, blank=True, verbose_name="Prix")
+     event = models.ForeignKey(Event, null=True, blank=False, on_delete=models.CASCADE, verbose_name="Evenement")
+     price = models.IntegerField( null=True, blank=True, verbose_name="Prix")
      prix_promo = models.IntegerField( null=True, blank=True, verbose_name="Prix evenement")
-     images = models.ImageField(upload_to=image_produits, null=True, blank=True, verbose_name="Image")
+     images = models.ManyToManyField('Image')
      description = models.TextField( null=True, blank=True, verbose_name="description produit")
      description_precise = models.TextField( null=True, blank=True, verbose_name="description precise")
 
      user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Administrateur")
-     date_enregistrement = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
+     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=True, verbose_name='Etat')
      
@@ -113,21 +113,23 @@ class Produits(models.Model):
           ordering = ['-id']
 
      def __str__(self):
-          return f"{self.nom}"
+          return f"{self.name}"
      
-     def get_image(self):
-          if self.images:
-               return f'{settings.MEDIA_URL}{self.images}'
-          return f'{settings.STATIC_URL}images/equ_image.png'
-     pass
+     
 
+class Image(models.Model):
+    image = models.ImageField(upload_to=image_produits, validators=[taille_image], null=True, blank=True, verbose_name="Image")
+
+    def __str__(self):
+        return self.image.name
+   
 class Commentaires(models.Model):
      contenu = models.TextField( null=True, blank=True, verbose_name="description evenement")
      note = models.IntegerField( null=True, blank=True, verbose_name="Note produit")
-     produit = models.ForeignKey(Produits , null=True, blank=False, on_delete=models.CASCADE, verbose_name="produit concerne")
+     product = models.ForeignKey(Products , null=True, blank=False, on_delete=models.CASCADE, verbose_name="produit concerne")
 
-     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Administrateur")
-     date_enregistrement = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
+     user = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
+     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=True, verbose_name='Etat')
 
@@ -138,6 +140,6 @@ class Commentaires(models.Model):
 
      def __str__(self):
           return f"{self.contenu}"
-     pass
+
 
 
