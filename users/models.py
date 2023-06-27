@@ -12,6 +12,9 @@ class CustomUser(AbstractUser):
     date_naissance = models.DateField(null=True, blank=True, verbose_name="Date de naissance")
     valide = models.BooleanField(default=True)
 
+    USERNAME_FIELD = "username"  # e.g: "username", "email"
+    EMAIL_FIELD = "email"
+    
     class Meta:
         verbose_name = "Utilisateur"
         verbose_name_plural = "Utilisateurs"

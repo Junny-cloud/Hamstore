@@ -100,7 +100,7 @@ LOGOUT_REDIRECT_URL = '/'
 TEMPLATE_DIR = os.path.join(
     BASE_DIR, "config/templates")  # ROOT dir for templates
 
-AUTH_USER_MODEL = 'users.CustomUser'
+
 
 TEMPLATES = [
     {
@@ -120,48 +120,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-GRAPHENE = {
-    'SCHEMA': 'reson.schema.schema' ,# Where your Graphene schema lives
-    'MIDDLEWARE': [
-        'graphql_jwt.middleware.JSONWebTokenMiddleware',
-    ],
-}
 
-GRAPHENE_DJANGO_EXTRAS = {
-    'DEFAULT_PAGINATION_CLASS': 'graphene_django_extras.paginations.LimitOffsetGraphqlPagination',
-    'DEFAULT_PAGE_SIZE': 20,
-    'MAX_PAGE_SIZE': 50,
-    'CACHE_ACTIVE': True,
-    'CACHE_TIMEOUT': 300    # seconds
-}
-
-AUTHENTICATION_BACKENDS = [
-    'graphql_jwt.backends.JSONWebTokenBackend',
-    'django.contrib.auth.backends.ModelBackend',
-    'graphql_auth.backends.GraphQLAuthBackend',
-]
-
-GRAPHQL_JWT = {
-    'JWT_ALLOW_ARGUMENT': True,
-    
-    "JWT_VERIFY_EXPIRATION": True,
-
-    # optional
-    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
-    
-    "JWT_ALLOW_ANY_CLASSES": [
-        "graphql_auth.mutations.Register",
-        "graphql_auth.mutations.VerifyAccount",
-        "graphql_auth.mutations.ResendActivationEmail",
-        "graphql_auth.mutations.SendPasswordResetEmail",
-        "graphql_auth.mutations.PasswordReset",
-        "graphql_auth.mutations.ObtainJSONWebToken",
-        "graphql_auth.mutations.VerifyToken",
-        "graphql_auth.mutations.RefreshToken",
-        "graphql_auth.mutations.RevokeToken",
-        "graphql_auth.mutations.VerifySecondaryEmail",
-    ],
-}
 
 
 # Database
@@ -227,3 +186,63 @@ JAZZMIN_SETTINGS = {
 
    
 }
+
+
+AUTH_USER_MODEL = 'users.CustomUser'
+
+GRAPHENE = {
+    'SCHEMA': 'config.schema.schema' ,# Where your Graphene schema lives
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
+}
+
+GRAPHENE_DJANGO_EXTRAS = {
+    'DEFAULT_PAGINATION_CLASS': 'graphene_django_extras.paginations.LimitOffsetGraphqlPagination',
+    'DEFAULT_PAGE_SIZE': 20,
+    'MAX_PAGE_SIZE': 50,
+    'CACHE_ACTIVE': True,
+    'CACHE_TIMEOUT': 300    # seconds
+}
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_auth.backends.GraphQLAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'graphql_jwt.backends.JSONWebTokenBackend',   
+]
+
+GRAPHQL_JWT = {
+    'JWT_ALLOW_ARGUMENT': True,
+    
+    "JWT_VERIFY_EXPIRATION": True,
+
+    # optional
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
+    
+    "JWT_ALLOW_ANY_CLASSES": [
+        "graphql_auth.mutations.Register",
+        "graphql_auth.mutations.VerifyAccount",
+        "graphql_auth.mutations.ResendActivationEmail",
+        "graphql_auth.mutations.SendPasswordResetEmail",
+        "graphql_auth.mutations.PasswordReset",
+        "graphql_auth.mutations.ObtainJSONWebToken",
+        "graphql_auth.mutations.VerifyToken",
+        "graphql_auth.mutations.RefreshToken",
+        "graphql_auth.mutations.RevokeToken",
+        "graphql_auth.mutations.VerifySecondaryEmail",
+    ],
+}
+
+GRAPHQL_AUTH = {
+    'REGISTER_MUTATION_FIELDS' : [
+        # ...
+        'username',
+        'email',
+        'first_name',
+        'last_name',
+        'date_naissance'
+        ],
+    'LOGIN_ALLOWED_FIELDS': ['email', 'username'],
+}
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
