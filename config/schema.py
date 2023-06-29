@@ -4,7 +4,7 @@ from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
 import graphql
 from graphql import GraphQLError
-from graphene_file_upload.scalars import Upload
+#from graphene_file_upload.scalars import Upload
 from users.models import *
 from purchases.models import *
 from products.models import *
@@ -86,7 +86,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
         return SubCategory.objects.get(id=id)
 
     def resolve_products(self, info, category_id=None, min_price=None, max_price=None):
-        products = Product.objects.all()
+        products = Products.objects.all()
 
         if category_id:
             products = products.filter(subcategory__category_id=category_id)
@@ -106,7 +106,7 @@ class Query(UserQuery, MeQuery, graphene.ObjectType):
 class CreateCategory(graphene.Mutation):
     class Arguments:
         name = graphene.String(required=True)
-        image = Upload()
+        image = graphene.String()
 
     category = graphene.Field(CategoryType)
 
