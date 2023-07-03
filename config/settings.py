@@ -42,9 +42,6 @@ DJANGO_PACKAGES = [
     #api rest
     'rest_framework',
     'django_filters',
-    'active_link',
-    'tinymce',
-    'drf_yasg',
     #configuration graphene
     'graphene_django',
     #config graphene auth
