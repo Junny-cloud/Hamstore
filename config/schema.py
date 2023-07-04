@@ -181,8 +181,8 @@ class UpdateSubcategory(graphene.Mutation):
     @staticmethod
     def mutate(root, info, subcategory_id, subcategory_data=None):
         try:
-            subcategory = Subcategory.objects.get(pk=subcategory_id)
-        except Subcategory.DoesNotExist:
+            subcategory = SubCategory.objects.get(pk=subcategory_id)
+        except SubCategory.DoesNotExist:
             raise Exception("Subcategory not found")
 
         subcategory.name = subcategory_data.name
@@ -199,8 +199,8 @@ class DeleteSubcategory(graphene.Mutation):
     @staticmethod
     def mutate(root, info, subcategory_id):
         try:
-            subcategory = Subcategory.objects.get(pk=subcategory_id)
-        except Subcategory.DoesNotExist:
+            subcategory = SubCategory.objects.get(pk=subcategory_id)
+        except SubCategory.DoesNotExist:
             raise Exception("Subcategory not found")
 
         subcategory.delete()

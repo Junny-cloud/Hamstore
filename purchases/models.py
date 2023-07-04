@@ -19,7 +19,7 @@ class Commandes(models.Model):
      
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
-     status = models.BooleanField(default=True, verbose_name='Etat')
+     status = models.BooleanField(default=False, verbose_name='Etat')
      
      class Meta:
           verbose_name = "Commande"
@@ -37,7 +37,7 @@ class ProduitsCommandes(models.Model):
 
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
-     status = models.BooleanField(default=True, verbose_name='Etat')
+     status = models.BooleanField(default=False, verbose_name='Etat')
      
      class Meta:
           verbose_name = "Produit Commandé"
