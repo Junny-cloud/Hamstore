@@ -27,7 +27,7 @@ django-active-link
 django-filebrowser-no-grappelli==3.8.0
 django-filter==2.2.0
 django-graphql-auth==0.3.10
-django-graphql-jwt==0.3.0
+django-graphql-jwt
 django-tinymce4-lite==1.8.0
 djangorestframework==3.12.2
 django-allauth==0.50.0
@@ -54,7 +54,7 @@ fontawesomefree==6.0.0
 future==0.18.2
 graphene==2.1.8
 graphene-django==2.8.0
-graphql-core==2.3.1
+graphql-core
 graphql-relay==2.0.1
 httplib2==0.20.4
 html5lib==1.1
@@ -79,7 +79,7 @@ pickleshare==0.7.5
 Pillow==8.4.0
 pipenv==2021.11.23
 Pygments==2.10.0
-PyJWT==1.7.1
+PyJWT
 pytz==2019.3
 PyMySQL==1.0.2
 pyparsing==3.0.9
