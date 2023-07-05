@@ -5,7 +5,7 @@ from graphql_auth import mutations
 import graphql
 from graphql import GraphQLError
 
-from .models import 
+from .models import *
 
 class MailingInput(graphene.InputObjectType):
     objet_mail = graphene.String(required=True)
@@ -26,7 +26,7 @@ class CreateNewsletters(graphene.Mutation):
           
           newsletters = graphene.Field(NewslettersType)
 
-     def mutate(self, info, name, category_id):
+     def mutate(self, info, email):
           newsletters = Newsletters(email=email,)
           newsletters.save()
           return CreateNewsletters(newsletters=newsletters)
@@ -38,7 +38,7 @@ class CreateMailing(graphene.Mutation):
           
           mailing = graphene.Field(MailingType)
 
-     def mutate(self, info, name, category_id):
+     def mutate(self, info, contenu, objet_mail):
           mailing = Mailing(objet_mail=objet_mail, contenu=contenu)
           mailing.save()
           return CreateMailing(mailing=mailing)

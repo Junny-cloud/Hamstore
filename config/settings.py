@@ -41,7 +41,7 @@ DJANGO_PACKAGES = [
     "django_apscheduler",
     #api rest
     'rest_framework',
-    'django_filters',
+    #'django_filters',
     #configuration graphene
     'graphene_django',
     #config graphene auth
