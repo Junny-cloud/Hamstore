@@ -40,7 +40,7 @@ DJANGO_PACKAGES = [
     'jazzmin',
     "django_apscheduler",
     #api rest
-    'rest_framework',
+    #'rest_framework',
     #'django_filters',
     #configuration graphene
     'graphene_django',

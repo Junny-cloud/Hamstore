@@ -99,4 +99,4 @@ class Mutation(graphene.ObjectType):
     update_commandes = UpdateCommandes.Field()
     delete_commandes = DeleteCommandes.Field()
     
-schema = graphene.Schema(query=Query, mutation=Mutation)
+#schema = graphene.Schema(query=Query, mutation=Mutation)
