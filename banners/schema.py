@@ -60,7 +60,7 @@ class UpdateBanners(graphene.Mutation):
 
           return UpdateBanners(banners=banners)
 
-class DeleteBanners(graphene.Mutation):
+'''class DeleteBanners(graphene.Mutation):
      class Arguments:
           banners_id = graphene.ID(required=True)
 
@@ -75,4 +75,4 @@ class DeleteBanners(graphene.Mutation):
 
           banners.delete()
 
-          return DeleteBanners(success=True)
+          return DeleteBanners(success=True)'''
