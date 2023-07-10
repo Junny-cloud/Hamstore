@@ -39,7 +39,7 @@ def image_evenements(instance, filename):
 
 
 class Category(models.Model):
-     name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom categorie")
+     name = models.CharField(max_length=200, null=True, unique=True,blank=True, verbose_name="Nom categorie")
      image = models.ImageField(upload_to=image_categories, validators=[taille_image], null=True, blank=True, verbose_name="Image")
      
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")

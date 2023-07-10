@@ -38,15 +38,12 @@ ALLOWED_HOSTS = []
 
 DJANGO_PACKAGES = [
     'jazzmin',
-    "django_apscheduler",
-    #api rest
-    #'rest_framework',
-    #'django_filters',
     #configuration graphene
     'graphene_django',
     #config graphene auth
-    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "graphql_auth",
+    "django_filters",
    
 ]
 
@@ -130,16 +127,10 @@ DATABASES = db.MYSQL
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'OPTIONS': {
+            'min_length': 8,  # Remplacez la valeur par la longueur minimale souhaitée
+        }
     },
 ]
 
@@ -185,7 +176,7 @@ JAZZMIN_SETTINGS = {
 }
 
 
-AUTH_USER_MODEL = 'users.CustomUser'
+
 
 GRAPHENE = {
     'SCHEMA': 'config.schema.schema' ,# Where your Graphene schema lives
@@ -233,15 +224,18 @@ GRAPHQL_JWT = {
 GRAPHQL_AUTH = {
    
     'REGISTER_MUTATION_FIELDS' : {
-    'username': "String",
+   
     'email': "String",
     'first_name': "String",
     'last_name': "String",
     'date_naissance': "String",
-    'abonnes_newsletters': "Int"
-    },
+    'abonnes_newsletters':'Boolean',
     
-    'LOGIN_ALLOWED_FIELDS': ['email', 'username'],
+    },
+    'REGISTER_MUTATION_FIELDS_OPTIONAL':['username', 'password2'],
+    'LOGIN_ALLOWED_FIELDS': ['email'],
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+AUTH_USER_MODEL = 'users.CustomUser'
