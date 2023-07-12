@@ -1,6 +1,5 @@
 APScheduler==3.9.1.post1
 arabic-reshaper
-asgiref==3.3.2
 async-timeout==4.0.2
 autopep8==1.5.7
 aniso8601==7.0.0

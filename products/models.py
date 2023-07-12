@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from users.models import *
-
+from django.core.exceptions import FieldDoesNotExist
 User = settings.AUTH_USER_MODEL
 
 # CUSTOM IMAGE CATEGORIES AND PRODUITS
