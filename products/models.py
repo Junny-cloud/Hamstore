@@ -10,7 +10,13 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from users.models import *
+<<<<<<< Updated upstream
 from django.core.exceptions import FieldDoesNotExist
+=======
+from django.dispatch import receiver
+import os
+import requests
+>>>>>>> Stashed changes
 User = settings.AUTH_USER_MODEL
 
 # CUSTOM IMAGE CATEGORIES AND PRODUITS
@@ -28,8 +34,9 @@ def image_categories(instance, filename):
 
 def image_produits(instance, filename): 
     fpath = pathlib.Path(filename)
-    new_fname = str(instance.name)
-    return f"produits_images/{new_fname}{fpath.suffix}"
+    #new_fname = str(instance.name)
+    #return f"produits_images/{new_fname}{fpath.suffix}"
+    return f"produits_images/{fpath.suffix}"
 
 def image_evenements(instance, filename): 
     fpath = pathlib.Path(filename)
@@ -95,7 +102,7 @@ class Products(models.Model):
      name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom produit")
      sub_category = models.ForeignKey(SubCategory, null=True, blank=False, on_delete=models.CASCADE, verbose_name="Nom sous categorie")
      extras = models.CharField(max_length=200, null=True, blank=True, verbose_name="Extras")
-     event = models.ForeignKey(Event, null=True, blank=False, on_delete=models.CASCADE, verbose_name="Evenement")
+     event = models.ForeignKey(Event,default='', null=True, blank=False, on_delete=models.CASCADE, verbose_name="Evenement")
      price = models.IntegerField( null=True, blank=True, verbose_name="Prix")
      prix_promo = models.IntegerField( null=True, blank=True, verbose_name="Prix evenement")
      images = models.ManyToManyField('Image')
@@ -115,14 +122,37 @@ class Products(models.Model):
      def __str__(self):
           return f"{self.name}"
      
-     
+def product_image_path(instance, filename):
+    # Construction du chemin de destination des images
+    # Utilisez le nom du produit pour renommer le fichier
+    base_filename, extension = os.path.splitext(filename)
+    product_name = instance.product.name
+    new_filename = f"{product_name}{extension}"
+    return os.path.join('produits_images/', new_filename) 
 
 class Image(models.Model):
-    image = models.ImageField(upload_to=image_produits, validators=[taille_image], null=True, blank=True, verbose_name="Image")
 
-    def __str__(self):
-        return self.image.name
+     product = models.ForeignKey(Products, on_delete=models.CASCADE, verbose_name="Image produit")
+     image = models.ImageField(upload_to=product_image_path, validators=[taille_image], null=True, blank=True, verbose_name="Image")
+
+     def __str__(self):
+          return self.image.name
    
+@receiver(models.signals.pre_save, sender=Image)
+def auto_rename_image(sender, instance, **kwargs):
+    if instance.pk:
+        # L'image existe déjà, récupère le nom du fichier actuel
+        current_image = Image.objects.get(pk=instance.pk)
+        if current_image.image != instance.image:
+            # L'image a été modifiée, supprime l'ancien fichier
+            current_image.image.delete(False)
+
+@receiver(models.signals.post_delete, sender=Image)
+def auto_delete_image(sender, instance, **kwargs):
+    # Supprime le fichier d'image lorsque l'objet Image est supprimé
+    instance.image.delete(False)
+
+
 class Commentaires(models.Model):
      contenu = models.TextField( null=True, blank=True, verbose_name="description evenement")
      note = models.IntegerField( null=True, blank=True, verbose_name="Note produit")
