@@ -10,13 +10,11 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from users.models import *
-<<<<<<< Updated upstream
 from django.core.exceptions import FieldDoesNotExist
-=======
 from django.dispatch import receiver
 import os
 import requests
->>>>>>> Stashed changes
+
 User = settings.AUTH_USER_MODEL
 
 # CUSTOM IMAGE CATEGORIES AND PRODUITS
