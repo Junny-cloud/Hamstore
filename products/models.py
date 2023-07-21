@@ -81,7 +81,7 @@ class Event(models.Model):
      title = models.CharField(max_length=200, null=True, blank=True, verbose_name="titre evenement")
      date_limite = models.DateField( null=True, blank=True, verbose_name="date fin evenement")
      contenu = models.TextField( null=True, blank=True, verbose_name="description evenement")
-     images = models.ImageField(upload_to=image_evenements, null=True, blank=True, verbose_name="Image")
+     images = models.ImageField(upload_to=image_evenements, null=True, blank=True, verbose_name="images")
 
      user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Administrateur")
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
@@ -100,7 +100,7 @@ class Products(models.Model):
      name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom produit")
      sub_category = models.ForeignKey(SubCategory, null=True, blank=False, on_delete=models.CASCADE, verbose_name="Nom sous categorie")
      extras = models.CharField(max_length=200, null=True, blank=True, verbose_name="Extras")
-     event = models.ForeignKey(Event,default='', null=True, blank=False, on_delete=models.CASCADE, verbose_name="Evenement")
+     event = models.ForeignKey(Event,default='', null=True, blank=True, on_delete=models.CASCADE, verbose_name="Evenement")
      price = models.IntegerField( null=True, blank=True, verbose_name="Prix")
      prix_promo = models.IntegerField( null=True, blank=True, verbose_name="Prix evenement")
      images = models.ManyToManyField('Image')

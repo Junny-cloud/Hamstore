@@ -69,6 +69,14 @@ class ProductsAdmin(admin.ModelAdmin):
      '''def images_view(self, obj):
           return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url=obj.images.url)) '''
 
+
+class CommentairesAdmin(admin.ModelAdmin):
+     list_display = ('user','contenu','note', 'product', 'status','date_registry')
+     list_filter = ('user','note', 'product', 'date_registry')
+     list_display_links = ['user']
+     search_fields =  ('user', 'product')
+     fieldsets = [('Info commentaire', {'fields': [ 'user', 'product','contenu', 'note','status' ]}),
+                    ]
  
 
 def _register(model, admin_class):

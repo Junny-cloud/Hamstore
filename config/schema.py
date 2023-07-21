@@ -13,6 +13,25 @@ from newsletters.models import *
 from users.schema import *
 from products.schema import *
 from django.core.exceptions import FieldDoesNotExist
+from graphene import relay
+class ProductFilterInput(graphene.InputObjectType):
+    # Ajoutez les champs que vous souhaitez filtrer
+    priceRange_sub_1 = graphene.Boolean()
+    priceRange_1_2 = graphene.Boolean()
+    priceRange_2_5 = graphene.Boolean()
+    priceRange_5_10 = graphene.Boolean()
+    priceRange_10_20 = graphene.Boolean()
+    priceRange_20_more = graphene.Boolean()
+    
+    sort_by_price =graphene.String()
+    
+    category_product = graphene.ID()
+    
+    first = graphene.Int()
+    skip = graphene.Int()
+    
+    
+    
 class Query(UserQuery, MeQuery, ListUsersQuery,graphene.ObjectType):
     
     categories = graphene.List(CategoryType)
@@ -21,7 +40,7 @@ class Query(UserQuery, MeQuery, ListUsersQuery,graphene.ObjectType):
     subcategories = graphene.List(SubCategoryType)
     subcategory = graphene.Field(SubCategoryType, id=graphene.Int(required=True))
 
-    products = graphene.List(ProductType, category_id=graphene.Int(), min_price=graphene.Float(), max_price=graphene.Float())
+    products = graphene.List(ProductType, filter=ProductFilterInput())
     product = graphene.Field(ProductType, id=graphene.Int(required=True))
 
     def resolve_categories(self, info):
@@ -36,17 +55,31 @@ class Query(UserQuery, MeQuery, ListUsersQuery,graphene.ObjectType):
     def resolve_subcategory(self, info, id):
         return SubCategory.objects.get(id=id)
 
-    def resolve_products(self, info, category_id=None, min_price=None, max_price=None):
+    def resolve_products(self, info, filter=None):
         products = Products.objects.all()
 
-        if category_id:
-            products = products.filter(subcategory__category_id=category_id)
+        if filter:
+            if filter.category_product is not None:
+                products = products.filter(sub_category__id=filter.category_product)
+            if filter.priceRange_sub_1 is not None:
+                products = products.filter(price__range=(0.0, 10000.0))
+            if filter.priceRange_1_2 is not None:
+                products = products.filter(price__range=(10000.0, 20000.0))
+            if filter.priceRange_2_5 is not None:
+                products = products.filter(price__range=(20000.0, 50000.0))
+                
+            if filter.sort_by_price:
+                # Trier les produits en fonction du prix dans l'ordre spécifié
+                if filter.sort_by_price == "DESC":
+                    products = products.order_by("-price")
+                else:
+                    products = products.order_by("price")
 
-        if min_price is not None:
-            products = products.filter(price__gte=min_price)
 
-        if max_price is not None:
-            products = products.filter(price__lte=max_price)
+            if filter.skip:
+                products = products[filter.skip:]
+            if filter.first:
+                products = products[:filter.first]
 
         return products
 

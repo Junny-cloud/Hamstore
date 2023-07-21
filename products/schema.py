@@ -4,7 +4,7 @@ from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
 import graphql
 from graphql import GraphQLError
-
+from graphene import relay
 from .models import *
 
 # ---------------  APP PRODUITS  -----------------------
@@ -25,6 +25,10 @@ class ImageType(DjangoObjectType):
 class ProductType(DjangoObjectType):
     class Meta:
         model = Products
+        interfaces = (relay.Node,)
+        filter_fields = {
+            "name": ["istartswith", "exact"]
+        }
 
     images = graphene.List(ImageType)
 
