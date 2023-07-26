@@ -6,6 +6,7 @@ from urllib.request import urlopen
 from datetime import datetime, timedelta
 from PIL import Image
 import random
+import requests
 from urllib.parse import urlparse
 from faker import Faker
 from products.models import *
@@ -48,7 +49,27 @@ def generate_random_image_url(width=400, height=400):
     image_url = f'{image_service}/{width}/{height}?image={image_id}'
     return image_url
 
+def get_random_product_image_url():
+    # Requête à l'API "Unsplash" pour obtenir des images de produits
+    url = "https://api.unsplash.com/photos/random"
+    headers = {
+        "Authorization": "Client-ID VOTRE_CLE_API_UNSPLASH",
+        "Accept-Version": "v1"
+    }
+    params = {
+        "query": "product",
+        "orientation": "squarish"
+    }
 
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        # Analyse de la réponse JSON pour obtenir l'URL de l'image
+        data = response.json()
+        image_url = data["urls"]["regular"]
+        return image_url
+    else:
+        print("Erreur lors de la requête à l'API Unsplash.")
+        return None
 
 
 def generer_subcategory(nombre_subcategory):
@@ -110,7 +131,7 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
       
         name = generic.text.word()
         subcategory_aleatoire = generic.random.choice(subcategory)
-        extras = generic.text.words(quantity=5)
+        extras = generic.text.words()
         event_aleatoire = generic.random.choice(event)
         price = generate_random_integer()
         description = generic.text.text()

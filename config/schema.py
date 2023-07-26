@@ -16,23 +16,15 @@ from django.core.exceptions import FieldDoesNotExist
 from graphene import relay
 class ProductFilterInput(graphene.InputObjectType):
     # Ajoutez les champs que vous souhaitez filtrer
-    priceRange_sub_1 = graphene.Boolean()
-    priceRange_1_2 = graphene.Boolean()
-    priceRange_2_5 = graphene.Boolean()
-    priceRange_5_10 = graphene.Boolean()
-    priceRange_10_20 = graphene.Boolean()
-    priceRange_20_more = graphene.Boolean()
-    
+    priceRange = graphene.List(graphene.String)
     sort_by_price =graphene.String()
-    
     category_product = graphene.ID()
-    
-    first = graphene.Int()
+
     skip = graphene.Int()
     
     
     
-class Query(UserQuery, MeQuery, ListUsersQuery,graphene.ObjectType):
+class Query(UserQuery, MeQuery, graphene.ObjectType):
     
     categories = graphene.List(CategoryType)
     category = graphene.Field(CategoryType, id=graphene.Int(required=True))
@@ -57,29 +49,40 @@ class Query(UserQuery, MeQuery, ListUsersQuery,graphene.ObjectType):
 
     def resolve_products(self, info, filter=None):
         products = Products.objects.all()
-
+        
         if filter:
+            first = 15
+            filter.skip =filter.skip*15
             if filter.category_product is not None:
                 products = products.filter(sub_category__id=filter.category_product)
-            if filter.priceRange_sub_1 is not None:
-                products = products.filter(price__range=(0.0, 10000.0))
-            if filter.priceRange_1_2 is not None:
-                products = products.filter(price__range=(10000.0, 20000.0))
-            if filter.priceRange_2_5 is not None:
-                products = products.filter(price__range=(20000.0, 50000.0))
-                
+            if filter.priceRange:
+                tx = products.filter(price=0)
+                for obj in filter.priceRange:
+                    
+                    if obj=='intervale_1' :
+                        tx = tx|products.filter(price__range=(0.0, 10000.0))
+                    if obj=='intervale_2' :
+                        tx = tx|products.filter(price__range=(10001.0, 20000.0))
+                    if obj=='intervale_3' :
+                        tx = tx|products.filter(price__range=(20001.0, 50000.0))
+                    if obj=='intervale_4' :
+                        tx = tx|products.filter(price__range=(50001.0, 100000.0))
+                    if obj=='intervale_5' :
+                        tx = tx|products.filter(price__gte=100001.0)
+                products=tx
             if filter.sort_by_price:
                 # Trier les produits en fonction du prix dans l'ordre spécifié
-                if filter.sort_by_price == "DESC":
+                if filter.sort_by_price == "price_desc":
                     products = products.order_by("-price")
-                else:
+                elif filter.sort_by_price == "price_asc":
                     products = products.order_by("price")
-
+                else:
+                    products = products.order_by("date_registry")
 
             if filter.skip:
                 products = products[filter.skip:]
-            if filter.first:
-                products = products[:filter.first]
+            if first:
+                products = products[:first]
 
         return products
 
