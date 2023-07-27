@@ -48,9 +48,11 @@ class EventAdmin(admin.ModelAdmin):
 
 class ImageInline(admin.TabularInline):
     model = Image
-
+    
+class VariantesInline(admin.TabularInline):
+    model = Variantes
 class ProductsAdmin(admin.ModelAdmin):
-     inlines = [ImageInline]
+     inlines = [ImageInline, VariantesInline]
 
      def display_first_image(self, obj):
           first_image = obj.image_set.first()
@@ -63,7 +65,7 @@ class ProductsAdmin(admin.ModelAdmin):
      display_first_image.short_description = 'First Image'
      display_first_image.allow_tags = True
 
-     list_display = ('display_first_image','name','sub_category', 'extras','price', 'prix_promo','date_registry','status')
+     list_display = ('display_first_image','name','sub_category', , 'price', 'prix_promo','date_registry','status')
      list_filter = ('sub_category', 'name','price', 'prix_promo','event')
      search_fields =  ('sub_category','name', 'price', 'prix_promo','event')
      list_display_links = ['name']

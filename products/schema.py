@@ -197,6 +197,61 @@ class DeleteSubcategory(graphene.Mutation):
 
         return DeleteSubcategory(success=True)
 
+# -------------------------- VARAINTES CRUD -----------------------------
+class VariantesInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+    
+class CreateVariantes(graphene.Mutation):
+    class Arguments:
+        variantes_data = VariantesInput(required=True)
+
+    variantes = graphene.Field(VariantesType)
+    success = graphene.Boolean()
+    
+    @staticmethod
+    def mutate(self, info, variantes_data):
+        
+        name = variantes_data.name
+        variantes= Category(name=name)
+        variantes.save()
+        return CreateVariantes( success=True,variantes=variantes)
+
+class UpdateVariantes(graphene.Mutation):
+    class Arguments:
+        variantes_id = graphene.ID(required=True)
+        variantes_data = VariantesInput(required=True)
+
+    variantes = graphene.Field(VariantesType)
+
+    @staticmethod
+    def mutate(root, info, variantes_id, variantes_data=None):
+        try:
+            variantes = Variantes.objects.get(pk=variantes_id)
+        except Variantes.DoesNotExist:
+            raise Exception("variantes not found")
+
+        variantes.name = variantes_data.name
+        variantes.save()
+
+        return UpdateVariantes(variantes=variantes)
+
+class DeleteVariantes(graphene.Mutation):
+    class Arguments:
+        variantes_id = graphene.ID(required=True)
+
+    success = graphene.Boolean()
+
+    @staticmethod
+    def mutate(root, info, variantes_id):
+        try:
+            variantes = Variantes.objects.get(pk=variantes_id)
+        except Variantes.DoesNotExist:
+            raise Exception("variantes not found")
+
+        variantes.delete()
+
+        return DeleteVariantes(success=True)
+
 #------------------ PRODUCTS CRUD ------------------------
 '''class ProductInput(graphene.InputObjectType):
     name = graphene.String(required=True)

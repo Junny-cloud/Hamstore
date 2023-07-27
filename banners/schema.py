@@ -5,9 +5,9 @@ from graphql_auth import mutations
 import graphql
 from graphql import GraphQLError
 from graphene_file_upload.scalars import Upload
-from .model import *
+from .models import *
 from products.models import *
-
+from config.schema import *
 class BannersInput(graphene.InputObjectType):
      title = graphene.String(required=True)
      sub_title = graphene.String(required=True)
