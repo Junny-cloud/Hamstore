@@ -27,6 +27,13 @@ class SubCategoryAdmin(admin.ModelAdmin):
      def images_view(self, obj):
           return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url=obj.category.image.url)) 
 
+class VariantesAdmin(admin.ModelAdmin):
+     list_display = ('name', 'date_registry','status')
+     list_filter = ('name', 'date_registry','status')
+     search_fields =  ('name', 'date_registry','status')
+     list_display_links = ['name']
+     fieldsets = [('Info Variantes', {'fields': [ 'name', 'status']}),  ]
+
 class EventAdmin(admin.ModelAdmin):
      list_display = ('images_view','title', 'date_limite', 'user','status')
      list_filter =('title', 'date_limite', 'user','status')
@@ -63,7 +70,7 @@ class ProductsAdmin(admin.ModelAdmin):
      fieldsets = [
           ('Info Produit', {'fields': [ 'name', 'sub_category', 'extras']}),
           ('Info Prix', {'fields': ['price', 'prix_promo', 'event']}),
-          ('Info Details', {'fields': ['description', 'description_precise', 'status']})
+          ('Info Details', {'fields': [ 'variantes','description', 'description_precise', 'status']})
                     ]
 
      '''def images_view(self, obj):
@@ -85,6 +92,7 @@ def _register(model, admin_class):
 
 _register(Category, CategoryAdmin) 
 _register(SubCategory, SubCategoryAdmin) 
+_register(Variantes, VariantesAdmin) 
 _register(Event, EventAdmin) 
 _register(Products, ProductsAdmin) 
 

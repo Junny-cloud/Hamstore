@@ -75,7 +75,21 @@ class SubCategory(models.Model):
      def __str__(self):
           return f"{self.name}"
 
-     pass
+     
+class Variantes(models.Model):
+     name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom sous-categorie")
+
+     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
+     date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
+     status = models.BooleanField(default=True, verbose_name='Etat')
+     
+     class Meta:
+          verbose_name = "Variante"
+          verbose_name_plural = "Variantes"
+          ordering = ['-id']
+
+     def __str__(self):
+          return f"{self.name}"
 
 class Event(models.Model):
      title = models.CharField(max_length=200, null=True, blank=True, verbose_name="titre evenement")
@@ -106,6 +120,7 @@ class Products(models.Model):
      images = models.ManyToManyField('Image')
      description = models.TextField( null=True, blank=True, verbose_name="description produit")
      description_precise = models.TextField( null=True, blank=True, verbose_name="description precise")
+     variantes = models.ManyToManyField(Variantes, blank=True, verbose_name="les variantes")
 
      user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Administrateur")
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")

@@ -16,7 +16,11 @@ class CategoryType(DjangoObjectType):
 class SubCategoryType(DjangoObjectType):
     class Meta:
         model = SubCategory
-
+        
+class VariantesType(DjangoObjectType):
+    class Meta:
+        model = Variantes
+        fields = "__all__"
         
 class ImageType(DjangoObjectType):
     class Meta:
@@ -49,11 +53,22 @@ class CommentairesType(DjangoObjectType):
         
 
 class Query(graphene.ObjectType):
+    
+    variantes = graphene.List(VariantesType)
+    variante = graphene.Field(VariantesType, id=graphene.Int(required=True))
+    
     events = graphene.List(EventType)
     event = graphene.Field(EventType, id=graphene.Int(required=True))
 
     commentaires = graphene.List(CommentairesType)
     commentaire = graphene.Field(CommentairesType, id=graphene.Int(required=True))
+    
+    def resolve_variantes(self, info):
+        return Variantes.objects.all()
+
+    def resolve_variante(self, info, id):
+        return Variantes.objects.get(id=id)
+    
     
     def resolve_events(self, info):
         return Event.objects.all()
