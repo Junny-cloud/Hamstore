@@ -45,6 +45,7 @@ def image_evenements(instance, filename):
 
 class Category(models.Model):
      name = models.CharField(max_length=200, null=True, unique=True,blank=True, verbose_name="Nom categorie")
+     slug = models.SlugField(unique=True, null=True)
      image = models.ImageField(upload_to=image_categories, validators=[taille_image], null=True, blank=True, verbose_name="Image")
      
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
@@ -59,8 +60,14 @@ class Category(models.Model):
      def __str__(self):
           return f"{self.name}"
      
+     def save(self, *args, **kwargs):
+        # Générer le slug à partir du nom de la catégorie avant de sauvegarder
+        self.slug = slugify(self.name)
+        super(Category, self).save(*args, **kwargs)
+     
 class SubCategory(models.Model):
      name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom sous-categorie")
+     slug = models.SlugField(unique=True, null=True)
      category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Nom categorie")
 
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
@@ -74,10 +81,16 @@ class SubCategory(models.Model):
 
      def __str__(self):
           return f"{self.name}"
+     
+     def save(self, *args, **kwargs):
+        # Générer le slug à partir du nom de la catégorie avant de sauvegarder
+        self.slug = slugify(self.name)
+        super(SubCategory, self).save(*args, **kwargs)
 
      
 class Variantes(models.Model):
      name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom sous-categorie")
+     slug = models.SlugField(unique=True, null=True)
 
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
@@ -90,9 +103,15 @@ class Variantes(models.Model):
 
      def __str__(self):
           return f"{self.name}"
+     
+     def save(self, *args, **kwargs):
+        # Générer le slug à partir du nom de la catégorie avant de sauvegarder
+        self.slug = slugify(self.name)
+        super(Variantes, self).save(*args, **kwargs)
 
 class Event(models.Model):
      title = models.CharField(max_length=200, null=True, blank=True, verbose_name="titre evenement")
+     slug = models.SlugField(unique=True, null=True)
      date_limite = models.DateField( null=True, blank=True, verbose_name="date fin evenement")
      contenu = models.TextField( null=True, blank=True, verbose_name="description evenement")
      images = models.ImageField(upload_to=image_evenements, null=True, blank=True, verbose_name="images")
@@ -109,9 +128,15 @@ class Event(models.Model):
 
      def __str__(self):
           return f"{self.title}"
+     
+     def save(self, *args, **kwargs):
+        # Générer le slug à partir du nom de la catégorie avant de sauvegarder
+        self.slug = slugify(self.title)
+        super(Event, self).save(*args, **kwargs)
 
 class Products(models.Model):
      name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom produit")
+     slug = models.SlugField(unique=True, null=True)
      sub_category = models.ForeignKey(SubCategory, null=True, blank=False, on_delete=models.CASCADE, verbose_name="Nom sous categorie")
      extras = models.CharField(max_length=200, null=True, blank=True, verbose_name="Extras")
      event = models.ForeignKey(Event,default='', null=True, blank=True, on_delete=models.CASCADE, verbose_name="Evenement")
@@ -134,6 +159,11 @@ class Products(models.Model):
 
      def __str__(self):
           return f"{self.name}"
+     
+     def save(self, *args, **kwargs):
+        # Générer le slug à partir du nom de la catégorie avant de sauvegarder
+        self.slug = slugify(self.name)
+        super(Products, self).save(*args, **kwargs)
      
 def product_image_path(instance, filename):
     # Construction du chemin de destination des images
@@ -183,6 +213,8 @@ class Commentaires(models.Model):
 
      def __str__(self):
           return f"{self.contenu}"
+     
+     
 
 
 

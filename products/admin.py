@@ -6,7 +6,7 @@ from .models import *
 
 
 class CategoryAdmin(admin.ModelAdmin):
-     list_display = ('images_view','name', 'date_registry', 'status')
+     list_display = ('images_view','name', 'slug','date_registry', 'status')
      list_filter = ('image','name', 'date_registry', 'status')
      list_display_links = ['name']
      search_fields =  ('name',)
@@ -18,7 +18,7 @@ class CategoryAdmin(admin.ModelAdmin):
           return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url=obj.image.url)) 
 
 class SubCategoryAdmin(admin.ModelAdmin):
-     list_display = ('images_view','name', 'category', 'date_registry','status')
+     list_display = ('images_view','name', 'slug','category', 'date_registry','status')
      list_filter =('name', 'category', 'date_registry','status')
      search_fields =  ('name', 'category', 'date_registry','status')
      list_display_links = ['name']
@@ -28,14 +28,14 @@ class SubCategoryAdmin(admin.ModelAdmin):
           return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url=obj.category.image.url)) 
 
 class VariantesAdmin(admin.ModelAdmin):
-     list_display = ('name', 'date_registry','status')
+     list_display = ('name', 'slug','date_registry','status')
      list_filter = ('name', 'date_registry','status')
      search_fields =  ('name', 'date_registry','status')
      list_display_links = ['name']
      fieldsets = [('Info Variantes', {'fields': [ 'name', 'status']}),  ]
 
 class EventAdmin(admin.ModelAdmin):
-     list_display = ('images_view','title', 'date_limite', 'user','status')
+     list_display = ('images_view','title', 'slug','date_limite', 'user','status')
      list_filter =('title', 'date_limite', 'user','status')
      search_fields =  ('title', 'date_limite', 'user')
      list_display_links = ['title']
@@ -49,11 +49,9 @@ class EventAdmin(admin.ModelAdmin):
 class ImageInline(admin.TabularInline):
     model = Image
     
-class VariantesInline(admin.TabularInline):
-    model = Variantes
 class ProductsAdmin(admin.ModelAdmin):
-     inlines = [ImageInline, VariantesInline]
-
+     inlines = [ImageInline]
+     
      def display_first_image(self, obj):
           first_image = obj.image_set.first()
           if first_image:
@@ -65,7 +63,7 @@ class ProductsAdmin(admin.ModelAdmin):
      display_first_image.short_description = 'First Image'
      display_first_image.allow_tags = True
 
-     list_display = ('display_first_image','name','sub_category', , 'price', 'prix_promo','date_registry','status')
+     list_display = ('display_first_image','name','slug','sub_category','get_variantes',  'price', 'prix_promo','date_registry','status')
      list_filter = ('sub_category', 'name','price', 'prix_promo','event')
      search_fields =  ('sub_category','name', 'price', 'prix_promo','event')
      list_display_links = ['name']
@@ -75,16 +73,21 @@ class ProductsAdmin(admin.ModelAdmin):
           ('Info Details', {'fields': [ 'variantes','description', 'description_precise', 'status']})
                     ]
 
+     def get_variantes(self, obj):
+        return ", ".join([variante.name for variante in obj.variantes.all()])
+
+     get_variantes.short_description = 'Variantes'
+     
      '''def images_view(self, obj):
           return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url=obj.images.url)) '''
 
 
 class CommentairesAdmin(admin.ModelAdmin):
-     list_display = ('user','contenu','note', 'product', 'status','date_registry')
+     list_display = ('user','contenu','slug','note', 'product', 'status','date_registry')
      list_filter = ('user','note', 'product', 'date_registry')
      list_display_links = ['user']
      search_fields =  ('user', 'product')
-     fieldsets = [('Info commentaire', {'fields': [ 'user', 'product','contenu', 'note','status' ]}),
+     fieldsets = [('Info commentaire', {'fields': [ 'user', 'product','contenu',  'note','status' ]}),
                     ]
  
 

@@ -15,6 +15,7 @@ User = settings.AUTH_USER_MODEL
 
 class Commandes(models.Model):
      reference = models.CharField(max_length=200, null=True, blank=True, verbose_name="reference commande")
+     slug = models.SlugField(unique=True, null=True)
      client = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
      
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
@@ -32,6 +33,7 @@ class Commandes(models.Model):
 
 class ProduitsCommandes(models.Model):
      commande = models.ForeignKey(Commandes, null=True, blank=True, on_delete=models.CASCADE, verbose_name="commande concerné")
+     slug = models.SlugField(unique=True, null=True)
      product = models.ForeignKey(Products, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Produit")
      price_product = models.CharField(max_length=200, null=True, blank=True, verbose_name="prix produit")
 

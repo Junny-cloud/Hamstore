@@ -27,6 +27,7 @@ def image_banners(instance, filename):
 
 class Banners(models.Model):
      title = models.CharField(max_length=200, null=True, blank=True, verbose_name="titre banner")
+     slug = models.SlugField(unique=True, null=True)
      sub_title = models.CharField(max_length=200, null=True, blank=True, verbose_name="sous titre banner")
      description = models.TextField( null=True, blank=True, verbose_name="description evenement")
      images = models.ImageField(upload_to=image_banners, null=True, blank=True, verbose_name="Image")
