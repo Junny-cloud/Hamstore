@@ -110,7 +110,9 @@ class Variantes(models.Model):
         super(Variantes, self).save(*args, **kwargs)
 
 class Event(models.Model):
+     
      title = models.CharField(max_length=200, null=True, blank=True, verbose_name="titre evenement")
+     subtitle = models.CharField(max_length=200, null=True, blank=True, verbose_name="sous titre evenement")
      slug = models.SlugField(unique=True, null=True)
      date_limite = models.DateField( null=True, blank=True, verbose_name="date fin evenement")
      contenu = models.TextField( null=True, blank=True, verbose_name="description evenement")

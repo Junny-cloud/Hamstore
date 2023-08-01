@@ -35,11 +35,11 @@ class VariantesAdmin(admin.ModelAdmin):
      fieldsets = [('Info Variantes', {'fields': [ 'name', 'status']}),  ]
 
 class EventAdmin(admin.ModelAdmin):
-     list_display = ('images_view','title', 'slug','date_limite', 'user','status')
+     list_display = ('images_view','title', 'subtitle','slug','date_limite', 'user','status')
      list_filter =('title', 'date_limite', 'user','status')
      search_fields =  ('title', 'date_limite', 'user')
      list_display_links = ['title']
-     fieldsets = [('Info sous Categorie', {'fields': [ 'title', 'contenu', 'date_limite']}),
+     fieldsets = [('Info sous Categorie', {'fields': [ 'title', 'subtitle','contenu', 'date_limite']}),
                     ('Visuel', {'fields': ['images', 'status']})
                     ]
 

@@ -126,7 +126,7 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
 
     subcategory = SubCategory.objects.all()
     event = Event.objects.all()
-    variantes=[obj['id'] for obj in Variantes.objects.all().values()]
+    #variantes=[obj['id'] for obj in Variantes.objects.all().values()]
     
     for _ in range(nombre_produits):
       
@@ -134,7 +134,7 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
         subcategory_aleatoire = generic.random.choice(subcategory)
         extras = generic.text.words()
         event_aleatoire = generic.random.choice(event)
-        variantes_aleatoire_id =[generic.random.choice(variantes) for _ in range(1)] 
+        #variantes_aleatoire_id =[generic.random.choice(variantes) for _ in range(1)] 
         price = generate_random_integer()
         description = generic.text.text()
         description_precise = generic.text.text()
@@ -145,8 +145,8 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
         product = Products(name=name, sub_category=subcategory_aleatoire, extras=extras,
                            event=event_aleatoire,  price=price,description=description,
                            description_precise=description_precise)
-        variantes_aleatoire = Variantes.objects.filter(id__in=variantes_aleatoire_id)
-        product.variantes.set(variantes_aleatoire)
+        #variantes_aleatoire = Variantes.objects.filter(id__in=variantes_aleatoire_id)
+        #product.variantes.set(variantes_aleatoire)
         product.save()
 
         for _ in range(nombre_images_par_produit):

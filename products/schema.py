@@ -11,7 +11,7 @@ from .models import *
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
-        fields = ("id", "name", "image")
+        fields = ("id", "name", "image", "slug")
 
 class SubCategoryType(DjangoObjectType):
     class Meta:
@@ -29,10 +29,7 @@ class ImageType(DjangoObjectType):
 class ProductType(DjangoObjectType):
     class Meta:
         model = Products
-        interfaces = (relay.Node,)
-        filter_fields = {
-            "name": ["istartswith", "exact"]
-        }
+        
 
     images = graphene.List(ImageType)
 
