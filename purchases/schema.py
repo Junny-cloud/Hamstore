@@ -24,22 +24,22 @@ class ProduitsCommandesType(DjangoObjectType):
 class Query(graphene.ObjectType):
     
     commandes = graphene.List(CommandesType)
-    commande = graphene.Field(CommandesType, id=graphene.Int(required=True))
+    commande = graphene.Field(CommandesType, reference=graphene.String(required=True))
     
     produitscommandes = graphene.List(ProduitsCommandesType)
-    produitscommande = graphene.Field(ProduitsCommandesType, id=graphene.Int(required=True))
+    produitscommande = graphene.Field(ProduitsCommandesType, slug=graphene.String(required=True))
     
     def resolve_commandes(self, info):
         return Commandes.objects.all()
     
-    def resolve_commande(self, info, id):
-        return Commandes.objects.get(id=id)
+    def resolve_commande(self, info, reference):
+        return Commandes.objects.get(reference=reference)
     
     def resolve_produitscommandes(self, info):
         return ProduitsCommandes.objects.all()
     
-    def resolve_produitscommande(self, info, id):
-        return ProduitsCommandes.objects.get(id=id)
+    def resolve_produitscommande(self, info, slug):
+        return ProduitsCommandes.objects.get(slug=slug)
     
 
 class CommandesInput(graphene.InputObjectType):

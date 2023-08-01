@@ -233,6 +233,8 @@ GRAPHQL_AUTH = {
     },
     'REGISTER_MUTATION_FIELDS_OPTIONAL':['username', 'password2'],
     'LOGIN_ALLOWED_FIELDS': ['email'],
+    'ACCESS_TOKEN_EXPIRE_SECONDS' : 3600 ,
+    'REFRESH_TOKEN_EXPIRE_SECONDS':3600
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

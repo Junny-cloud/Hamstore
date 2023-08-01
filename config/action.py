@@ -9,6 +9,7 @@ import random
 import requests
 from urllib.parse import urlparse
 from faker import Faker
+from purchases.models import *
 from products.models import *
 from users.models import *
 from banners.models import *
@@ -92,7 +93,7 @@ def generer_events(nombre_events):
     generic = Generic()
 
     for _ in range(nombre_events):
-        title = generic.text.title()
+        title = generic.text.word()
         date_limite = datetime.now() + timedelta(days=generic.random.randint(1, 30))
         contenu = generic.text.text()
 
@@ -163,3 +164,27 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
             image.image.save(os.path.basename(image_url), File(img_temp))
             image.save()
         
+
+def generer_commandes(nombre_commandes, nombre_produits):
+    generic = Generic()
+
+    products = Products.objects.all()
+    users = CustomUser.objects.all()
+    #variantes=[obj['id'] for obj in Variantes.objects.all().values()]
+    quantity_def = [1,2,3,4,5,6,7,8,9]
+    for _ in range(nombre_commandes):
+      
+        user = generic.random.choice(users)
+
+        # Créez l'objet Product sans enregistrement dans la base de données
+        commande = Commandes(user=user)
+        #variantes_aleatoire = Variantes.objects.filter(id__in=variantes_aleatoire_id)
+        #product.variantes.set(variantes_aleatoire)
+        commande.save()
+
+        for _ in range(nombre_produits):
+            product = generic.random.choice(products)
+            quantity = generic.random.choice(quantity_def)
+
+            produits_commandes = ProduitsCommandes(commande=commande,product=product, quantity=quantity)
+            produits_commandes.save()
