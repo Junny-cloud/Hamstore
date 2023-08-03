@@ -149,6 +149,12 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
         #variantes_aleatoire = Variantes.objects.filter(id__in=variantes_aleatoire_id)
         #product.variantes.set(variantes_aleatoire)
         product.save()
+        # Générer des variantes fictives et les associer au produit
+        for _ in range(3):  # Générer 3 variantes par produit
+            name = generic.food.dish()
+            variante = Variantes.objects.create(name=name)
+            product.variantes.add(variante)
+                
 
         for _ in range(nombre_images_par_produit):
             image_url = generate_random_image_url()

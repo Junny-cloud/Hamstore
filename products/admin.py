@@ -28,7 +28,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
           return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url=obj.category.image.url)) 
 
 class VariantesAdmin(admin.ModelAdmin):
-     list_display = ('name', 'slug','date_registry','status')
+     list_display = ('name', 'date_registry','status')
      list_filter = ('name', 'date_registry','status')
      search_fields =  ('name', 'date_registry','status')
      list_display_links = ['name']
@@ -44,8 +44,10 @@ class EventAdmin(admin.ModelAdmin):
                     ]
 
      def images_view(self, obj):
-          return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url=obj.images.url)) 
-
+          if obj.images:
+               return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url=obj.images.url)) 
+          else:
+               return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url='/assets/img/logo.png')) 
 class ImageInline(admin.TabularInline):
     model = Image
     

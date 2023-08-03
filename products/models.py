@@ -90,7 +90,6 @@ class SubCategory(models.Model):
      
 class Variantes(models.Model):
      name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom sous-categorie")
-     slug = models.SlugField(unique=True, null=True)
 
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
@@ -104,10 +103,6 @@ class Variantes(models.Model):
      def __str__(self):
           return f"{self.name}"
      
-     def save(self, *args, **kwargs):
-        # Générer le slug à partir du nom de la catégorie avant de sauvegarder
-        self.slug = slugify(self.name)
-        super(Variantes, self).save(*args, **kwargs)
 
 class Event(models.Model):
      

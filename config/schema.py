@@ -1,6 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 from graphql_auth.schema import UserQuery, MeQuery
+from django.db.models import Q
 from graphql_auth import mutations
 import graphql
 from django.http import JsonResponse
@@ -21,10 +22,11 @@ from graphene import relay
 class ProductFilterInput(graphene.InputObjectType):
     # Ajoutez les champs que vous souhaitez filtrer
     priceRange = graphene.List(graphene.String)
-    sort_by_price =graphene.String()
+    sort_by_price = graphene.String()
     slug_category = graphene.String()
     slug_subcategory = graphene.String()
-    slug_event= graphene.String()
+    slug_event = graphene.String()
+    slug_product = graphene.String()
     skip = graphene.Int()
 
 class ProductFilterCategoryInput(graphene.InputObjectType):
@@ -139,6 +141,12 @@ class Query(UserQuery, MeQuery, productsQuery, graphene.ObjectType):
                 else:
                     products = products.order_by("date_registry")
 
+            if filter.slug_product:
+                prod_cat =  Products.objects.values('sub_category__slug').filter(slug=filter.slug_product)
+                prod_cat=prod_cat[0]['sub_category__slug']
+                products = products.filter(Q(sub_category__slug=prod_cat) &  ~Q(slug=filter.slug_product))
+                
+                
             if filter.skip:
                 products = products[filter.skip:]
             else :
