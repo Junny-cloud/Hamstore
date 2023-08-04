@@ -8,6 +8,7 @@ from PIL import Image
 import random
 import requests
 from urllib.parse import urlparse
+from django.core.management.base import BaseCommand
 from faker import Faker
 from purchases.models import *
 from products.models import *
@@ -138,14 +139,13 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
         #variantes_aleatoire_id =[generic.random.choice(variantes) for _ in range(1)] 
         price = generate_random_integer()
         description = generic.text.text()
-        description_precise = generic.text.text()
+
        
         
 
         # Créez l'objet Product sans enregistrement dans la base de données
         product = Products(name=name, sub_category=subcategory_aleatoire, extras=extras,
-                           event=event_aleatoire,  price=price,description=description,
-                           description_precise=description_precise)
+                            price=price,description=description)
         #variantes_aleatoire = Variantes.objects.filter(id__in=variantes_aleatoire_id)
         #product.variantes.set(variantes_aleatoire)
         product.save()
@@ -154,9 +154,19 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
             name = generic.food.dish()
             variante = Variantes.objects.create(name=name)
             product.variantes.add(variante)
-                
+            
+        for _ in range(2):
+            event_aleatoire = generic.random.choice(event)
+            product.event.add(event_aleatoire)
+        
+        for _ in range(5):  # Générer 5 description precises par produit
+            name = generic.text.word()
+            valeur = generic.text.word()
+            description_precise, creer = DescriptionPrecise.objects.get_or_create(name=name, valeur=valeur)
+            
+            product.description_precise.add(description_precise)
 
-        for _ in range(nombre_images_par_produit):
+        '''for _ in range(nombre_images_par_produit):
             image_url = generate_random_image_url()
             img_temp = NamedTemporaryFile()
             img_temp.write(urlopen(image_url).read())
@@ -168,7 +178,7 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
             
             image = Image(product=product)
             image.image.save(os.path.basename(image_url), File(img_temp))
-            image.save()
+            image.save()'''
         
 
 def generer_commandes(nombre_commandes, nombre_produits):
@@ -194,3 +204,30 @@ def generer_commandes(nombre_commandes, nombre_produits):
 
             produits_commandes = ProduitsCommandes(commande=commande,product=product, quantity=quantity)
             produits_commandes.save()
+            
+
+def replace_products_images():
+    # Liste de paires d'images (chaque paire est une liste de deux liens d'images)
+    image_pairs = [
+        ["produits_images/m1.png", "produits_images/m2.png", "produits_images/m3.png"],
+        ["produits_images/n1.png", "produits_images/n2.png"],
+        ["produits_images/v1.webp", "produits_images/v2.png", "produits_images/v3.png"],
+        # ... Ajoutez autant de paires que nécessaire
+    ]
+
+    # Parcourir tous les produits et remplacer les images par des paires aléatoires
+    products = Products.objects.all()
+
+    for product in products:
+        product.images.all().delete()
+
+        # Choisir aléatoirement une paire d'images
+        random_pair = random.choice(image_pairs)
+
+        # Ajouter les deux images de la paire au produit
+        for image_link in random_pair:
+            product_image = Image(image=image_link, product=product)
+            product_image.save()
+            product.images.add(product_image)
+
+        print("succes")
