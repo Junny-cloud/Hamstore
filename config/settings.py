@@ -112,7 +112,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.messages.context_proc essors.messages',
             ],
         },
     },
@@ -247,4 +247,20 @@ GRAPHQL_AUTH = {
     'LOGIN_ALLOWED_FIELDS': ['email', 'username'],
 }
 
+# Paramètres d'e-mails
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_TIMEOUT = 30
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'mail.systech-ci.net'
+EMAIL_HOST_USER = 'm.yeo@systech-ci.net'
+EMAIL_HOST_PASSWORD = 'Mailsecure001'
+EMAIL_PORT =  465
+
+EMAIL_SUBJECT_PREFIX = 'Nouvelle commande enregistrée'
+
+# Paramètres d'envoi d'e-mails pour les notifications
+
+
+
+
