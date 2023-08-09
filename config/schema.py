@@ -14,8 +14,8 @@ from banners.models import *
 from newsletters.models import *
 from users.schema import *
 from products.schema import *
-from products.schema import Query as productsQuery
-
+from products.schema import Query as productsQuery, Mutation as productsMutation
+from purchases.schema import Mutation as purchasesMutation, Query as purchasesQuery
 from django.core.exceptions import FieldDoesNotExist
 from graphene import relay
 
@@ -43,7 +43,7 @@ class ProductListType(graphene.ObjectType):
     total_count = graphene.Int()
     products = graphene.List(ProductType) 
     
-class Query(UserQuery, MeQuery, productsQuery, graphene.ObjectType):
+class Query(UserQuery, MeQuery, productsQuery, purchasesQuery,graphene.ObjectType):
     
     categories = graphene.List(CategoryType)
     category = graphene.Field(CategoryType, slug=graphene.String(required=True))
@@ -77,7 +77,7 @@ class Query(UserQuery, MeQuery, productsQuery, graphene.ObjectType):
 
     def resolve_products_by_category_slug(self, info, filter=None):
         products = Products.objects.all()
-        
+        total_count = products.count()
         if filter:
             first = 15
             if filter.skip is None:
@@ -86,20 +86,20 @@ class Query(UserQuery, MeQuery, productsQuery, graphene.ObjectType):
             if filter.slug is not None:
                 products = products.filter(sub_category__category__slug=filter.slug)
             
-            
+            total_count = products.count()  # Obtenir le nombre total de produits
             if filter.skip:
                 products = products[filter.skip:]
             
 
             if first:
                 products = products[:first]
-        total_count = products.count()  # Obtenir le nombre total de produits
+        
 
         return ProductListType(total_count=total_count, products=products)
     
     def resolve_products_by_subcategory_slug(self, info, filter=None):
-        products = Products.objects.all()
-        
+        products = Products.objects.all().order_by('-id')
+        total_count = products.count()
         if filter:
             first = 15
             if filter.skip is None:
@@ -146,7 +146,7 @@ class Query(UserQuery, MeQuery, productsQuery, graphene.ObjectType):
                 prod_cat=prod_cat[0]['sub_category__slug']
                 products = products.filter(Q(sub_category__slug=prod_cat) &  ~Q(slug=filter.slug_product))
                 
-                
+            total_count = products.count()  # Obtenir le nombre total de produits    
             if filter.skip:
                 products = products[filter.skip:]
             else :
@@ -156,7 +156,7 @@ class Query(UserQuery, MeQuery, productsQuery, graphene.ObjectType):
             if first:
                 products = products[:first]
               
-        total_count = products.count()  # Obtenir le nombre total de produits
+        
 
         return ProductListType(total_count=total_count, products=products)
 
@@ -165,7 +165,7 @@ class Query(UserQuery, MeQuery, productsQuery, graphene.ObjectType):
         return Products.objects.get(slug=slug)
 
 
-class Mutation(AuthMutation, graphene.ObjectType):
+class Mutation(AuthMutation, purchasesMutation, productsMutation, graphene.ObjectType):
     create_category = CreateCategory.Field()
     update_category = UpdateCategory.Field()
     delete_category = DeleteCategory.Field()

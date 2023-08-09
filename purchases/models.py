@@ -11,8 +11,10 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from products.models import *
+from django.contrib.auth import get_user_model
 
-User = settings.AUTH_USER_MODEL
+
+User = get_user_model()
 
     
 class Commandes(models.Model):
@@ -20,7 +22,8 @@ class Commandes(models.Model):
      products = models.ManyToManyField(Products, through='ProduitsCommandes')
      user = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
      total_amount = models.DecimalField(max_digits=10, default=0,decimal_places=2)
-     
+     date_commande = models.DateField(auto_now_add=True)
+     etat_commande = models.CharField(max_length=200, default="En cours",null=True, blank=True, verbose_name="etat de la commande")
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=False, verbose_name='Etat')
@@ -37,9 +40,9 @@ class Commandes(models.Model):
 
 class ProduitsCommandes(models.Model):
      commande = models.ForeignKey(Commandes, null=True, blank=True, on_delete=models.CASCADE, verbose_name="commande concerné")
-     slug = models.SlugField(unique=True, null=True)
      product = models.ForeignKey(Products,  null=True, blank=True, on_delete=models.CASCADE, verbose_name="Produit")
-     price_product = models.CharField(max_length=200, null=True, blank=True, verbose_name="prix produit")
+     variante = models.CharField(max_length=200, null=True, blank=True, verbose_name="variante choisie")
+     price_unitaire = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="prix produit")
      quantity = models.PositiveIntegerField(default=1)
      subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0,verbose_name="Total du produit")
      
@@ -52,14 +55,13 @@ class ProduitsCommandes(models.Model):
           verbose_name_plural = "Produits Commandés"
           ordering = ['-id']
 
-     def save(self, *args, **kwargs):
-          self.slug = slugify(''.join( [str(self.commande.reference ),self.product.name]))
-          self.subtotal = self.product.price * self.quantity
-          '''if self.product.event:
+     '''def save(self, *args, **kwargs):
+          
+          if self.product.event:
                self.subtotal = self.product.prix_promo * self.quantity
           else:
-               self.subtotal = self.product.price * self.quantity'''
-          super(ProduitsCommandes, self).save(*args, **kwargs)
+               self.subtotal = self.product.price * self.quantity
+          super(ProduitsCommandes, self).save(*args, **kwargs)'''
 
      def __str__(self):
           return f"{self.quantity} x {self.product.name} (commande #{self.commande.reference})"

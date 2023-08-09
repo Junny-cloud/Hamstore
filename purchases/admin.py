@@ -19,14 +19,14 @@ class CommandesAdmin(admin.ModelAdmin):
         return ', '.join([product.name for product in products])
         
         
-'''class ProduitsCommandesAdmin(admin.ModelAdmin):
-    list_display = ('slug','commande', 'product','price_product', 'quantity', 'subtotal','date_registry', 'status')
+class ProduitsCommandesAdmin(admin.ModelAdmin):
+    list_display = ('slug','commande', 'product','price_unitaire', 'quantity', 'subtotal','date_registry', 'status')
     list_filter = ('commande', 'product','date_registry', 'status')
     list_display_links = ['slug']
     search_fields =  ('commande', 'product','date_registry', 'status')
 
     fieldsets = [('Produits Commandes', {'fields': [ 'product', 'quantity']}),]
-'''
+
 def _register(model, admin_class):
     admin.site.register(model, admin_class)
 
