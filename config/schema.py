@@ -1,310 +1,171 @@
 import graphene
 from graphene_django import DjangoObjectType
 from graphql_auth.schema import UserQuery, MeQuery
+from django.db.models import Q
 from graphql_auth import mutations
 import graphql
+from django.http import JsonResponse
 from graphql import GraphQLError
-from graphene_file_upload.scalars import Upload
+#from graphene_file_upload.scalars import Upload
 from users.models import *
 from purchases.models import *
 from products.models import *
 from banners.models import *
 from newsletters.models import *
+from users.schema import *
+from products.schema import *
+from products.schema import Query as productsQuery, Mutation as productsMutation
+from purchases.schema import Mutation as purchasesMutation, Query as purchasesQuery
+from django.core.exceptions import FieldDoesNotExist
+from graphene import relay
 
-# ---------------  APP PRODUITS  -----------------------
-class CategoryType(DjangoObjectType):
-    class Meta:
-        model = Category
-        fields = ("id", "name", "image")
+class ProductFilterInput(graphene.InputObjectType):
+    # Ajoutez les champs que vous souhaitez filtrer
+    priceRange = graphene.List(graphene.String)
+    sort_by_price = graphene.String()
+    slug_category = graphene.String()
+    slug_subcategory = graphene.String()
+    slug_event = graphene.String()
+    slug_product = graphene.String()
+    skip = graphene.Int()
 
-class SubCategoryType(DjangoObjectType):
-    class Meta:
-        model = SubCategory
+class ProductFilterCategoryInput(graphene.InputObjectType):
+    # Ajoutez les champs que vous souhaitez filtrer
+    slug = graphene.String()
 
-        
-class ImageType(DjangoObjectType):
-    class Meta:
-        model = Image
+    skip = graphene.Int()
 
-class ProductType(DjangoObjectType):
-    class Meta:
-        model = Products
+class SubCategoryFilterInput(graphene.InputObjectType):
+    # Ajoutez les champs que vous souhaitez filtrer
+    slug = graphene.String()
 
-    images = graphene.List(ImageType)
-
-    def resolve_images(self, info):
-        return self.images.all()
-
-
-
-
-class AuthMutation(graphene.ObjectType):
-    register = mutations.Register.Field()
-    verify_account = mutations.VerifyAccount.Field()
-    resend_activation_email = mutations.ResendActivationEmail.Field()
-    send_password_reset_email = mutations.SendPasswordResetEmail.Field()
-    password_reset = mutations.PasswordReset.Field()
-    password_set = mutations.PasswordSet.Field()
-    password_change = mutations.PasswordChange.Field()
-    archive_account = mutations.ArchiveAccount.Field()
-    delete_account = mutations.DeleteAccount.Field()
-    update_account = mutations.UpdateAccount.Field()
-    send_secondary_email_activation = mutations.SendSecondaryEmailActivation.Field()
-    verify_secondary_email = mutations.VerifySecondaryEmail.Field()
-    swap_emails = mutations.SwapEmails.Field()
-
+class ProductListType(graphene.ObjectType):
+    total_count = graphene.Int()
+    products = graphene.List(ProductType) 
     
-    # django-graphql-jwt authentication
-    # with some extra features
-    token_auth = mutations.ObtainJSONWebToken.Field()
-    verify_token = mutations.VerifyToken.Field()
-    refresh_token = mutations.RefreshToken.Field()
-    revoke_token = mutations.RevokeToken.Field()
-
-
-class Query(UserQuery, MeQuery, graphene.ObjectType):
+class Query(UserQuery, MeQuery, productsQuery, purchasesQuery,graphene.ObjectType):
     
     categories = graphene.List(CategoryType)
-    category = graphene.Field(CategoryType, id=graphene.Int(required=True))
+    category = graphene.Field(CategoryType, slug=graphene.String(required=True))
 
-    subcategories = graphene.List(SubCategoryType)
-    subcategory = graphene.Field(SubCategoryType, id=graphene.Int(required=True))
+    subcategories = graphene.List(SubCategoryType, filter=SubCategoryFilterInput())
+    subcategory = graphene.Field(SubCategoryType, slug=graphene.String(required=True))
 
-    products = graphene.List(ProductType, category_id=graphene.Int(), min_price=graphene.Float(), max_price=graphene.Float())
-    product = graphene.Field(ProductType, id=graphene.Int(required=True))
+    products_by_category_slug = graphene.Field(ProductListType, filter=ProductFilterCategoryInput())
+    products_by_subcategory_slug= graphene.Field(ProductListType, filter=ProductFilterInput())
+    product = graphene.Field(ProductType, slug=graphene.String(required=True))
 
     def resolve_categories(self, info):
         return Category.objects.all()
 
-    def resolve_category(self, info, id):
-        return Category.objects.get(id=id)
+    def resolve_category(self, info, slug):
+        return Category.objects.get(slug=slug)
 
-    def resolve_subcategories(self, info):
-        return SubCategory.objects.all()
+    def resolve_subcategories(self, info ,  filter=None):
+        subcategories = SubCategory.objects.all()
 
-    def resolve_subcategory(self, info, id):
-        return SubCategory.objects.get(id=id)
-
-    def resolve_products(self, info, category_id=None, min_price=None, max_price=None):
-        products = Product.objects.all()
-
-        if category_id:
-            products = products.filter(subcategory__category_id=category_id)
-
-        if min_price is not None:
-            products = products.filter(price__gte=min_price)
-
-        if max_price is not None:
-            products = products.filter(price__lte=max_price)
-
-        return products
-
-    def resolve_product(self, info, id):
-        return Products.objects.get(id=id)
-
-# ------------------- CATEGORY CRUD ---------------------
-class CreateCategory(graphene.Mutation):
-    class Arguments:
-        name = graphene.String(required=True)
-        image = Upload()
-
-    category = graphene.Field(CategoryType)
-
-    def mutate(self, info, name, image):
-        category = Category(name=name, image=image)
-        category.save()
-        return CreateCategory(category=category)
-
-class UpdateCategory(graphene.Mutation):
-    class Arguments:
-        id = graphene.ID(required=True)
-        name = graphene.String()
-        image = graphene.String()
-
-    category = graphene.Field(CategoryType)
-
-    def mutate(self, info, id, name=None, image=None):
-        try:
-            category = Category.objects.get(pk=id)
-        except Category.DoesNotExist:
-            raise Exception("La catégorie spécifiée n'existe pas")
-
-        if name is not None:
-            category.name = name
-        if image is not None:
-            category.image = image
-
-        category.save()
-        return UpdateCategory(category=category)
-
-class DeleteCategory(graphene.Mutation):
-    class Arguments:
-        id = graphene.ID(required=True)
-
-    success = graphene.Boolean()
-
-    def mutate(self, info, id):
-        try:
-            category = Category.objects.get(pk=id)
-        except Category.DoesNotExist:
-            raise Exception("La catégorie spécifiée n'existe pas")
-
-        category.delete()
-        return DeleteCategory(success=True)
+        if filter:
+            if filter.slug is not None:
+                subcategories =subcategories.filter(category__slug=filter.slug)
 
 
-# ------------------- SUBCATEGORY CRUD ---------------------
-class SubcategoryInput(graphene.InputObjectType):
-    name = graphene.String(required=True)
-    category_id = graphene.ID(required=True)
 
-class CreateSubCategory(graphene.Mutation):
-    class Arguments:
-        name = graphene.String(required=True)
-        category_id = graphene.Int(required=True)
+        return subcategories
 
-    subcategory = graphene.Field(SubCategoryType)
+    def resolve_subcategory(self, info, slug):
+        return SubCategory.objects.get(slug=slug)
 
-    def mutate(self, info, name, category_id):
-        category = Category.objects.get(id=category_id)
-        subcategory = SubCategory(name=name, category=category)
-        subcategory.save()
-        return CreateSubCategory(subcategory=subcategory)
+    def resolve_products_by_category_slug(self, info, filter=None):
+        products = Products.objects.all()
+        total_count = products.count()
+        if filter:
+            first = 15
+            if filter.skip is None:
+                filter.skip=0
+            filter.skip =filter.skip*15
+            if filter.slug is not None:
+                products = products.filter(sub_category__category__slug=filter.slug)
+            
+            total_count = products.count()  # Obtenir le nombre total de produits
+            if filter.skip:
+                products = products[filter.skip:]
+            
 
-class UpdateSubcategory(graphene.Mutation):
-    class Arguments:
-        subcategory_id = graphene.ID(required=True)
-        subcategory_data = SubcategoryInput(required=True)
-
-    subcategory = graphene.Field(SubCategoryType)
-
-    @staticmethod
-    def mutate(root, info, subcategory_id, subcategory_data=None):
-        try:
-            subcategory = Subcategory.objects.get(pk=subcategory_id)
-        except Subcategory.DoesNotExist:
-            raise Exception("Subcategory not found")
-
-        subcategory.name = subcategory_data.name
-        subcategory.save()
-
-        return UpdateSubcategory(subcategory=subcategory)
-
-class DeleteSubcategory(graphene.Mutation):
-    class Arguments:
-        subcategory_id = graphene.ID(required=True)
-
-    success = graphene.Boolean()
-
-    @staticmethod
-    def mutate(root, info, subcategory_id):
-        try:
-            subcategory = Subcategory.objects.get(pk=subcategory_id)
-        except Subcategory.DoesNotExist:
-            raise Exception("Subcategory not found")
-
-        subcategory.delete()
-
-        return DeleteSubcategory(success=True)
-
-#------------------ PRODUCTS CRUD ------------------------
-'''class ProductInput(graphene.InputObjectType):
-    name = graphene.String(required=True)
-    extras = graphene.String(required=True)
-    price = graphene.Float(required=True)
-    sub_category = graphene.ID(required=True)
-    description = graphene.String(required=True)
-    description_precise = graphene.String(required=True)
-    images = graphene.List(Scalar, required=False)
-
-class CreateProduct(graphene.Mutation):
-    class Arguments:
-        product_data = ProductInput(required=True)
-
-    product = graphene.Field(ProductType)
-
-    def mutate(self, info, product_data):
-        name = product_data.name
-        description = product_data.description
-        price = product_data.price
-        category_id = product_data.category
-
-        # Créez le produit dans la base de données avec les données fournies
-        product = Product(name=name, description=description, price=price, category_id=category_id)
-        product.save()
-
-        # Récupérez l'ID du produit créé
-        product_id = product.id
-
-        # Importez les images du produit via la mutation `addProductImages`
-        images = product_data.images
-        if images:
-            for image in images:
-                add_product_image(product_id, image)
-
-        return CreateProduct(product=product)
-
-class AddProductImages(graphene.Mutation):
-    class Arguments:
-        product_id = graphene.Int(required=True)
-        images = graphene.List(graphene.String, required=True)
-
-    product = graphene.Field(ProductType)
-
-    def mutate(self, info, product_id, images):
-        product = Product.objects.get(id=product_id)
-        for image in images:
-            product.images.create(image=image)
-        return AddProductImages(product=product)  
-
-class DeleteProduct(graphene.Mutation):
-    class Arguments:
-        product_id = graphene.ID(required=True)
-
-    success = graphene.Boolean()
-
-    @staticmethod
-    def mutate(root, info, product_id):
-        try:
-            product = Product.objects.get(id=product_id)
-            product.delete()
-            success = True
-        except Product.DoesNotExist:
-            raise GraphQLError("Invalid product ID.")
+            if first:
+                products = products[:first]
         
-        return DeleteProduct(success=success)
-'''
-class UpdateProduct(graphene.Mutation):
-    class Arguments:
-        product_id = graphene.ID(required=True)
-        name = graphene.String()
-        description = graphene.String()
-        price = graphene.Float()
-        category = graphene.ID()
 
-    product = graphene.Field(ProductType)
+        return ProductListType(total_count=total_count, products=products)
+    
+    def resolve_products_by_subcategory_slug(self, info, filter=None):
+        products = Products.objects.all().order_by('-id')
+        total_count = products.count()
+        if filter:
+            first = 15
+            if filter.skip is None:
+                filter.skip=0
 
-    @staticmethod
-    def mutate(root, info, product_id, **kwargs):
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
-            raise GraphQLError("Invalid product ID.")
+            if filter.skip >0:
+                filter.skip-=1
 
-        # Mettez à jour les champs spécifiés dans les arguments kwargs
-        for field, value in kwargs.items():
-            if value is not None:
-                setattr(product, field, value)
-        try:
-            product.full_clean()
-            product.save()
-        except ValidationError as e:
-            raise GraphQLError(f"Validation error: {str(e)}")
+            filter.skip =filter.skip*15
+            if filter.slug_category is not None:
+                products = products.filter(sub_category__category__slug=filter.slug_category)
+            if filter.slug_subcategory is not None:
+                products = products.filter(sub_category__slug=filter.slug_subcategory)
 
-        return UpdateProduct(product=product)
+            if filter.slug_event is not None:
+                products = products.filter(event__slug=filter.slug_event)
+
+            if filter.priceRange:
+                tx = products.filter(price=0)
+                for obj in filter.priceRange:
+                    
+                    if obj=='intervale_1' :
+                        tx = tx|products.filter(price__range=(0.0, 10000.0))
+                    if obj=='intervale_2' :
+                        tx = tx|products.filter(price__range=(10001.0, 20000.0))
+                    if obj=='intervale_3' :
+                        tx = tx|products.filter(price__range=(20001.0, 50000.0))
+                    if obj=='intervale_4' :
+                        tx = tx|products.filter(price__range=(50001.0, 100000.0))
+                    if obj=='intervale_5' :
+                        tx = tx|products.filter(price__gte=100001.0)
+                products=tx
+            if filter.sort_by_price:
+                # Trier les produits en fonction du prix dans l'ordre spécifié
+                if filter.sort_by_price == "price_desc":
+                    products = products.order_by("-price")
+                elif filter.sort_by_price == "price_asc":
+                    products = products.order_by("price")
+                else:
+                    products = products.order_by("date_registry")
+
+            if filter.slug_product:
+                prod_cat =  Products.objects.values('sub_category__slug').filter(slug=filter.slug_product)
+                prod_cat=prod_cat[0]['sub_category__slug']
+                products = products.filter(Q(sub_category__slug=prod_cat) &  ~Q(slug=filter.slug_product))
+                
+            total_count = products.count()  # Obtenir le nombre total de produits    
+            if filter.skip:
+                products = products[filter.skip:]
+            else :
+                filter.skip =0
+                products = products[filter.skip:]
+
+            if first:
+                products = products[:first]
+              
+        
+
+        return ProductListType(total_count=total_count, products=products)
 
 
-class Mutation(AuthMutation, graphene.ObjectType):
+    def resolve_product(self, info, slug):
+        return Products.objects.get(slug=slug)
+
+
+class Mutation(AuthMutation, purchasesMutation, productsMutation, graphene.ObjectType):
     create_category = CreateCategory.Field()
     update_category = UpdateCategory.Field()
     delete_category = DeleteCategory.Field()
