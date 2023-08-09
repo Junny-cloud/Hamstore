@@ -15,7 +15,7 @@ import os
 from pathlib import Path
 from decouple import config
 from config import db
-
+from datetime import datetime, timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -215,7 +215,7 @@ GRAPHQL_JWT = {
     'JWT_ALLOW_ARGUMENT': True,
     
     "JWT_VERIFY_EXPIRATION": True,
-
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=15),
     # optional
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
     
