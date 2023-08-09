@@ -1,0 +1,55 @@
+[
+    {
+        "model": "products.Category",
+        "pk": 1,
+        "fields": {
+            "name": "Bricolage",
+            "image": "categories_images/bricolage_sie2HDY.png"
+        }
+    },
+    {
+        "model": "products.Category",
+        "pk": 2,
+        "fields": {
+            "name": "Articles de sport",
+            "image": "categories_images/bricolage_sie2HDY.png"
+        }
+    },
+    {
+        "model": "products.Category",
+        "pk": 3,
+        "fields": {
+            "name": "electro-menager",
+            "image":"categories_images/bricolage_sie2HDY.png"
+        }
+    },
+    {
+        "model": "products.SubCategory",
+        "pk": 1,
+        "fields": {
+            "name": "outils",
+            "category":1
+            
+        }
+    },
+    {
+        "model": "products.SubCategory",
+        "pk": 1,
+        "fields": {
+            "name": "articles de sport",
+            "category":2
+            
+        }
+    },
+    {
+        "model": "products.SubCategory",
+        "pk": 1,
+        "fields": {
+            "name": "habille de sport",
+            "category":2
+            
+        }
+    },
+    
+
+]

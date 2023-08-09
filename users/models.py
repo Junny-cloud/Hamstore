@@ -3,7 +3,7 @@ from django.db import models
 from django.forms import model_to_dict
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-
+from django.core.exceptions import FieldDoesNotExist
 
 from config import settings
 

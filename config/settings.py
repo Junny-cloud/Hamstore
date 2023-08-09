@@ -15,7 +15,6 @@ import os
 from pathlib import Path
 from decouple import config
 from config import db
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -38,18 +37,12 @@ ALLOWED_HOSTS = []
 
 DJANGO_PACKAGES = [
     'jazzmin',
-    "django_apscheduler",
-    #api rest
-    'rest_framework',
-    'django_filters',
-    'active_link',
-    'tinymce',
-    'drf_yasg',
     #configuration graphene
     'graphene_django',
     #config graphene auth
-    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
+    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "graphql_auth",
+    "django_filters",
    
 ]
 
@@ -133,16 +126,10 @@ DATABASES = db.MYSQL
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'OPTIONS': {
+            'min_length': 8,  # Remplacez la valeur par la longueur minimale souhaitée
+        }
     },
 ]
 
@@ -188,7 +175,7 @@ JAZZMIN_SETTINGS = {
 }
 
 
-AUTH_USER_MODEL = 'users.CustomUser'
+
 
 GRAPHENE = {
     'SCHEMA': 'config.schema.schema' ,# Where your Graphene schema lives
@@ -236,15 +223,18 @@ GRAPHQL_JWT = {
 GRAPHQL_AUTH = {
    
     'REGISTER_MUTATION_FIELDS' : {
-    'username': "String",
+   
     'email': "String",
     'first_name': "String",
     'last_name': "String",
     'date_naissance': "String",
-    'abonnes_newsletters': "Int"
-    },
+    'abonnes_newsletters':'Boolean',
     
-    'LOGIN_ALLOWED_FIELDS': ['email', 'username'],
+    },
+    'REGISTER_MUTATION_FIELDS_OPTIONAL':['username', 'password2'],
+    'LOGIN_ALLOWED_FIELDS': ['email'],
+    'ACCESS_TOKEN_EXPIRE_SECONDS' : 3600 ,
+    'REFRESH_TOKEN_EXPIRE_SECONDS':3600
 }
 
 # Paramètres d'e-mails
@@ -259,8 +249,109 @@ EMAIL_PORT =  465
 
 EMAIL_SUBJECT_PREFIX = 'Nouvelle commande enregistrée'
 
-# Paramètres d'envoi d'e-mails pour les notifications
 
+AUTH_USER_MODEL = 'users.CustomUser'
 
+JAZZMIN_SETTINGS = {
+    "site_title": "Hamstore",
+    "site_header": "Admin Hamstore",
+    "site_brand": "Hamstore",
+    "site_icon": "/assets/img/logo.png",    
+    # Add your own branding here
+    "site_logo": "/assets/img/logo.png",
+    "welcome_sign": "Bienvenue sur Hamstore",
+    # Copyright on the footer
+    "copyright": "Junior Essoh",
+    "user_avatar": None,
+    ############
+    # Top Menu #
+    ############
+    # Links to put along the top menu
+    "topmenu_links": [
+        # Url that gets reversed (Permissions can be added)
+        {"name": "Accueil",  "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"model": "auth.User"},
+    ],
+    #############
+    # Side Menu #
+    #############
+    # Whether to display the side menu
+    "show_sidebar": True,
+    # Whether to aut expand the menu
+    "navigation_expanded": True,
+    # Custom icons for side menu apps/models See https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.0.2,5.0.3,5.0.4,5.0.5,5.0.6,5.0.7,5.0.8,5.0.9,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.13.0,5.12.0,5.11.2,5.11.1,5.10.0,5.9.0,5.8.2,5.8.1,5.7.2,5.7.1,5.7.0,5.6.3,5.5.0,5.4.2
+    "hide_apps": [ "auth", "refresh_token"],
+    "hide_models": [],
+    "order_with_respect_to": ["banners", "newsletters", "products", "purchases", "users"],
+    "icons": {
+        
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "users.customuser": "fas fa-users",
+        "products.category":"fas fa-tags",
+        "products.products":"fas fa-shopping-cart",
+        "products.event":"fas  fa-universal-access",
+    },
+    # for the full list of 5.13.0 free icon classes
+    # # Icons that are used when one is not manually specified
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-arrow-circle-right",
+    #################
+    # Related Modal #
+    #################
+    # Use modals instead of popups
+    "related_modal_active": True,
+    #############
+    # UI Tweaks #
+    #############
+    # Relative paths to custom CSS/JS scripts (must be present in static files)
+    # Uncomment this line once you create the bootstrap-dark.css file
+    "custom_css": "/config/static/assets/css/customiz_admin.css",
+    "custom_js": None,
+    # Whether to show the UI customizer on the sidebar
+    "show_ui_builder": True,
+    ###############
+    # Change view #
+    ###############
+    "changeform_format": "horizontal_tabs",
+    # override change forms on a per modeladmin basis
+    "changeform_format_overrides": {
+        "auth.user": "collapsible",
+        "auth.group": "vertical_tabs",
+    },
+}
 
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": True,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-navy",
+    "accent": "accent-lightblue",
+    "navbar": "navbar-navy navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": True,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-navy",
+    "sidebar_nav_small_text": True,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": True,
+    "theme": "cyborg",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success"
+    },
+    "actions_sticky_top": True
+}
 
