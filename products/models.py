@@ -3,14 +3,13 @@ import pathlib
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
-from users.models import *
+
 from django.forms import model_to_dict
 from django.db import transaction
 from django.utils.text import slugify 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from users.models import *
 from django.core.exceptions import FieldDoesNotExist
 from django.dispatch import receiver
 import os
@@ -222,7 +221,7 @@ class Commentaires(models.Model):
      note = models.IntegerField( null=True, blank=True, verbose_name="Note produit")
      product = models.ForeignKey(Products , null=True, blank=False, on_delete=models.CASCADE, verbose_name="produit concerne")
 
-     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
+     client = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=True, verbose_name='Etat')

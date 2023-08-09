@@ -21,7 +21,7 @@ class CustomUserType(DjangoObjectType):
     class Meta:
         model = CustomUser
         fields = '__all__'
-        
+    
 class ListUsersQuery(graphene.ObjectType):
     ListUsers = graphene.List(CustomUserType)
 
@@ -111,12 +111,12 @@ class AddFavorite(graphene.Mutation):
         product_id = graphene.Int()
 
     def mutate(self, info, product_id):
-        user = info.context.user.username
+        user = info.context.user
         if not user.is_authenticated:
             raise Exception('User not authenticated')
 
         product = Products.objects.get(pk=product_id)
-        user, created = CustomUser.objects.get_or_create(username=user)
+        user, created = CustomUser.objects.get_or_create(username=user.username)
         user.favorite_products.add(product)
         user.save()
         
@@ -147,7 +147,7 @@ class AuthMutation(graphene.ObjectType):
      
      #login = graphene.Field(AuthToken, credentials=YourInputObjectType(required=True))
 
-     def resolve_token_auth(self, info, credentials):
+     def resolve_login(self, info, credentials):
           email = credentials.email
           password = credentials.password
 

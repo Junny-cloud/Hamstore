@@ -12,7 +12,7 @@ class CustomUser(AbstractUser):
     telephone = models.CharField(max_length=30, null=True, blank=True, verbose_name="Téléphone")
     date_naissance = models.DateField(null=True, blank=True, verbose_name="Date de naissance")
     abonnes_newsletters = models.BooleanField(default=False)
-    favorite_products = models.ManyToManyField(Products, related_name='favorited_by')
+    #favorite_products = models.ManyToManyField(Products, related_name='favorited_by')
     
     USERNAME_FIELD = "username"  # e.g: "username", "email"
     EMAIL_FIELD = "email"
