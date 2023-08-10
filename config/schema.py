@@ -14,7 +14,7 @@ from banners.models import *
 from newsletters.models import *
 from users.schema import *
 from products.schema import *
-from products.schema import Query as productsQuery, Mutation as productsMutation
+from products.schema import Query as productsQuery
 from purchases.schema import Mutation as purchasesMutation, Query as purchasesQuery
 from django.core.exceptions import FieldDoesNotExist
 from graphene import relay
@@ -165,7 +165,7 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery,graphene.ObjectTyp
         return Products.objects.get(slug=slug)
 
 
-class Mutation(AuthMutation, purchasesMutation, productsMutation, graphene.ObjectType):
+class Mutation(AuthMutation, purchasesMutation,graphene.ObjectType):
     create_category = CreateCategory.Field()
     update_category = UpdateCategory.Field()
     delete_category = DeleteCategory.Field()

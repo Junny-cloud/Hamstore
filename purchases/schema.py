@@ -13,7 +13,6 @@ class CommandesFilterInput(graphene.InputObjectType):
     # Ajoutez les champs que vous souhaitez filtrer
     date_commande = graphene.Date()
     user = graphene.ID()
-    skip = graphene.Int()
 
 
 class CommandesType(DjangoObjectType):
@@ -26,49 +25,17 @@ class ProduitsCommandesType(DjangoObjectType):
         model = ProduitsCommandes
         fields = "__all__"
         
-class CommandesListType(graphene.ObjectType):
-    total_count = graphene.Int()
-    commandes = graphene.List(CommandesType) 
 
 class Query(graphene.ObjectType):
     
-    commandes = graphene.List(CommandesType, filter=CommandesFilterInput())
+    commandes = graphene.List(CommandesType)
     commande = graphene.Field(CommandesType, reference=graphene.String(required=True))
     
     produitscommandes = graphene.List(ProduitsCommandesType)
     produitscommande = graphene.Field(ProduitsCommandesType, id=graphene.ID(required=True))
     
-    def resolve_commandes(self, info, filter=None):
-        commandes = Commentaires.objects.all().order_by('-id')
-        total_count = commandes.count()
-        
-        if filter:
-            first = 15
-            if filter.skip is None:
-                filter.skip=0
-
-            if filter.skip >0:
-                filter.skip-=1
-
-            filter.skip =filter.skip*15
-            if filter.date_commande is not None:
-                commandes = commentcommandesaires.filter(date_commande=filter.date_commande)
-            if filter.user is not None:
-                commandes = commandes.filter(user__pk=filter.user)
-
-            
-            total_count = commandes.count()  # Obtenir le nombre total de commandes    
-            if filter.skip:
-                commandes = commandes[filter.skip:]
-            else :
-                filter.skip =0
-                commandes = commandes[filter.skip:]
-
-            if first:
-                commandes = commandes[:first]
-              
-        return CommandesListType(total_count=total_count, commandes=commandes)
-        
+    def resolve_commandes(self, info):
+        return Commandes.objects.all()
     
     def resolve_commande(self, info, reference):
         return Commandes.objects.get(reference=reference)
@@ -80,8 +47,8 @@ class Query(graphene.ObjectType):
         return ProduitsCommandes.objects.get(id=id)
     
 class ProductsCommandesInput(graphene.InputObjectType):
-    produit_slug = graphene.String(required=True)
-    quantite = graphene.Int(required=True)
+    produit_id = graphene.ID()
+    quantite = graphene.Int()
     variantes = graphene.List(graphene.ID)
 
 
@@ -98,7 +65,7 @@ class CreateCommande(graphene.Mutation):
         total_amount = 0
         
         for ligne in products_commandes:
-            produit = Products.objects.get(slug=ligne.produit_slug)
+            produit = Products.objects.get(pk=ligne.produit_id)
             quantite = ligne.quantite or 1
             
             # Obtenir les variantes à partir des identifiants fournis
@@ -108,7 +75,6 @@ class CreateCommande(graphene.Mutation):
                 variantes.append(variante)
             price = 10.00
             if produit.event:
-                
                 if produit.prix_promo:
                     
                     price = produit.prix_promo 

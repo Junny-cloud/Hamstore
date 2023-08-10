@@ -30,7 +30,6 @@ class Newsletters(models.Model):
 
 class Mailing(models.Model):
      objet_mail = models.CharField(max_length=200, null=True, blank=True, verbose_name="Objet du mail")
-     slug = models.SlugField(unique=True, null=True)
      contenu = models.TextField( null=True, blank=True, verbose_name="contenu mail")
      
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")

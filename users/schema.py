@@ -21,14 +21,7 @@ class CustomUserType(DjangoObjectType):
     class Meta:
         model = CustomUser
         fields = '__all__'
-        
-class ListUsersQuery(graphene.ObjectType):
-    ListUsers = graphene.List(CustomUserType)
 
-    def resolve_list_users(self, info):
-        # Récupérez la liste des utilisateurs de votre source de données (par exemple, base de données)
-        ListUsers = CustomUser.objects.all()
-        return ListUsers
 class UserInput(graphene.InputObjectType):
      email = graphene.String(required=True)
      firstname = graphene.String(required=True)

@@ -8,13 +8,6 @@ from graphene import relay
 from .models import *
 
 # ---------------  APP PRODUITS  -----------------------
-class CommentairesFilterInput(graphene.InputObjectType):
-    # Ajoutez les champs que vous souhaitez filtrer
-    client = graphene.ID()
-    note = graphene.Int()
-    slug_product = graphene.String()
-    skip = graphene.Int()
-
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
@@ -28,7 +21,12 @@ class VariantesType(DjangoObjectType):
     class Meta:
         model = Variantes
         fields = "__all__"
-        
+   
+class DescriptionPreciseType(DjangoObjectType):
+    class Meta:
+        model = DescriptionPrecise
+        fields = "__all__"
+       
 class ImageType(DjangoObjectType):
     class Meta:
         model = Image
@@ -54,10 +52,7 @@ class CommentairesType(DjangoObjectType):
     class Meta:
         model = Commentaires
         fields = "__all__"
-
-class CommentairesListType(graphene.ObjectType):
-    total_count = graphene.Int()
-    commentaires = graphene.List(CommentairesType)      
+        
 
 class Query(graphene.ObjectType):
     
@@ -67,7 +62,7 @@ class Query(graphene.ObjectType):
     events = graphene.List(EventType)
     event = graphene.Field(EventType, slug=graphene.String(required=True))
 
-    commentaires_by_filter = graphene.List(CommentairesType, filter=CommentairesFilterInput())
+    commentaires = graphene.List(CommentairesType)
     commentaire = graphene.Field(CommentairesType, id=graphene.Int(required=True))
     
     def resolve_variantes(self, info):
@@ -88,41 +83,6 @@ class Query(graphene.ObjectType):
 
     def resolve_commentaire(self, info, id):
         return Commentaires.objects.get(id=id)
-    
-    def resolve_commentaires_by_filter(self, info, filter=None):
-        commentaires = Commentaires.objects.all().order_by('-id')
-        total_count = commentaire.count()
-        
-        if filter:
-            first = 15
-            if filter.skip is None:
-                filter.skip=0
-
-            if filter.skip >0:
-                filter.skip-=1
-
-            filter.skip =filter.skip*15
-            if filter.slug_product is not None:
-                commentaires = commentaires.filter(product__slug=filter.slug_product)
-            if filter.client is not None:
-                commentaires = commentaires.filter(user__pk=filter.client)
-
-            if filter.note is not None:
-                commentaires = commentaires.filter(note=filter.note)
-                
-            total_count = commentaires.count()  # Obtenir le nombre total de produits    
-            if filter.skip:
-                commentaires = commentaires[filter.skip:]
-            else :
-                filter.skip =0
-                commentaires = commentaires[filter.skip:]
-
-            if first:
-                commentaires = commentaires[:first]
-              
-        
-
-        return CommentairesListType(total_count=total_count, commentaires=commentaires)
     
 # ------------------- CATEGORY CRUD ---------------------
 class CategoryInput(graphene.InputObjectType):
@@ -409,15 +369,16 @@ class CreateEvent(graphene.Mutation):
 
 class CreateCommentaires(graphene.Mutation):
     class Arguments:
-        product_id = graphene.Int()
-        note = graphene.Int()
-        contenu=graphene.String()
+        product_id = graphene.Int(required=True)
+        note =graphene.Int()
+        contenu=graphene.String(required=True)
+        user_id = graphene.Int(required=True)
 
     commentaires = graphene.Field(CommentairesType)
 
-    def mutate(self, info, product_id, note, contenu):
-        user = info.context.user
-        product = Products.objects.get(pk=product_id)
+    def mutate(self, info, product_id, note, contenu, user_id):
+        product = Products.objects.get(id=product_id)
+        user = CustomUser.objects.get(id=user_id)
         commentaires = Commentaires(product=product, note=note, contenu=contenu, user=user)
         commentaires.save()
         return CreateCommentaires(commentaires=commentaires)
@@ -439,9 +400,3 @@ class DeleteCommentaires(graphene.Mutation):
 
         return DeleteCommentaires(success=True)
     
-
-class Mutation(graphene.ObjectType):
-    create_commentaires = CreateCommentaires.Field()
-    delete_commentaires = DeleteCommentaires.Field()
-    
-   

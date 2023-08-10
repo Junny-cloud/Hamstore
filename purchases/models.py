@@ -23,7 +23,7 @@ class Commandes(models.Model):
      user = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
      total_amount = models.DecimalField(max_digits=10, default=0,decimal_places=2)
      date_commande = models.DateField(auto_now_add=True)
-     etat_commande = models.CharField(max_length=200, default="En cours",null=True, blank=True, verbose_name="etat de la commande")
+     
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=False, verbose_name='Etat')

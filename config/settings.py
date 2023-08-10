@@ -33,11 +33,10 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-# Application definition
-
 DJANGO_PACKAGES = [
     'jazzmin',
     #configuration graphene
+    'corsheaders',
     'graphene_django',
     #config graphene auth
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
@@ -74,6 +73,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -81,8 +81,21 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
    
 ]
+CORS_ALLOW_ALL_ORIGINS =True
+
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+)
+
+#CORS_ALLOWED_ORIGINS = ['*']
 
 ROOT_URLCONF = 'config.urls'
 
@@ -148,6 +161,7 @@ USE_L10N = True
 USE_TZ = True
 
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
@@ -202,7 +216,7 @@ GRAPHQL_JWT = {
     'JWT_ALLOW_ARGUMENT': True,
     
     "JWT_VERIFY_EXPIRATION": True,
-
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=60),
     # optional
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
     
@@ -220,6 +234,7 @@ GRAPHQL_JWT = {
     ],
 }
 
+
 GRAPHQL_AUTH = {
    
     'REGISTER_MUTATION_FIELDS' : {
@@ -233,8 +248,6 @@ GRAPHQL_AUTH = {
     },
     'REGISTER_MUTATION_FIELDS_OPTIONAL':['username', 'password2'],
     'LOGIN_ALLOWED_FIELDS': ['email'],
-    'ACCESS_TOKEN_EXPIRE_SECONDS' : 3600 ,
-    'REFRESH_TOKEN_EXPIRE_SECONDS':3600
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
@@ -245,12 +258,12 @@ JAZZMIN_SETTINGS = {
     "site_title": "Hamstore",
     "site_header": "Admin Hamstore",
     "site_brand": "Hamstore",
-    "site_icon": "/assets/img/logo.png",    
+    "site_icon": "/admin/img/logo.png",    
     # Add your own branding here
-    "site_logo": "/assets/img/logo.png",
+    "site_logo": "/admin/img/logo.png",
     "welcome_sign": "Bienvenue sur Hamstore",
     # Copyright on the footer
-    "copyright": "Junior Essoh",
+    "copyright": "AKAT",
     "user_avatar": None,
     ############
     # Top Menu #
