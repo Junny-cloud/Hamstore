@@ -28,12 +28,7 @@ class VariantesType(DjangoObjectType):
     class Meta:
         model = Variantes
         fields = "__all__"
-   
-class DescriptionPreciseType(DjangoObjectType):
-    class Meta:
-        model = DescriptionPrecise
-        fields = "__all__"
-       
+        
 class ImageType(DjangoObjectType):
     class Meta:
         model = Image

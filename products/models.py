@@ -130,41 +130,18 @@ class Event(models.Model):
         # Générer le slug à partir du nom de la catégorie avant de sauvegarder
         self.slug = slugify(self.title)
         super(Event, self).save(*args, **kwargs)
-        
-        
-class DescriptionPrecise(models.Model):
-     name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom")
-     slug = models.SlugField(unique=True, null=True)
-     valeur = models.CharField(max_length=200, null=True, blank=True, verbose_name="valeur")
-     
-     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
-     date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
-     status = models.BooleanField(default=True, verbose_name='Etat')
-     
-     class Meta:
-          verbose_name = "Description precise"
-          verbose_name_plural = "Descriptions precises"
-          ordering = ['-id']
 
-     def __str__(self):
-          return f"{self.name}"
-     
-     def save(self, *args, **kwargs):
-        # Générer le slug à partir du nom de la catégorie avant de sauvegarder
-        self.slug = slugify(self.name)
-        super(DescriptionPrecise, self).save(*args, **kwargs)
-     
 class Products(models.Model):
      name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom produit")
      slug = models.SlugField(unique=True, null=True)
      sub_category = models.ForeignKey(SubCategory, null=True, blank=False, on_delete=models.CASCADE, verbose_name="Nom sous categorie")
      extras = models.CharField(max_length=200, null=True, blank=True, verbose_name="Extras")
-     event = models.ManyToManyField(Event, blank=True, verbose_name="Evenement")
+     event = models.ForeignKey(Event,default='', null=True, blank=True, on_delete=models.CASCADE, verbose_name="Evenement")
      price = models.IntegerField( null=True, blank=True, verbose_name="Prix")
      prix_promo = models.IntegerField( null=True, blank=True, verbose_name="Prix evenement")
      images = models.ManyToManyField('Image')
      description = models.TextField( null=True, blank=True, verbose_name="description produit")
-     description_precise = models.ManyToManyField(DescriptionPrecise, blank=True, verbose_name="description precise")
+     description_precise = models.TextField( null=True, blank=True, verbose_name="description precise")
      variantes = models.ManyToManyField(Variantes, blank=True, verbose_name="les variantes")
 
      user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Administrateur")

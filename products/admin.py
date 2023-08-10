@@ -33,13 +33,6 @@ class VariantesAdmin(admin.ModelAdmin):
      search_fields =  ('name', 'date_registry','status')
      list_display_links = ['name']
      fieldsets = [('Info Variantes', {'fields': [ 'name', 'status']}),  ]
-     
-class DescriptionPreciseAdmin(admin.ModelAdmin):
-     list_display = ('name', 'valeur','date_registry','status')
-     list_filter = ('name', 'date_registry','status')
-     search_fields =  ('name', 'date_registry','status')
-     list_display_links = ['name']
-     fieldsets = [('Info Variantes', {'fields': [ 'name', 'valeur' ,'status']}),  ]
 
 class EventAdmin(admin.ModelAdmin):
      list_display = ('images_view','title', 'subtitle','slug','date_limite', 'user','status')
@@ -79,20 +72,13 @@ class ProductsAdmin(admin.ModelAdmin):
      fieldsets = [
           ('Info Produit', {'fields': [ 'name', 'sub_category', 'extras']}),
           ('Info Prix', {'fields': ['price', 'prix_promo', 'event']}),
-          ('Info Details', {'fields': [ 'variantes','description', 'description_precise' ,'status']})
+          ('Info Details', {'fields': [ 'variantes','description', 'description_precise', 'status']})
                     ]
 
      def get_variantes(self, obj):
         return ", ".join([variante.name for variante in obj.variantes.all()])
-   
-     def get_description_precise(self, obj):
-        return ", ".join([description_precise.name for description_precise in obj.description_precise.all()])
-     
-     def get_event(self, obj):
-        return ", ".join([event.Title for event in obj.event.all()])
 
      get_variantes.short_description = 'Variantes'
-     get_description_precise.short_description = 'description precise'
      
      '''def images_view(self, obj):
           return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url=obj.images.url)) '''
@@ -116,5 +102,5 @@ _register(SubCategory, SubCategoryAdmin)
 _register(Variantes, VariantesAdmin) 
 _register(Event, EventAdmin) 
 _register(Products, ProductsAdmin) 
-_register(DescriptionPrecise, DescriptionPreciseAdmin) 
+
 
