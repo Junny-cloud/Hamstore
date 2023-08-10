@@ -4,22 +4,31 @@ from graphene_django import DjangoObjectType
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
 import graphql
+from django.core.exceptions import FieldDoesNotExist
+from graphene import relay
 from graphql import GraphQLError
 from .models import *
 from products.models import *
 from django.contrib.auth.models import User
-
-class CommandesFilterInput(graphene.InputObjectType):
-    # Ajoutez les champs que vous souhaitez filtrer
-    date_commande = graphene.Date()
-    user = graphene.ID()
-    skip = graphene.Int()
 
 
 class CommandesType(DjangoObjectType):
     class Meta:
         model = Commandes
         fields = "__all__"
+        
+class CommandesFilterInput(graphene.InputObjectType):
+    # Ajoutez les champs que vous souhaitez filtrer
+    date_commande = graphene.Date()
+    user = graphene.ID()
+    skip = graphene.Int()
+
+class FavoriteProductsType(DjangoObjectType):
+    class Meta:
+        model = FavoriteProducts
+        fields = '__all__' 
+        
+
 
 class ProduitsCommandesType(DjangoObjectType):
     class Meta:
@@ -39,7 +48,7 @@ class Query(graphene.ObjectType):
     produitscommande = graphene.Field(ProduitsCommandesType, id=graphene.ID(required=True))
     
     def resolve_commandes(self, info, filter=None):
-        commandes = Commentaires.objects.all().order_by('-id')
+        commandes = Commandes.objects.all().order_by('-id')
         total_count = commandes.count()
         
         if filter:
@@ -52,7 +61,7 @@ class Query(graphene.ObjectType):
 
             filter.skip =filter.skip*15
             if filter.date_commande is not None:
-                commandes = commentcommandesaires.filter(date_commande=filter.date_commande)
+                commandes = commandes.filter(date_commande=filter.date_commande)
             if filter.user is not None:
                 commandes = commandes.filter(user__pk=filter.user)
 
@@ -183,9 +192,27 @@ class DeleteCommandes(graphene.Mutation):
         commandes.delete()
 
         return DeleteCommandes(success=True)'''
-    
+
+class AddFavorite(graphene.Mutation):
+    favoris_product = graphene.Field(FavoriteProductsType)
+
+    class Arguments:
+        product_id = graphene.Int()
+
+    def mutate(self, info, product_id):
+        user = info.context.user
+        if not user.is_authenticated:
+            raise Exception('User not authenticated')
+
+        product = Products.objects.get(pk=product_id)
+        favoris_product, created = FavoriteProducts.objects.get_or_create(user=user, product=product)
+        favoris_product.save()
+        
+        return AddFavorite(user=user)
+        
 class Mutation(graphene.ObjectType):
     create_commandes = CreateCommande.Field()
+    add_favorite =AddFavorite.Field()
     
     
 #schema = graphene.Schema(query=Query, mutation=Mutation)

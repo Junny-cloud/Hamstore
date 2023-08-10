@@ -65,3 +65,18 @@ class ProduitsCommandes(models.Model):
 
      def __str__(self):
           return f"{self.quantity} x {self.product.name} (commande #{self.commande.reference})"
+
+
+class FavoriteProducts(models.Model):
+    #info = models.CharField(max_length=200, null=True, blank=True, verbose_name="info")
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
+    product = models.ForeignKey(Products,  null=True, blank=True, on_delete=models.CASCADE, verbose_name="Produit")
+     
+    date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
+    date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
+    status = models.BooleanField(default=False, verbose_name='Etat')
+     
+    class Meta:
+        verbose_name = "Produit favoris"
+        verbose_name_plural = "Produits favoris"
+        ordering = ['-id']

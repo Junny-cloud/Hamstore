@@ -24,16 +24,5 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"{self.get_full_name()}"
     
-'''class FavoriteProducts(models.Model):
-    user = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
-    product = models.ForeignKey(Products,  null=True, blank=True, on_delete=models.CASCADE, verbose_name="Produit")
-     
-    date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
-    date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
-    status = models.BooleanField(default=False, verbose_name='Etat')
-     
-    class Meta:
-        verbose_name = "Produit favoris"
-        verbose_name_plural = "Produits favoris"
-        ordering = ['-id']'''
+
 

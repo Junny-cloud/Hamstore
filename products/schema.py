@@ -54,7 +54,8 @@ class EventType(DjangoObjectType):
     class Meta:
         model = Event
         fields = "__all__"
-
+  
+        
 class CommentairesType(DjangoObjectType):
     class Meta:
         model = Commentaires

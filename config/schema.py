@@ -50,6 +50,7 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery,graphene.ObjectTyp
 
     subcategories = graphene.List(SubCategoryType, filter=SubCategoryFilterInput())
     subcategory = graphene.Field(SubCategoryType, slug=graphene.String(required=True))
+    subcategory_all = graphene.List(SubCategoryType)
 
     products_by_category_slug = graphene.Field(ProductListType, filter=ProductFilterCategoryInput())
     products_by_subcategory_slug= graphene.Field(ProductListType, filter=ProductFilterInput())
@@ -74,7 +75,10 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery,graphene.ObjectTyp
 
     def resolve_subcategory(self, info, slug):
         return SubCategory.objects.get(slug=slug)
-
+    
+    def resolve_subcategory_all(self, info):
+        return SubCategory.objects.all()
+    
     def resolve_products_by_category_slug(self, info, filter=None):
         products = Products.objects.all()
         total_count = products.count()
