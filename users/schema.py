@@ -3,10 +3,11 @@ import graphql_auth
 from graphene_django import DjangoObjectType
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
+from graphql_auth.mutations import PasswordReset
 from graphql import GraphQLError
 from .models import *
-from django.contrib.auth import authenticate
-
+from django.contrib.auth import authenticate, get_user_model
+from newsletters.models import *
 
 REGISTER_MUTATION_FIELDS = [
     ('email', graphene.String(required=True)),
@@ -106,16 +107,46 @@ class AuthToken(graphene.ObjectType):
     token = graphene.String()
     user = graphene.Field(graphene.NonNull(graphene.String))
     
+class CustomPasswordReset(PasswordReset):
+    class Arguments:
+        email = graphene.String(required=True)
+        username = graphene.String(required=True) 
+        
+class NewsletterSubscription(graphene.Mutation):
+     
+     class Arguments:
+          email = graphene.String(required=True)
+          abonner = graphene.Boolean(required=True)
 
-   
+     success = graphene.Boolean()
+     user = graphene.Field(CustomUserType)
+
+     @staticmethod
+     def mutate(self, info, email, abonner):
+          User = get_user_model()
+          try:
+               user = User.objects.get(email=email)
+          except User.DoesNotExist:
+               user = None
+
+          if not user:
+               # Si l'utilisateur n'existe pas, ajoutez l'e-mail à la newsletter
+               if abonner:
+                    Newsletters.objects.get_or_create(email=email)
+
+          else:
+               user.abonnes_newsletters = abonner
+               user.save()
+
+          return NewsletterSubscription(success=True, user=user)   
 class AuthMutation(graphene.ObjectType):
-     #add_favorite = AddFavorite.Field()
+     newsletter_subscription = NewsletterSubscription.Field()
      register = CreateUser.Field()
      verify_account = mutations.VerifyAccount.Field()
      resend_activation_email = mutations.ResendActivationEmail.Field()
      send_password_reset_email = mutations.SendPasswordResetEmail.Field()
      password_reset = mutations.PasswordReset.Field()
-     #password_set = mutations.PasswordSet.Field()
+     password_set = mutations.SendPasswordResetEmail.Field()
      password_change = mutations.PasswordChange.Field()
      archive_account = mutations.ArchiveAccount.Field()
      delete_account = mutations.DeleteAccount.Field()

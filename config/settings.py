@@ -203,7 +203,7 @@ GRAPHQL_JWT = {
     'JWT_ALLOW_ARGUMENT': True,
     
     "JWT_VERIFY_EXPIRATION": True,
-    
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=60),
     # optional
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
     
@@ -234,8 +234,7 @@ GRAPHQL_AUTH = {
     },
     'REGISTER_MUTATION_FIELDS_OPTIONAL':['username', 'password2'],
     'LOGIN_ALLOWED_FIELDS': ['email'],
-    'ACCESS_TOKEN_EXPIRE_SECONDS' : 3600 ,
-    'REFRESH_TOKEN_EXPIRE_SECONDS':3600
+    'UPDATE_MUTATION_FIELDS':["first_name", "last_name", "date_naissance", "telephone"]
 }
 
 # Paramètres d'e-mails

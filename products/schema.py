@@ -412,7 +412,11 @@ class CreateEvent(graphene.Mutation):
         return CreateEvent(events=events)
 
 # --------------- COMMENTAIRE CRUD MUTATIONS ------------------------------
-
+class UpdateCommentairesInput(graphene.InputObjectType):
+    commentaire_id = graphene.Int()
+    note = graphene.Int()
+    contenu=graphene.String()
+    
 class CreateCommentaires(graphene.Mutation):
     class Arguments:
         product_id = graphene.Int()
@@ -448,9 +452,29 @@ class DeleteCommentaires(graphene.Mutation):
 
         return DeleteCommentaires(success=True)
     
+class UpdateCommentaires(graphene.Mutation):
+    class Arguments:
+        commentaires_data = UpdateCommentairesInput(required=True)
 
+    success = graphene.Boolean()
+    commentaires = graphene.Field(CommentairesType)
+
+    @staticmethod
+    def mutate(self, info, commentaires_data):
+        user = info.context.user
+        try:
+            commentaires = Commentaires.objects.get(id=commentaires_data.commentaire_id, user=user)
+        except commentaires.DoesNotExist:
+            raise Exception("vous ne pouvez pas modifier ce commentaire")
+
+        commentaires.contenu = commentaires_data.contenu
+        commentaires.note = commentaires_data.note
+        commentaires.save()
+
+        return UpdateCommentaires(success=True, commentaires=commentaires)
 class Mutation(graphene.ObjectType):
     create_commentaires = CreateCommentaires.Field()
     delete_commentaires = DeleteCommentaires.Field()
+    update_commentaires = UpdateCommentaires.Field()
     
    

@@ -19,7 +19,17 @@ class NewslettersType(DjangoObjectType):
 class MailingType(DjangoObjectType):
      class Meta:
           model = Mailing
-
+class Query(graphene.ObjectType):
+    
+    newsletters = graphene.List(NewslettersType)
+    newsletter = graphene.Field(NewslettersType, id=graphene.Int(required=True))
+    
+    def resolve_newsletters(self, info):
+        return Newsletters.objects.all()
+    
+    def resolve_newsletter(self, info, id):
+        return Newsletters.objects.get(id=id)
+    
 class CreateNewsletters(graphene.Mutation):
      class Arguments:
           email = graphene.String(required=True)

@@ -21,7 +21,7 @@ class Commandes(models.Model):
      reference = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, verbose_name="reference commande")
      products = models.ManyToManyField(Products, through='ProduitsCommandes')
      user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
-     total_amount = models.DecimalField(max_digits=10, default=0,decimal_places=2)
+     total_amount = models.PositiveIntegerField(default=0, verbose_name="prix commande")
      date_commande = models.DateField(auto_now_add=True)
      etat_commande = models.CharField(max_length=200, default="En cours",null=True, blank=True, verbose_name="etat de la commande")
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
@@ -42,7 +42,7 @@ class ProduitsCommandes(models.Model):
      commande = models.ForeignKey(Commandes, null=True, blank=True, on_delete=models.CASCADE, verbose_name="commande concerné")
      product = models.ForeignKey(Products,  null=True, blank=True, on_delete=models.CASCADE, verbose_name="Produit")
      variante = models.CharField(max_length=200, null=True, blank=True, verbose_name="variante choisie")
-     price_unitaire = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="prix produit")
+     price_unitaire = models.PositiveIntegerField(default=0, verbose_name="prix produit")
      quantity = models.PositiveIntegerField(default=1)
      subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0,verbose_name="Total du produit")
      

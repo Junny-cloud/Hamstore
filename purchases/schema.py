@@ -113,25 +113,28 @@ class CreateCommande(graphene.Mutation):
             # Obtenir les variantes à partir des identifiants fournis
             variantes = []
             for variante_id in ligne.variantes:
-                variante = Variantes.objects.get(pk=variante_id)
+                vt= Variantes.objects.get(pk=variante_id)
+                variante= vt.name
+                
                 variantes.append(variante)
-            price = 10.00
+            price = 10
             if produit.event:
                 
                 if produit.prix_promo:
                     
                     price = produit.prix_promo 
                 else:
-                    price=10.00
+                    price=10
             else:
                 price = produit.price
-
+            variant = ', '.join(variantes)
             ProduitsCommandes.objects.create(
                 commande=commande,
                 product=produit,
                 quantity=quantite,
                 price_unitaire=price,
                 subtotal=price * quantite,
+                variante = variantes
             )
             total_amount += price * quantite
         
@@ -193,7 +196,7 @@ class DeleteCommandes(graphene.Mutation):
 
         return DeleteCommandes(success=True)'''
 
-class AddFavorite(graphene.Mutation):
+class AddFavoris(graphene.Mutation):
     favoris_product = graphene.Field(FavoriteProductsType)
 
     class Arguments:
@@ -208,11 +211,30 @@ class AddFavorite(graphene.Mutation):
         favoris_product, created = FavoriteProducts.objects.get_or_create(user=user, product=product)
         favoris_product.save()
         
-        return AddFavorite(favoris_product=favoris_product)
-        
+        return AddFavoris(favoris_product=favoris_product)
+    
+class DeleteFavoris(graphene.Mutation):
+    class Arguments:
+        favoris_id = graphene.ID(required=True)
+
+    success = graphene.Boolean()
+
+    @staticmethod
+    def mutate(root, info, favoris_id):
+        user = info.context.user
+        try:
+            favoris_product = FavoriteProducts.objects.get(pk=favoris_id)
+        except Commandes.DoesNotExist:
+            raise Exception("Subcategory not found")
+
+        favoris_product.delete()
+
+        return DeleteFavoris(success=True)      
 class Mutation(graphene.ObjectType):
     create_commandes = CreateCommande.Field()
-    add_favorite =AddFavorite.Field()
+    
+    add_favoris = AddFavoris.Field()
+    delete_favoris = DeleteFavoris.Field()
     
     
 #schema = graphene.Schema(query=Query, mutation=Mutation)

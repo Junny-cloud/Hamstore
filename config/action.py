@@ -135,6 +135,7 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
         name = generic.text.word()
         subcategory_aleatoire = generic.random.choice(subcategory)
         extras = generic.text.words()
+        
         event_aleatoire = generic.random.choice(event)
         #variantes_aleatoire_id =[generic.random.choice(variantes) for _ in range(1)] 
         price = generate_random_integer()
