@@ -41,14 +41,14 @@ class CommandesListType(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
     
-    commandes = graphene.List(CommandesType, filter=CommandesFilterInput())
+    commandes = graphene.Field(CommandesListType, filter=CommandesFilterInput())
     commande = graphene.Field(CommandesType, reference=graphene.String(required=True))
     
     produitscommandes = graphene.List(ProduitsCommandesType)
     produitscommande = graphene.Field(ProduitsCommandesType, id=graphene.ID(required=True))
     
     def resolve_commandes(self, info, filter=None):
-        commandes = Commandes.objects.all().order_by('-id')
+        commandes = Commandes.objects.all()
         total_count = commandes.count()
         
         if filter:
@@ -76,7 +76,7 @@ class Query(graphene.ObjectType):
             if first:
                 commandes = commandes[:first]
               
-        return CommandesListType(total_count=total_count, commandes=commandes)
+        return  CommandesListType(total_count=total_count, commandes=commandes)
         
     
     def resolve_commande(self, info, reference):
@@ -208,7 +208,7 @@ class AddFavorite(graphene.Mutation):
         favoris_product, created = FavoriteProducts.objects.get_or_create(user=user, product=product)
         favoris_product.save()
         
-        return AddFavorite(user=user)
+        return AddFavorite(favoris_product=favoris_product)
         
 class Mutation(graphene.ObjectType):
     create_commandes = CreateCommande.Field()

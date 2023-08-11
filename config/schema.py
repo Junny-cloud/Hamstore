@@ -52,6 +52,7 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery,graphene.ObjectTyp
     subcategory = graphene.Field(SubCategoryType, slug=graphene.String(required=True))
     subcategory_all = graphene.List(SubCategoryType)
 
+    search_products = graphene.List(ProductType, query=graphene.String())
     products_by_category_slug = graphene.Field(ProductListType, filter=ProductFilterCategoryInput())
     products_by_subcategory_slug= graphene.Field(ProductListType, filter=ProductFilterInput())
     product = graphene.Field(ProductType, slug=graphene.String(required=True))
@@ -167,6 +168,18 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery,graphene.ObjectTyp
 
     def resolve_product(self, info, slug):
         return Products.objects.get(slug=slug)
+    
+    def resolve_search_products(self, info, query):
+        if not query:
+            return Products.objects.none()
+
+        return Products.objects.filter(
+            Q(name__icontains=query) |
+            Q(sub_category__name__icontains=query) |
+            Q(sub_category__category__name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(description_precise__name__icontains=query)
+        ).distinct()
 
 
 class Mutation(AuthMutation, purchasesMutation, productsMutation, graphene.ObjectType):

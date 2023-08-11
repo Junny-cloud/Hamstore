@@ -73,7 +73,7 @@ class Query(graphene.ObjectType):
     events = graphene.List(EventType)
     event = graphene.Field(EventType, slug=graphene.String(required=True))
 
-    commentaires_by_filter = graphene.List(CommentairesType, filter=CommentairesFilterInput())
+    commentaires_by_filter = graphene.Field(CommentairesListType, filter=CommentairesFilterInput())
     commentaire = graphene.Field(CommentairesType, id=graphene.Int(required=True))
     
     def resolve_variantes(self, info):
@@ -97,7 +97,7 @@ class Query(graphene.ObjectType):
     
     def resolve_commentaires_by_filter(self, info, filter=None):
         commentaires = Commentaires.objects.all().order_by('-id')
-        total_count = commentaire.count()
+        total_count = commentaires.count()
         
         if filter:
             first = 15
@@ -418,13 +418,16 @@ class CreateCommentaires(graphene.Mutation):
         product_id = graphene.Int()
         note = graphene.Int()
         contenu=graphene.String()
+        
 
     commentaires = graphene.Field(CommentairesType)
 
     def mutate(self, info, product_id, note, contenu):
         user = info.context.user
+        print(user)
+        
         product = Products.objects.get(pk=product_id)
-        commentaires = Commentaires(product=product, note=note, contenu=contenu, user=user)
+        commentaires = Commentaires(product=product, note=note, contenu=contenu, client=user)
         commentaires.save()
         return CreateCommentaires(commentaires=commentaires)
     
