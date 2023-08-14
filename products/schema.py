@@ -6,7 +6,9 @@ import graphql
 from graphql import GraphQLError
 from graphene import relay
 from .models import *
-
+from graphql_auth.decorators import login_required
+from graphql_jwt.utils import get_payload
+from users.models import *
 # ---------------  APP PRODUITS  -----------------------
 class CommentairesFilterInput(graphene.InputObjectType):
     # Ajoutez les champs que vous souhaitez filtrer
@@ -472,8 +474,36 @@ class UpdateCommentaires(graphene.Mutation):
         commentaires.save()
 
         return UpdateCommentaires(success=True, commentaires=commentaires)
+    
+
+
+class CreateCommentaire(graphene.Mutation):
+    class Arguments:
+        product_id = graphene.Int()
+        note = graphene.Int()
+        contenu=graphene.String()
+        
+
+    commentaires = graphene.Field(CommentairesType)
+    
+    def mutate(self, info, product_id, note, contenu):
+        request = info.context.META
+        headers = request.get('HTTP_AUTHORIZATION')
+        headers = headers.replace('bearer ', '')
+        print(headers)
+        payload = get_payload(headers)
+        user_id = payload["user_id"]
+        
+        print(user_id)
+        user = CustomUser.objects.get(pk=user_id)
+        product = Products.objects.get(pk=product_id)
+        commentaires = Commentaires(product=product, note=note, contenu=contenu, client=user)
+        commentaires.save()
+        return CreateCommentaires(commentaires=commentaires)
+    
+
 class Mutation(graphene.ObjectType):
-    create_commentaires = CreateCommentaires.Field()
+    create_commentaires = CreateCommentaire.Field()
     delete_commentaires = DeleteCommentaires.Field()
     update_commentaires = UpdateCommentaires.Field()
     

@@ -8,6 +8,9 @@ from graphql import GraphQLError
 from .models import *
 from django.contrib.auth import authenticate, get_user_model
 from newsletters.models import *
+import graphql_jwt
+from datetime import datetime
+from config.settings import GRAPHQL_JWT
 
 REGISTER_MUTATION_FIELDS = [
     ('email', graphene.String(required=True)),
@@ -17,6 +20,19 @@ REGISTER_MUTATION_FIELDS = [
     ('abonnes_newsletters', graphene.Boolean()),
     ('password', graphene.String(required=True)),
 ]
+
+def jwt_payload(user, context=None):
+    username = user.get_username()
+    
+    payload = {
+        user.USERNAME_FIELD: username,
+        'user_id': user.id,
+        'email': user.email,
+        'phone': user.telephone,
+        
+  
+    }
+    return payload
 
 class CustomUserType(DjangoObjectType):
     class Meta:
@@ -139,6 +155,24 @@ class NewsletterSubscription(graphene.Mutation):
                user.save()
 
           return NewsletterSubscription(success=True, user=user)   
+
+class LoginMutation(graphene.Mutation):
+    class Arguments:
+        email = graphene.String(required=True)
+        password = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    token = graphene.String()
+    user = graphene.Field(CustomUserType)
+
+    def mutate(self, info, email, password):
+        result = mutations.ObtainJSONWebToken.mutate(self, info, email=email, password=password)
+        success = result.get('success')
+        token = result.get('token')
+        user = result.get('user')
+
+        return LoginMutation(success=success, token=token, user=user)
+   
 class AuthMutation(graphene.ObjectType):
      newsletter_subscription = NewsletterSubscription.Field()
      register = CreateUser.Field()
@@ -158,6 +192,7 @@ class AuthMutation(graphene.ObjectType):
      # django-graphql-jwt authentication
      # with some extra features
      login = mutations.ObtainJSONWebToken.Field()
+    
      logout = mutations.RevokeToken.Field()
      verify_token = mutations.VerifyToken.Field()
      refresh_token = mutations.RefreshToken.Field()
@@ -174,7 +209,7 @@ class AuthMutation(graphene.ObjectType):
                raise GraphQLError('Invalid email or password.')
 
           token = graphql_auth.shortcuts.get_token(user)
-
+          
           return AuthToken(token=token, user=user)
 
 
