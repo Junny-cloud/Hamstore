@@ -3,12 +3,14 @@ from graphene_django import DjangoObjectType
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
 import graphql
+from users.models import *
+from django.contrib.auth.models import User
 from graphql import GraphQLError
 from graphene import relay
 from .models import *
 
 # ---------------  APP PRODUITS  -----------------------
-class CommentairesFilterInput(graphene.InputObjectType):
+class CommentsFilterInput(graphene.InputObjectType):
     # Ajoutez les champs que vous souhaitez filtrer
     client = graphene.ID()
     note = graphene.Int()
@@ -73,7 +75,7 @@ class Query(graphene.ObjectType):
     events = graphene.List(EventType)
     event = graphene.Field(EventType, slug=graphene.String(required=True))
 
-    commentaires_by_filter = graphene.Field(CommentairesListType, filter=CommentairesFilterInput())
+    commentaires_by_filter = graphene.Field(CommentairesListType, filter=CommentsFilterInput())
     commentaire = graphene.Field(CommentairesType, id=graphene.Int(required=True))
     
     def resolve_variantes(self, info):
@@ -412,69 +414,75 @@ class CreateEvent(graphene.Mutation):
         return CreateEvent(events=events)
 
 # --------------- COMMENTAIRE CRUD MUTATIONS ------------------------------
-class UpdateCommentairesInput(graphene.InputObjectType):
-    commentaire_id = graphene.Int()
+class UpdateCommentInput(graphene.InputObjectType):
+    comment_id = graphene.Int()
     note = graphene.Int()
     contenu=graphene.String()
-    
-class CreateCommentaires(graphene.Mutation):
-    class Arguments:
-        product_id = graphene.Int()
-        note = graphene.Int()
-        contenu=graphene.String()
-        
 
-    commentaires = graphene.Field(CommentairesType)
-
-    def mutate(self, info, product_id, note, contenu):
-        user = info.context.user
-        print(user)
-        
-        product = Products.objects.get(pk=product_id)
-        commentaires = Commentaires(product=product, note=note, contenu=contenu, client=user)
-        commentaires.save()
-        return CreateCommentaires(commentaires=commentaires)
+class CreateCommentInput(graphene.InputObjectType):
+    product_id = graphene.Int(required=True)
+    note = graphene.Int()
+    contenu=graphene.String()
+    user_id = graphene.ID(required=True)
     
-class DeleteCommentaires(graphene.Mutation):
+class CreateComment(graphene.Mutation):
     class Arguments:
-        commentaires_id = graphene.ID(required=True)
+        comment_input = CreateCommentInput(required=True)
+
+    success = graphene.Boolean()
+    comments = graphene.Field(CommentairesType)
+
+    def mutate(self, info, comment_input):
+        user_id =comment_input.user_id
+        user = CustomUser.objects.get(id=user_id)
+        contenu = comment_input.contenu
+        note = comment_input.note
+        product = Products.objects.get(pk=comment_input.product_id)
+        comments = Commentaires(product=product, note=note, contenu=contenu, client=user)
+        comments.save()
+        return CreateComment(success=True, comments=comments)
+    
+class DeleteComment(graphene.Mutation):
+    class Arguments:
+        comment_id = graphene.ID(required=True)
 
     success = graphene.Boolean()
 
     @staticmethod
-    def mutate(root, info, commentaires_id):
+    def mutate(root, info, comment_id):
         try:
-            commentaires = Commentaires.objects.get(pk=commentaires_id)
+            comment = Commentaires.objects.get(id=comment_id)
         except Commentaires.DoesNotExist:
             raise Exception(" commentaires not found")
 
-        commentaires.delete()
+        comment.delete()
 
-        return DeleteCommentaires(success=True)
+        return DeleteComment(success=True)
     
-class UpdateCommentaires(graphene.Mutation):
+class UpdateComment(graphene.Mutation):
     class Arguments:
-        commentaires_data = UpdateCommentairesInput(required=True)
+        comment_input = UpdateCommentInput(required=True)
 
     success = graphene.Boolean()
-    commentaires = graphene.Field(CommentairesType)
+    comments = graphene.Field(CommentairesType)
 
     @staticmethod
-    def mutate(self, info, commentaires_data):
-        user = info.context.user
+    def mutate(self, info, comment_input):
+        
         try:
-            commentaires = Commentaires.objects.get(id=commentaires_data.commentaire_id, user=user)
-        except commentaires.DoesNotExist:
+            comments = Commentaires.objects.get(id=comment_input.comment_id)
+        except Commentaires.DoesNotExist:
             raise Exception("vous ne pouvez pas modifier ce commentaire")
 
-        commentaires.contenu = commentaires_data.contenu
-        commentaires.note = commentaires_data.note
-        commentaires.save()
+        comments.contenu = comment_input.contenu
+        comments.note = comment_input.note
+        comments.save()
 
-        return UpdateCommentaires(success=True, commentaires=commentaires)
+        return UpdateComment(success=True, comments=comments)
+
 class Mutation(graphene.ObjectType):
-    create_commentaires = CreateCommentaires.Field()
-    delete_commentaires = DeleteCommentaires.Field()
-    update_commentaires = UpdateCommentaires.Field()
+    create_comment = CreateComment.Field()
+    delete_comment = DeleteComment.Field()
+    update_comment = UpdateComment.Field()
     
    

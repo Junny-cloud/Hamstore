@@ -1,9 +1,10 @@
 from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 from django.forms import model_to_dict
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.core.exceptions import FieldDoesNotExist
+from django.db import transaction
 #from products.models import Products
 
 from config import settings
@@ -25,4 +26,16 @@ class CustomUser(AbstractUser):
         return f"{self.get_full_name()}"
     
 
-
+@receiver(post_save, sender=CustomUser)
+def update_status_verified(sender, created, instance, **kwargs):
+     
+     try:
+          with transaction.atomic():
+               
+            instance.status.verified = True
+            instance.status.save()
+           
+               
+     except CustomUser.DoesNotExist:
+        pass         
+               

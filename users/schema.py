@@ -3,6 +3,7 @@ import graphql_auth
 from graphene_django import DjangoObjectType
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
+from django.contrib.auth.models import User
 from graphql_auth.mutations import PasswordReset
 from graphql import GraphQLError
 from .models import *
@@ -39,7 +40,19 @@ class UserInput(graphene.InputObjectType):
      date_naissance = graphene.Date(required=True)
      abonnes_newsletters = graphene.Boolean(required=True)
      password = graphene.String(required=True)
-     
+
+class UpdateUserPasswordInput(graphene.InputObjectType):
+     user_id = graphene.ID(required=True)
+     old_password = graphene.String(required=True)
+     new_password = graphene.String(required=True) 
+
+class UpdateUserInfoInput(graphene.InputObjectType):
+     user_id = graphene.ID(required=True)
+     first_name = graphene.String()
+     last_name = graphene.String()
+     date_naissance = graphene.Date()
+     telephone = graphene.String()
+
 class CreateUser(graphene.Mutation):
      class Arguments:
           input = UserInput(required=True)
@@ -70,15 +83,17 @@ class CreateUser(graphene.Mutation):
                abonnes_newsletters=abonnes_newsletters,
           )
           user.set_password(password)
+          
           user.save()
+         
           return CreateUser(user=user, success=True, setpassword=password)
           
 class CustomRegister(mutations.Register):
      class Arguments:
-        pass
+         pass
 
      @classmethod
-     def perform_mutate(cls, form, info):
+     def perform_mutate(cls, form, info, data):
           email = form.cleaned_data.get('email')
           firstname = form.cleaned_data.get('first_name')
           lastname = form.cleaned_data.get('last_name')
@@ -98,6 +113,82 @@ class CustomRegister(mutations.Register):
           )
 
           return CustomRegister(user=user)
+
+class UpdateUserEmail(graphene.Mutation):
+    class Arguments:
+        old_email = graphene.String(required=True)
+        new_email = graphene.String(required=True)
+
+    success = graphene.Boolean()
+
+    @staticmethod
+    def mutate(self, info, old_email, new_email):
+        User = get_user_model()
+        try:
+            user = User.objects.get(email=old_email)
+        except User.DoesNotExist:
+            raise Exception("User not found")
+
+        user.email = new_email
+        user.username = new_email
+        user.save()
+
+        return UpdateUserEmail(success=True)
+
+class UpdateUserPassword(graphene.Mutation):
+
+     class Arguments:
+          password_input = UpdateUserPasswordInput(required=True)
+
+     success = graphene.Boolean()
+
+     @staticmethod
+     def mutate(self, info, password_input):
+
+          User = get_user_model()
+          user = User.objects.get(pk=password_input.user_id)
+
+          if not user:
+               raise Exception("L'utilisateur n'existe pas")
+
+          if not user.check_password(password_input.old_password):
+               raise Exception("L'encien mot de passe est incorrect")
+
+          user.set_password(password_input.new_password)
+          user.save()
+
+          return UpdateUserPassword(success=True)
+
+class UpdateUserInfo(graphene.Mutation):
+
+     class Arguments:
+          info_input = UpdateUserInfoInput(required=True)
+
+     success = graphene.Boolean()
+
+     @staticmethod
+     def mutate(self, info, info_input):
+
+          User = get_user_model()
+          user = CustomUser.objects.get(pk=info_input.user_id)
+
+          if not user:
+               raise Exception("L'utilisateur n'existe pas")
+
+          #if not user.check_password(password_input.old_password):
+               #raise Exception("Le mot de passe est incorrect")
+          if info_input.first_name is not None and info_input.first_name != "":
+               user.first_name =info_input.first_name
+          if info_input.last_name is not None and info_input.last_name != "":
+               user.last_name =info_input.last_name
+          if info_input.date_naissance is not None and info_input.date_naissance != "":
+               user.date_naissance =info_input.date_naissance
+          if info_input.telephone is not None and info_input.telephone != "":
+               user.telephone =info_input.telephone
+
+          user.save()
+
+          return UpdateUserInfo(success=True)
 
 class YourInputObjectType(graphene.InputObjectType):
     email = graphene.String(required=True)
@@ -146,7 +237,7 @@ class AuthMutation(graphene.ObjectType):
      resend_activation_email = mutations.ResendActivationEmail.Field()
      send_password_reset_email = mutations.SendPasswordResetEmail.Field()
      password_reset = mutations.PasswordReset.Field()
-     password_set = mutations.SendPasswordResetEmail.Field()
+     #password_set = mutations.SendPasswordResetEmail.Field()
      password_change = mutations.PasswordChange.Field()
      archive_account = mutations.ArchiveAccount.Field()
      delete_account = mutations.DeleteAccount.Field()
@@ -161,6 +252,9 @@ class AuthMutation(graphene.ObjectType):
      logout = mutations.RevokeToken.Field()
      verify_token = mutations.VerifyToken.Field()
      refresh_token = mutations.RefreshToken.Field()
+     update_user_email = UpdateUserEmail.Field()
+     update_user_password = UpdateUserPassword.Field()
+     update_user_info = UpdateUserInfo.Field()
      
      #login = graphene.Field(AuthToken, credentials=YourInputObjectType(required=True))
 

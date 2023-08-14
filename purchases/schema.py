@@ -10,6 +10,7 @@ from graphql import GraphQLError
 from .models import *
 from products.models import *
 from django.contrib.auth.models import User
+from users.models import *
 
 
 class CommandesType(DjangoObjectType):
@@ -91,17 +92,18 @@ class Query(graphene.ObjectType):
 class ProductsCommandesInput(graphene.InputObjectType):
     produit_slug = graphene.String(required=True)
     quantite = graphene.Int(required=True)
-    variantes = graphene.List(graphene.ID)
+    variante_id = graphene.Int(required=True)
+    
 
 
 class CreateCommande(graphene.Mutation):
     class Arguments:
         products_commandes = graphene.List(ProductsCommandesInput)
-        
+        user_id = graphene.ID(required=True)
     commande = graphene.Field(CommandesType)
 
-    def mutate(self, info, products_commandes):
-        user = info.context.user
+    def mutate(self, info, products_commandes, user_id):
+        user = CustomUser.objects.get(id=user_id)
         commande = Commandes.objects.create(user=user)
         
         total_amount = 0
@@ -110,13 +112,7 @@ class CreateCommande(graphene.Mutation):
             produit = Products.objects.get(slug=ligne.produit_slug)
             quantite = ligne.quantite or 1
             
-            # Obtenir les variantes à partir des identifiants fournis
-            variantes = []
-            for variante_id in ligne.variantes:
-                vt= Variantes.objects.get(pk=variante_id)
-                variante= vt.name
-                
-                variantes.append(variante)
+           
             price = 10
             if produit.event:
                 
@@ -127,14 +123,15 @@ class CreateCommande(graphene.Mutation):
                     price=10
             else:
                 price = produit.price
-            variant = ', '.join(variantes)
+            variante = Variantes.objects.get(pk=ligne.variante_id)
+            variante_name =variante.name
             ProduitsCommandes.objects.create(
                 commande=commande,
                 product=produit,
                 quantity=quantite,
                 price_unitaire=price,
                 subtotal=price * quantite,
-                variante = variantes
+                variante = variante_name
             )
             total_amount += price * quantite
         
@@ -143,6 +140,22 @@ class CreateCommande(graphene.Mutation):
         
         return CreateCommande(commande=commande)
 
+class DeleteCommande(graphene.Mutation):
+    class Arguments:
+        commandes_id = graphene.ID(required=True)
+
+    success = graphene.Boolean()
+
+    @staticmethod
+    def mutate(root, info, commandes_id):
+        try:
+            commandes = Commandes.objects.get(pk=commandes_id)
+        except Commandes.DoesNotExist:
+            raise Exception("Subcategory not found")
+
+        commandes.delete()
+
+        return DeleteCommande(success=True)
 
 '''class CommandesInput(graphene.InputObjectType):
     status = graphene.Boolean(required=True)
@@ -179,33 +192,19 @@ class UpdateCommandes(graphene.Mutation):
         return UpdateCommandes(commandes=commandes)
     
 
-class DeleteCommandes(graphene.Mutation):
-    class Arguments:
-        commandes_id = graphene.ID(required=True)
-
-    success = graphene.Boolean()
-
-    @staticmethod
-    def mutate(root, info, commandes_id):
-        try:
-            commandes = Commandes.objects.get(pk=commandes_id)
-        except Commandes.DoesNotExist:
-            raise Exception("Subcategory not found")
-
-        commandes.delete()
-
-        return DeleteCommandes(success=True)'''
+'''
 
 class AddFavoris(graphene.Mutation):
     favoris_product = graphene.Field(FavoriteProductsType)
 
     class Arguments:
         product_id = graphene.Int()
+        user_id = graphene.ID(required=True)
 
-    def mutate(self, info, product_id):
-        user = info.context.user
-        if not user.is_authenticated:
-            raise Exception('User not authenticated')
+    def mutate(self, info, product_id, user_id):
+        user = CustomUser.objects.get(id=user_id)
+        if not user:
+            raise Exception('Veillez vous connecter')
 
         product = Products.objects.get(pk=product_id)
         favoris_product, created = FavoriteProducts.objects.get_or_create(user=user, product=product)
@@ -221,18 +220,19 @@ class DeleteFavoris(graphene.Mutation):
 
     @staticmethod
     def mutate(root, info, favoris_id):
-        user = info.context.user
         try:
             favoris_product = FavoriteProducts.objects.get(pk=favoris_id)
-        except Commandes.DoesNotExist:
-            raise Exception("Subcategory not found")
+        except FavoriteProducts.DoesNotExist:
+            raise Exception("produit favoris n'existe pas")
 
         favoris_product.delete()
 
-        return DeleteFavoris(success=True)      
+        return DeleteFavoris(success=True)  
+
 class Mutation(graphene.ObjectType):
-    create_commandes = CreateCommande.Field()
-    
+    create_commande = CreateCommande.Field()
+    delete_commande = DeleteCommande.Field()
+
     add_favoris = AddFavoris.Field()
     delete_favoris = DeleteFavoris.Field()
     

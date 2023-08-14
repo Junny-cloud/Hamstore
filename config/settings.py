@@ -44,6 +44,7 @@ DJANGO_PACKAGES = [
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "graphql_auth",
     "django_filters",
+    'corsheaders',
    
 ]
 
@@ -82,8 +83,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
    
 ]
+
+X_FRAME_OPTIONS = 'ALLOWALL'
 
 ROOT_URLCONF = 'config.urls'
 
@@ -94,7 +98,18 @@ LOGOUT_REDIRECT_URL = '/'
 TEMPLATE_DIR = os.path.join(
     BASE_DIR, "config/templates")  # ROOT dir for templates
 
-
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 TEMPLATES = [
     {
@@ -352,6 +367,7 @@ JAZZMIN_UI_TWEAKS = {
         "danger": "btn-danger",
         "success": "btn-success"
     },
-    "actions_sticky_top": True
+    "actions_sticky_top": True,
+    
 }
 
