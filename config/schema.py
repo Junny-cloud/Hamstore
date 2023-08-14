@@ -28,13 +28,23 @@ class ProductFilterInput(graphene.InputObjectType):
     slug_subcategory = graphene.String()
     slug_event = graphene.String()
     slug_product = graphene.String()
-    skip = graphene.Int()
+    page = graphene.Int()
+
+class SearchProductInput(graphene.InputObjectType):
+    # Ajoutez les champs que vous souhaitez filtrer
+    priceRange = graphene.List(graphene.String)
+    sort_by_price = graphene.String()
+    slug_category = graphene.String()
+    slug_subcategory = graphene.String()
+    slug_event = graphene.String()
+    search_input = graphene.String()
+    page = graphene.Int()
 
 class ProductFilterCategoryInput(graphene.InputObjectType):
     # Ajoutez les champs que vous souhaitez filtrer
     slug = graphene.String()
 
-    skip = graphene.Int()
+    page = graphene.Int()
 
 class SubCategoryFilterInput(graphene.InputObjectType):
     # Ajoutez les champs que vous souhaitez filtrer
@@ -53,7 +63,7 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery,
     subcategory = graphene.Field(SubCategoryType, slug=graphene.String(required=True))
     subcategory_all = graphene.List(SubCategoryType)
 
-    search_products = graphene.List(ProductType, query=graphene.String())
+    search_products = graphene.Field(ProductListType, filter=SearchProductInput())
     products_by_category_slug = graphene.Field(ProductListType, filter=ProductFilterCategoryInput())
     products_by_subcategory_slug= graphene.Field(ProductListType, filter=ProductFilterInput())
     product = graphene.Field(ProductType, slug=graphene.String(required=True))
@@ -86,15 +96,15 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery,
         total_count = products.count()
         if filter:
             first = 15
-            if filter.skip is None:
-                filter.skip=0
-            filter.skip =filter.skip*15
+            if filter.page is None:
+                filter.page=0
+            filter.page =filter.page*15
             if filter.slug is not None:
                 products = products.filter(sub_category__category__slug=filter.slug)
             
             total_count = products.count()  # Obtenir le nombre total de produits
-            if filter.skip:
-                products = products[filter.skip:]
+            if filter.page:
+                products = products[filter.page:]
             
 
             if first:
@@ -108,13 +118,13 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery,
         total_count = products.count()
         if filter:
             first = 15
-            if filter.skip is None:
-                filter.skip=0
+            if filter.page is None:
+                filter.page=0
 
-            if filter.skip >0:
-                filter.skip-=1
+            if filter.page >0:
+                filter.page-=1
 
-            filter.skip =filter.skip*15
+            filter.page =filter.page*15
             if filter.slug_category is not None:
                 products = products.filter(sub_category__category__slug=filter.slug_category)
             if filter.slug_subcategory is not None:
@@ -153,11 +163,11 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery,
                 products = products.filter(Q(sub_category__slug=prod_cat) &  ~Q(slug=filter.slug_product))
                 
             total_count = products.count()  # Obtenir le nombre total de produits    
-            if filter.skip:
-                products = products[filter.skip:]
+            if filter.page:
+                products = products[filter.page:]
             else :
-                filter.skip =0
-                products = products[filter.skip:]
+                filter.page =0
+                products = products[filter.page:]
 
             if first:
                 products = products[:first]
@@ -170,17 +180,76 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery,
     def resolve_product(self, info, slug):
         return Products.objects.get(slug=slug)
     
-    def resolve_search_products(self, info, query):
-        if not query:
-            return Products.objects.none()
+    def resolve_search_products(self, info, filter=None):
+        products = Products.objects.all().order_by('-id')
+        total_count = products.count()
+        if filter:
+            first = 15
+            if filter.page is None:
+                filter.page=0
 
-        return Products.objects.filter(
-            Q(name__icontains=query) |
-            Q(sub_category__name__icontains=query) |
-            Q(sub_category__category__name__icontains=query) |
-            Q(description__icontains=query) |
-            Q(description_precise__name__icontains=query)
-        ).distinct()
+            if filter.page >0:
+                filter.page-=1
+
+            filter.page =filter.page*15
+            if filter.search_input :
+                query = filter.search_input
+                products = products.filter(
+                    Q(name__icontains=query) |
+                    Q(sub_category__name__icontains=query) |
+                    Q(sub_category__category__name__icontains=query) |
+                    Q(description__icontains=query) |
+                    Q(description_precise__name__icontains=query)
+                ).distinct()
+            if filter.slug_category is not None:
+                products = products.filter(sub_category__category__slug=filter.slug_category)
+            if filter.slug_subcategory is not None:
+                products = products.filter(sub_category__slug=filter.slug_subcategory)
+
+            if filter.slug_event is not None:
+                products = products.filter(event__slug=filter.slug_event)
+
+            if filter.priceRange:
+                tx = products.filter(price=0)
+                for obj in filter.priceRange:
+                    
+                    if obj=='intervale_1' :
+                        tx = tx|products.filter(price__range=(0.0, 10000.0))
+                    if obj=='intervale_2' :
+                        tx = tx|products.filter(price__range=(10001.0, 20000.0))
+                    if obj=='intervale_3' :
+                        tx = tx|products.filter(price__range=(20001.0, 50000.0))
+                    if obj=='intervale_4' :
+                        tx = tx|products.filter(price__range=(50001.0, 100000.0))
+                    if obj=='intervale_5' :
+                        tx = tx|products.filter(price__gte=100001.0)
+                products=tx
+            if filter.sort_by_price:
+                # Trier les produits en fonction du prix dans l'ordre spécifié
+                if filter.sort_by_price == "price_desc":
+                    products = products.order_by("-price")
+                elif filter.sort_by_price == "price_asc":
+                    products = products.order_by("price")
+                else:
+                    products = products.order_by("date_registry")
+
+           
+            total_count = products.count()  # Obtenir le nombre total de produits    
+            if filter.page:
+                products = products[filter.page:]
+            else :
+                filter.page =0
+                products = products[filter.page:]
+
+            if first:
+                products = products[:first]
+              
+        
+
+        return ProductListType(total_count=total_count, products=products)
+
+    
+    
 
 
 class Mutation(AuthMutation, purchasesMutation, productsMutation, graphene.ObjectType):

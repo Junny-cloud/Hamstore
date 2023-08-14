@@ -45,6 +45,7 @@ DJANGO_PACKAGES = [
     "graphql_auth",
     "django_filters",
     'corsheaders',
+
    
 ]
 
@@ -221,7 +222,7 @@ GRAPHQL_JWT = {
     "JWT_EXPIRATION_DELTA": timedelta(minutes=60),
     # optional
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
-    
+    'JWT_PAYLOAD_HANDLER': 'users.schema.jwt_payload',
     "JWT_ALLOW_ANY_CLASSES": [
         "graphql_auth.mutations.Register",
         "graphql_auth.mutations.VerifyAccount",
@@ -342,30 +343,30 @@ JAZZMIN_UI_TWEAKS = {
     "footer_small_text": True,
     "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": "navbar-navy",
-    "accent": "accent-lightblue",
+    "brand_colour": "navbar-light",
+    "accent": "accent-primary",
     "navbar": "navbar-navy navbar-dark",
     "no_navbar_border": False,
     "navbar_fixed": True,
     "layout_boxed": False,
     "footer_fixed": True,
     "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-navy",
-    "sidebar_nav_small_text": True,
+    "sidebar": "sidebar-light-navy",
+    "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
-    "sidebar_nav_child_indent": False,
+    "sidebar_nav_child_indent": True,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": True,
-    "theme": "cyborg",
+    "theme": "simplex",
     "dark_mode_theme": None,
     "button_classes": {
-        "primary": "btn-primary",
-        "secondary": "btn-secondary",
-        "info": "btn-info",
+        "primary": "btn-outline-primary",
+        "secondary": "btn-outline-secondary",
+        "info": "btn-outline-info",
         "warning": "btn-warning",
         "danger": "btn-danger",
-        "success": "btn-success"
+        "success": "btn-outline-success"
     },
     "actions_sticky_top": True,
     
