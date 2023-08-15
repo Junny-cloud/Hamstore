@@ -39,13 +39,12 @@ ALLOWED_HOSTS = []
 DJANGO_PACKAGES = [
     'jazzmin',
     #configuration graphene
+    'corsheaders',
     'graphene_django',
     #config graphene auth
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "graphql_auth",
     "django_filters",
-    'corsheaders',
-
    
 ]
 
@@ -77,6 +76,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -84,11 +84,24 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    
    
 ]
 
 X_FRAME_OPTIONS = 'ALLOWALL'
+
+CORS_ALLOW_ALL_ORIGINS =True
+
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+)
+
+#CORS_ALLOWED_ORIGINS = ['*']
 
 ROOT_URLCONF = 'config.urls'
 
@@ -111,6 +124,9 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+'''CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:8000/',
+] '''# If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
 
 TEMPLATES = [
     {
@@ -169,14 +185,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = '/home/c2154647c/public_html/hamstore/static/'
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = '/home/c2154647c/public_html/hamstore/media/'
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'config/../config/static/'),
-)
+STATICFILES_DIRS = (os.path.join('static'),)
 
 
 # Default primary key field type
@@ -215,6 +230,8 @@ AUTHENTICATION_BACKENDS = [
     'graphql_jwt.backends.JSONWebTokenBackend',   
 ]
 
+
+
 GRAPHQL_JWT = {
     'JWT_ALLOW_ARGUMENT': True,
     
@@ -237,6 +254,7 @@ GRAPHQL_JWT = {
     ],
 }
 
+
 GRAPHQL_AUTH = {
    
     'REGISTER_MUTATION_FIELDS' : {
@@ -251,20 +269,10 @@ GRAPHQL_AUTH = {
     'REGISTER_MUTATION_FIELDS_OPTIONAL':['username', 'password2'],
     'LOGIN_ALLOWED_FIELDS': ['email'],
     'UPDATE_MUTATION_FIELDS':["first_name", "last_name", "date_naissance", "telephone"]
+
 }
 
-# Paramètres d'e-mails
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_TIMEOUT = 30
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-EMAIL_HOST = 'mail.systech-ci.net'
-EMAIL_HOST_USER = 'm.yeo@systech-ci.net'
-EMAIL_HOST_PASSWORD = 'Mailsecure001'
-EMAIL_PORT =  465
-
-EMAIL_SUBJECT_PREFIX = 'Nouvelle commande enregistrée'
-
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -272,12 +280,12 @@ JAZZMIN_SETTINGS = {
     "site_title": "Hamstore",
     "site_header": "Admin Hamstore",
     "site_brand": "Hamstore",
-    "site_icon": "/assets/img/logo.png",    
+    "site_icon": "/admin/img/logo.png",    
     # Add your own branding here
-    "site_logo": "/assets/img/logo.png",
+    "site_logo": "/admin/img/logo.png",
     "welcome_sign": "Bienvenue sur Hamstore",
     # Copyright on the footer
-    "copyright": "Junior Essoh",
+    "copyright": "AKAT",
     "user_avatar": None,
     ############
     # Top Menu #
@@ -298,7 +306,7 @@ JAZZMIN_SETTINGS = {
     # Custom icons for side menu apps/models See https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.0.2,5.0.3,5.0.4,5.0.5,5.0.6,5.0.7,5.0.8,5.0.9,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.13.0,5.12.0,5.11.2,5.11.1,5.10.0,5.9.0,5.8.2,5.8.1,5.7.2,5.7.1,5.7.0,5.6.3,5.5.0,5.4.2
     "hide_apps": [ "auth", "refresh_token"],
     "hide_models": [],
-    "order_with_respect_to": ["banners", "newsletters", "products", "purchases", "users"],
+    "order_with_respect_to": ["banners", "newsletters", "products", "purchases", "users", "graphql_auth"],
     "icons": {
         
         "auth": "fas fa-users-cog",
@@ -343,32 +351,30 @@ JAZZMIN_UI_TWEAKS = {
     "footer_small_text": True,
     "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": "navbar-light",
-    "accent": "accent-primary",
+    "brand_colour": "navbar-navy",
+    "accent": "accent-lightblue",
     "navbar": "navbar-navy navbar-dark",
     "no_navbar_border": False,
     "navbar_fixed": True,
     "layout_boxed": False,
     "footer_fixed": True,
     "sidebar_fixed": True,
-    "sidebar": "sidebar-light-navy",
-    "sidebar_nav_small_text": False,
+    "sidebar": "sidebar-dark-navy",
+    "sidebar_nav_small_text": True,
     "sidebar_disable_expand": False,
-    "sidebar_nav_child_indent": True,
+    "sidebar_nav_child_indent": False,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": True,
-    "theme": "simplex",
+    "theme": "cyborg",
     "dark_mode_theme": None,
     "button_classes": {
-        "primary": "btn-outline-primary",
-        "secondary": "btn-outline-secondary",
-        "info": "btn-outline-info",
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
         "warning": "btn-warning",
         "danger": "btn-danger",
-        "success": "btn-outline-success"
+        "success": "btn-success"
     },
-    "actions_sticky_top": True,
-    
+    "actions_sticky_top": True
 }
-

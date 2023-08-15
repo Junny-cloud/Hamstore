@@ -11,6 +11,7 @@ from .models import *
 from graphql_auth.decorators import login_required
 from graphql_jwt.utils import get_payload
 from users.models import *
+from users.schema import  renvoyer_user, jwt_payload
 # ---------------  APP PRODUITS  -----------------------
 class CommentsFilterInput(graphene.InputObjectType):
     # Ajoutez les champs que vous souhaitez filtrer
@@ -425,7 +426,7 @@ class CreateCommentInput(graphene.InputObjectType):
     product_id = graphene.Int(required=True)
     note = graphene.Int()
     contenu=graphene.String()
-    user_id = graphene.ID(required=True)
+    
     
 class CreateComment(graphene.Mutation):
     class Arguments:
@@ -435,7 +436,9 @@ class CreateComment(graphene.Mutation):
     comments = graphene.Field(CommentairesType)
 
     def mutate(self, info, comment_input):
-        user_id =comment_input.user_id
+        request = info.context.META
+        user_id =renvoyer_user(request)
+
         user = CustomUser.objects.get(id=user_id)
         contenu = comment_input.contenu
         note = comment_input.note
@@ -482,36 +485,12 @@ class UpdateComment(graphene.Mutation):
 
         return UpdateComment(success=True, comments=comments)
 
-       
+           
 
-class CreateCommentaire(graphene.Mutation):
-    class Arguments:
-        product_id = graphene.Int()
-        note = graphene.Int()
-        contenu=graphene.String()
-        
-
-    commentaires = graphene.Field(CommentairesType)
-    
-    def mutate(self, info, product_id, note, contenu):
-        request = info.context.META
-        headers = request.get('HTTP_AUTHORIZATION')
-        headers = headers.replace('bearer ', '')
-        print(headers)
-        payload = get_payload(headers)
-        user_id = payload["user_id"]
-        
-        print(user_id)
-        user = CustomUser.objects.get(pk=user_id)
-        product = Products.objects.get(pk=product_id)
-        commentaires = Commentaires(product=product, note=note, contenu=contenu, client=user)
-        commentaires.save()
-        return CreateCommentaires(commentaires=commentaires)
-    
 
 class Mutation(graphene.ObjectType):
-    create_commentaires = CreateCommentaire.Field()
-    delete_commentaires = DeleteCommentaires.Field()
-    update_commentaires = UpdateCommentaires.Field()
+    create_comment = CreateComment.Field()
+    delete_comment = DeleteComment.Field()
+    update_comment = UpdateComment.Field()
     
    

@@ -11,6 +11,7 @@ from .models import *
 from products.models import *
 from django.contrib.auth.models import User
 from users.models import *
+from users.schema import renvoyer_user, jwt_payload
 
 
 class CommandesType(DjangoObjectType):
@@ -99,10 +100,12 @@ class ProductsCommandesInput(graphene.InputObjectType):
 class CreateCommande(graphene.Mutation):
     class Arguments:
         products_commandes = graphene.List(ProductsCommandesInput)
-        user_id = graphene.ID(required=True)
+
     commande = graphene.Field(CommandesType)
 
-    def mutate(self, info, products_commandes, user_id):
+    def mutate(self, info, products_commandes):
+        request = info.context.META
+        user_id =renvoyer_user(request)
         user = CustomUser.objects.get(id=user_id)
         commande = Commandes.objects.create(user=user)
         
@@ -198,10 +201,12 @@ class AddFavoris(graphene.Mutation):
     favoris_product = graphene.Field(FavoriteProductsType)
 
     class Arguments:
-        product_id = graphene.Int()
-        user_id = graphene.ID(required=True)
+        product_id = graphene.Int(required=True)
+        
 
-    def mutate(self, info, product_id, user_id):
+    def mutate(self, info, product_id):
+        request = info.context.META
+        user_id =renvoyer_user(request)
         user = CustomUser.objects.get(id=user_id)
         if not user:
             raise Exception('Veillez vous connecter')
@@ -214,14 +219,16 @@ class AddFavoris(graphene.Mutation):
     
 class DeleteFavoris(graphene.Mutation):
     class Arguments:
-        favoris_id = graphene.ID(required=True)
+        product_id = graphene.Int(required=True)
 
     success = graphene.Boolean()
 
     @staticmethod
-    def mutate(root, info, favoris_id):
+    def mutate(root, info, product_id):
+        request = info.context.META
+        user_id = renvoyer_user(request)
         try:
-            favoris_product = FavoriteProducts.objects.get(pk=favoris_id)
+            favoris_product = FavoriteProducts.objects.get(product__id=product_id, user__id =user_id)
         except FavoriteProducts.DoesNotExist:
             raise Exception("produit favoris n'existe pas")
 

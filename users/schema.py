@@ -11,6 +11,8 @@ from django.contrib.auth import authenticate, get_user_model
 from newsletters.models import *
 import graphql_jwt
 from datetime import datetime
+from graphql_auth.decorators import login_required
+from graphql_jwt.utils import get_payload
 from config.settings import GRAPHQL_JWT
 
 REGISTER_MUTATION_FIELDS = [
@@ -23,32 +25,40 @@ REGISTER_MUTATION_FIELDS = [
 ]
 
 def jwt_payload(user, context=None):
-    username = user.get_username()
-    
-    payload = {
+
+     username = user.get_username()
+     payload = {
         user.USERNAME_FIELD: username,
         'user_id': user.id,
         'email': user.email,
-        'phone': user.telephone,
-        
+        'phone': user.telephone, 
   
-    }
-    return payload
+     }
+     return payload
+
+def renvoyer_user(request):
+
+     headers = request.get('HTTP_AUTHORIZATION')
+     headers = headers.replace('Bearer ', '')
+     payload = get_payload(headers)
+     user_id = payload["user_id"]
+     return user_id
 
 class CustomUserType(DjangoObjectType):
-    class Meta:
-        model = CustomUser
-        fields = '__all__'
+     class Meta:
+          model = CustomUser
+          fields = '__all__'
         
 
         
 class ListUsersQuery(graphene.ObjectType):
-    ListUsers = graphene.List(CustomUserType)
+     ListUsers = graphene.List(CustomUserType)
 
-    def resolve_list_users(self, info):
-        # Récupérez la liste des utilisateurs de votre source de données (par exemple, base de données)
-        ListUsers = CustomUser.objects.all()
-        return ListUsers
+     def resolve_list_users(self, info):
+          # Récupérez la liste des utilisateurs de votre source de données (par exemple, base de données)
+          ListUsers = CustomUser.objects.all()
+          return ListUsers
+
 class UserInput(graphene.InputObjectType):
      email = graphene.String(required=True)
      firstname = graphene.String(required=True)
@@ -57,13 +67,16 @@ class UserInput(graphene.InputObjectType):
      abonnes_newsletters = graphene.Boolean(required=True)
      password = graphene.String(required=True)
 
+class UpdateUserEmailInput(graphene.InputObjectType):
+     old_email = graphene.String(required=True)
+     new_email = graphene.String(required=True)
+
+
 class UpdateUserPasswordInput(graphene.InputObjectType):
-     user_id = graphene.ID(required=True)
      old_password = graphene.String(required=True)
      new_password = graphene.String(required=True) 
 
 class UpdateUserInfoInput(graphene.InputObjectType):
-     user_id = graphene.ID(required=True)
      first_name = graphene.String()
      last_name = graphene.String()
      date_naissance = graphene.Date()
@@ -131,25 +144,27 @@ class CustomRegister(mutations.Register):
           return CustomRegister(user=user)
 
 class UpdateUserEmail(graphene.Mutation):
-    class Arguments:
-        old_email = graphene.String(required=True)
-        new_email = graphene.String(required=True)
+     class Arguments:
+          email_input = UpdateUserEmailInput(required=True)
+          
 
-    success = graphene.Boolean()
+     success = graphene.Boolean()
 
-    @staticmethod
-    def mutate(self, info, old_email, new_email):
-        User = get_user_model()
-        try:
-            user = User.objects.get(email=old_email)
-        except User.DoesNotExist:
-            raise Exception("User not found")
+     @staticmethod
+     def mutate(self, info, email_input):
+          User = get_user_model()
+          request = info.context.META
+          user_id =renvoyer_user(request)
+          try:
+               user = User.objects.get(pk=user_id ,email=email_input.old_email)
+          except User.DoesNotExist:
+               raise Exception("User not found")
 
-        user.email = new_email
-        user.username = new_email
-        user.save()
+          user.email = email_input.new_email
+          user.username = email_input.new_email
+          user.save()
 
-        return UpdateUserEmail(success=True)
+          return UpdateUserEmail(success=True)
 
 class UpdateUserPassword(graphene.Mutation):
 
@@ -160,9 +175,10 @@ class UpdateUserPassword(graphene.Mutation):
 
      @staticmethod
      def mutate(self, info, password_input):
-
+          request = info.context.META
+          user_id =renvoyer_user(request)
           User = get_user_model()
-          user = User.objects.get(pk=password_input.user_id)
+          user = User.objects.get(pk=user_id)
 
           if not user:
                raise Exception("L'utilisateur n'existe pas")
@@ -184,9 +200,10 @@ class UpdateUserInfo(graphene.Mutation):
 
      @staticmethod
      def mutate(self, info, info_input):
-
+          request = info.context.META
+          user_id =renvoyer_user(request)
           User = get_user_model()
-          user = CustomUser.objects.get(pk=info_input.user_id)
+          user = CustomUser.objects.get(pk=user_id)
 
           if not user:
                raise Exception("L'utilisateur n'existe pas")
@@ -246,24 +263,6 @@ class NewsletterSubscription(graphene.Mutation):
                user.save()
 
           return NewsletterSubscription(success=True, user=user)   
-
-class LoginMutation(graphene.Mutation):
-    class Arguments:
-        email = graphene.String(required=True)
-        password = graphene.String(required=True)
-
-    success = graphene.Boolean()
-    token = graphene.String()
-    user = graphene.Field(CustomUserType)
-
-    def mutate(self, info, email, password):
-        result = mutations.ObtainJSONWebToken.mutate(self, info, email=email, password=password)
-        success = result.get('success')
-        token = result.get('token')
-        user = result.get('user')
-
-        return LoginMutation(success=success, token=token, user=user)
-   
 class AuthMutation(graphene.ObjectType):
      newsletter_subscription = NewsletterSubscription.Field()
      register = CreateUser.Field()
@@ -283,7 +282,6 @@ class AuthMutation(graphene.ObjectType):
      # django-graphql-jwt authentication
      # with some extra features
      login = mutations.ObtainJSONWebToken.Field()
-    
      logout = mutations.RevokeToken.Field()
      verify_token = mutations.VerifyToken.Field()
      refresh_token = mutations.RefreshToken.Field()
@@ -303,7 +301,7 @@ class AuthMutation(graphene.ObjectType):
                raise GraphQLError('Invalid email or password.')
 
           token = graphql_auth.shortcuts.get_token(user)
-          
+
           return AuthToken(token=token, user=user)
 
 
