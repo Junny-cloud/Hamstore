@@ -23,7 +23,7 @@ class CommandesFilterInput(graphene.InputObjectType):
     # Ajoutez les champs que vous souhaitez filtrer
     date_commande = graphene.Date()
     user = graphene.ID()
-    skip = graphene.Int()
+    page = graphene.Int()
 
 class FavoriteProductsType(DjangoObjectType):
     class Meta:
@@ -55,13 +55,13 @@ class Query(graphene.ObjectType):
         
         if filter:
             first = 15
-            if filter.skip is None:
-                filter.skip=0
+            if filter.page is None:
+                filter.page=0
 
-            if filter.skip >0:
-                filter.skip-=1
+            if filter.page >0:
+                filter.page-=1
 
-            filter.skip =filter.skip*15
+            filter.page =filter.page*15
             if filter.date_commande is not None:
                 commandes = commandes.filter(date_commande=filter.date_commande)
             if filter.user is not None:
@@ -69,11 +69,11 @@ class Query(graphene.ObjectType):
 
             
             total_count = commandes.count()  # Obtenir le nombre total de commandes    
-            if filter.skip:
-                commandes = commandes[filter.skip:]
+            if filter.page:
+                commandes = commandes[filter.page:]
             else :
-                filter.skip =0
-                commandes = commandes[filter.skip:]
+                filter.page =0
+                commandes = commandes[filter.page:]
 
             if first:
                 commandes = commandes[:first]
@@ -93,7 +93,7 @@ class Query(graphene.ObjectType):
 class ProductsCommandesInput(graphene.InputObjectType):
     produit_slug = graphene.String(required=True)
     quantite = graphene.Int(required=True)
-    variante_id = graphene.Int(required=True)
+    variante_id = graphene.Int()
     
 
 
@@ -105,7 +105,7 @@ class CreateCommande(graphene.Mutation):
 
     def mutate(self, info, products_commandes):
         request = info.context.META
-        user_id =renvoyer_user(request)
+        user_id = renvoyer_user(request)
         user = CustomUser.objects.get(id=user_id)
         commande = Commandes.objects.create(user=user)
         

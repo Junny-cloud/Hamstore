@@ -18,7 +18,7 @@ class CommentsFilterInput(graphene.InputObjectType):
     client = graphene.ID()
     note = graphene.Int()
     slug_product = graphene.String()
-    skip = graphene.Int()
+    page = graphene.Int()
 
 class CategoryType(DjangoObjectType):
     class Meta:
@@ -106,13 +106,13 @@ class Query(graphene.ObjectType):
         
         if filter:
             first = 15
-            if filter.skip is None:
-                filter.skip=0
+            if filter.page is None:
+                filter.page=0
 
-            if filter.skip >0:
-                filter.skip-=1
+            if filter.page >0:
+                filter.page-=1
 
-            filter.skip =filter.skip*15
+            filter.page =filter.page*15
             if filter.slug_product is not None:
                 commentaires = commentaires.filter(product__slug=filter.slug_product)
             if filter.client is not None:
@@ -122,11 +122,11 @@ class Query(graphene.ObjectType):
                 commentaires = commentaires.filter(note=filter.note)
                 
             total_count = commentaires.count()  # Obtenir le nombre total de produits    
-            if filter.skip:
-                commentaires = commentaires[filter.skip:]
+            if filter.page:
+                commentaires = commentaires[filter.page:]
             else :
-                filter.skip =0
-                commentaires = commentaires[filter.skip:]
+                filter.page =0
+                commentaires = commentaires[filter.page:]
 
             if first:
                 commentaires = commentaires[:first]
