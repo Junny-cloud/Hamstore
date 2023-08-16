@@ -3,11 +3,26 @@ from graphene_django import DjangoObjectType
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
 import graphql
+from users.models import *
+from django.contrib.auth.models import User
 from graphql import GraphQLError
 from graphene import relay
 from .models import *
-
+from graphql_auth.decorators import login_required
+from graphql_jwt.utils import get_payload
+from users.models import *
+from users.schema import  renvoyer_user, jwt_payload
 # ---------------  APP PRODUITS  -----------------------
+<<<<<<< HEAD
+=======
+class CommentsFilterInput(graphene.InputObjectType):
+    # Ajoutez les champs que vous souhaitez filtrer
+    client = graphene.ID()
+    note = graphene.Int()
+    slug_product = graphene.String()
+    page = graphene.Int()
+
+>>>>>>> junny-branch
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
@@ -47,7 +62,8 @@ class EventType(DjangoObjectType):
     class Meta:
         model = Event
         fields = "__all__"
-
+  
+        
 class CommentairesType(DjangoObjectType):
     class Meta:
         model = Commentaires
@@ -62,7 +78,11 @@ class Query(graphene.ObjectType):
     events = graphene.List(EventType)
     event = graphene.Field(EventType, slug=graphene.String(required=True))
 
+<<<<<<< HEAD
     commentaires = graphene.List(CommentairesType)
+=======
+    commentaires_by_filter = graphene.Field(CommentairesListType, filter=CommentsFilterInput())
+>>>>>>> junny-branch
     commentaire = graphene.Field(CommentairesType, id=graphene.Int(required=True))
     
     def resolve_variantes(self, info):
@@ -84,6 +104,44 @@ class Query(graphene.ObjectType):
     def resolve_commentaire(self, info, id):
         return Commentaires.objects.get(id=id)
     
+<<<<<<< HEAD
+=======
+    def resolve_commentaires_by_filter(self, info, filter=None):
+        commentaires = Commentaires.objects.all().order_by('-id')
+        total_count = commentaires.count()
+        
+        if filter:
+            first = 15
+            if filter.page is None:
+                filter.page=0
+
+            if filter.page >0:
+                filter.page-=1
+
+            filter.page =filter.page*15
+            if filter.slug_product is not None:
+                commentaires = commentaires.filter(product__slug=filter.slug_product)
+            if filter.client is not None:
+                commentaires = commentaires.filter(user__pk=filter.client)
+
+            if filter.note is not None:
+                commentaires = commentaires.filter(note=filter.note)
+                
+            total_count = commentaires.count()  # Obtenir le nombre total de produits    
+            if filter.page:
+                commentaires = commentaires[filter.page:]
+            else :
+                filter.page =0
+                commentaires = commentaires[filter.page:]
+
+            if first:
+                commentaires = commentaires[:first]
+              
+        
+
+        return CommentairesListType(total_count=total_count, commentaires=commentaires)
+    
+>>>>>>> junny-branch
 # ------------------- CATEGORY CRUD ---------------------
 class CategoryInput(graphene.InputObjectType):
     name = graphene.String(required=True)
@@ -366,7 +424,12 @@ class CreateEvent(graphene.Mutation):
         return CreateEvent(events=events)
 
 # --------------- COMMENTAIRE CRUD MUTATIONS ------------------------------
+class UpdateCommentInput(graphene.InputObjectType):
+    comment_id = graphene.Int()
+    note = graphene.Int()
+    contenu=graphene.String()
 
+<<<<<<< HEAD
 class CreateCommentaires(graphene.Mutation):
     class Arguments:
         product_id = graphene.Int(required=True)
@@ -382,21 +445,80 @@ class CreateCommentaires(graphene.Mutation):
         commentaires = Commentaires(product=product, note=note, contenu=contenu, user=user)
         commentaires.save()
         return CreateCommentaires(commentaires=commentaires)
+=======
+class CreateCommentInput(graphene.InputObjectType):
+    product_id = graphene.Int(required=True)
+    note = graphene.Int()
+    contenu=graphene.String()
+>>>>>>> junny-branch
     
-class DeleteCommentaires(graphene.Mutation):
+    
+class CreateComment(graphene.Mutation):
     class Arguments:
-        commentaires_id = graphene.ID(required=True)
+        comment_input = CreateCommentInput(required=True)
+
+    success = graphene.Boolean()
+    comments = graphene.Field(CommentairesType)
+
+    def mutate(self, info, comment_input):
+        request = info.context.META
+        user_id =renvoyer_user(request)
+
+        user = CustomUser.objects.get(id=user_id)
+        contenu = comment_input.contenu
+        note = comment_input.note
+        product = Products.objects.get(pk=comment_input.product_id)
+        comments = Commentaires(product=product, note=note, contenu=contenu, client=user)
+        comments.save()
+        return CreateComment(success=True, comments=comments)
+    
+class DeleteComment(graphene.Mutation):
+    class Arguments:
+        comment_id = graphene.ID(required=True)
 
     success = graphene.Boolean()
 
     @staticmethod
-    def mutate(root, info, commentaires_id):
+    def mutate(root, info, comment_id):
         try:
-            commentaires = Commentaires.objects.get(pk=commentaires_id)
+            comment = Commentaires.objects.get(id=comment_id)
         except Commentaires.DoesNotExist:
             raise Exception(" commentaires not found")
 
-        commentaires.delete()
+        comment.delete()
 
-        return DeleteCommentaires(success=True)
+        return DeleteComment(success=True)
     
+<<<<<<< HEAD
+=======
+class UpdateComment(graphene.Mutation):
+    class Arguments:
+        comment_input = UpdateCommentInput(required=True)
+
+    success = graphene.Boolean()
+    comments = graphene.Field(CommentairesType)
+
+    @staticmethod
+    def mutate(self, info, comment_input):
+        
+        try:
+            comments = Commentaires.objects.get(id=comment_input.comment_id)
+        except Commentaires.DoesNotExist:
+            raise Exception("vous ne pouvez pas modifier ce commentaire")
+
+        comments.contenu = comment_input.contenu
+        comments.note = comment_input.note
+        comments.save()
+
+        return UpdateComment(success=True, comments=comments)
+
+           
+
+
+class Mutation(graphene.ObjectType):
+    create_comment = CreateComment.Field()
+    delete_comment = DeleteComment.Field()
+    update_comment = UpdateComment.Field()
+    
+   
+>>>>>>> junny-branch

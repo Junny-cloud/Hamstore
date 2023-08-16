@@ -20,8 +20,8 @@ User = get_user_model()
 class Commandes(models.Model):
      reference = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, verbose_name="reference commande")
      products = models.ManyToManyField(Products, through='ProduitsCommandes')
-     user = models.ForeignKey(CustomUser, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
-     total_amount = models.DecimalField(max_digits=10, default=0,decimal_places=2)
+     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
+     total_amount = models.PositiveIntegerField(default=0, verbose_name="prix commande")
      date_commande = models.DateField(auto_now_add=True)
      
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
@@ -42,7 +42,7 @@ class ProduitsCommandes(models.Model):
      commande = models.ForeignKey(Commandes, null=True, blank=True, on_delete=models.CASCADE, verbose_name="commande concerné")
      product = models.ForeignKey(Products,  null=True, blank=True, on_delete=models.CASCADE, verbose_name="Produit")
      variante = models.CharField(max_length=200, null=True, blank=True, verbose_name="variante choisie")
-     price_unitaire = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="prix produit")
+     price_unitaire = models.PositiveIntegerField(default=0, verbose_name="prix produit")
      quantity = models.PositiveIntegerField(default=1)
      subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0,verbose_name="Total du produit")
      
@@ -65,3 +65,18 @@ class ProduitsCommandes(models.Model):
 
      def __str__(self):
           return f"{self.quantity} x {self.product.name} (commande #{self.commande.reference})"
+
+
+class FavoriteProducts(models.Model):
+    #info = models.CharField(max_length=200, null=True, blank=True, verbose_name="info")
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
+    product = models.ForeignKey(Products,  null=True, blank=True, on_delete=models.CASCADE, verbose_name="Produit")
+     
+    date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
+    date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
+    status = models.BooleanField(default=False, verbose_name='Etat')
+     
+    class Meta:
+        verbose_name = "Produit favoris"
+        verbose_name_plural = "Produits favoris"
+        ordering = ['-id']

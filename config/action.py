@@ -135,6 +135,7 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
         name = generic.text.word()
         subcategory_aleatoire = generic.random.choice(subcategory)
         extras = generic.text.words()
+        
         event_aleatoire = generic.random.choice(event)
         #variantes_aleatoire_id =[generic.random.choice(variantes) for _ in range(1)] 
         price = generate_random_integer()
@@ -231,3 +232,19 @@ def replace_products_images():
             product.images.add(product_image)
 
         print("succes")
+        
+def replace_prix_event():
+    
+    products = Products.objects.all()
+    prix_event =[15000, 2555, 38000, 47000, 85000]
+    
+    for product in products:
+        
+        random_pair = random.choice(prix_event)
+        
+        product.prix_promo = random_pair
+        product.save()
+        
+        
+
+    

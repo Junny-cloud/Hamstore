@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 from decouple import config
 from config import db
+from datetime import datetime, timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -97,6 +98,21 @@ CORS_ALLOW_HEADERS = (
 
 #CORS_ALLOWED_ORIGINS = ['*']
 
+X_FRAME_OPTIONS = 'ALLOWALL'
+
+CORS_ALLOW_ALL_ORIGINS =True
+
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+)
+
+#CORS_ALLOWED_ORIGINS = ['*']
+
 ROOT_URLCONF = 'config.urls'
 
 ROOT_URLCONF = 'config.urls'
@@ -106,7 +122,21 @@ LOGOUT_REDIRECT_URL = '/'
 TEMPLATE_DIR = os.path.join(
     BASE_DIR, "config/templates")  # ROOT dir for templates
 
-
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+'''CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:8000/',
+] '''# If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
 
 TEMPLATES = [
     {
@@ -166,14 +196,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = '/home/c2154647c/public_html/hamstore/static/'
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = '/home/c2154647c/public_html/hamstore/media/'
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'config/../config/static/'),
-)
+STATICFILES_DIRS = (os.path.join('static'),)
 
 
 # Default primary key field type
@@ -212,6 +241,8 @@ AUTHENTICATION_BACKENDS = [
     'graphql_jwt.backends.JSONWebTokenBackend',   
 ]
 
+
+
 GRAPHQL_JWT = {
     'JWT_ALLOW_ARGUMENT': True,
     
@@ -219,7 +250,7 @@ GRAPHQL_JWT = {
     "JWT_EXPIRATION_DELTA": timedelta(minutes=60),
     # optional
     "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
-    
+    'JWT_PAYLOAD_HANDLER': 'users.schema.jwt_payload',
     "JWT_ALLOW_ANY_CLASSES": [
         "graphql_auth.mutations.Register",
         "graphql_auth.mutations.VerifyAccount",
@@ -248,6 +279,11 @@ GRAPHQL_AUTH = {
     },
     'REGISTER_MUTATION_FIELDS_OPTIONAL':['username', 'password2'],
     'LOGIN_ALLOWED_FIELDS': ['email'],
+<<<<<<< HEAD
+=======
+    'UPDATE_MUTATION_FIELDS':["first_name", "last_name", "date_naissance", "telephone"]
+
+>>>>>>> junny-branch
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
@@ -284,7 +320,7 @@ JAZZMIN_SETTINGS = {
     # Custom icons for side menu apps/models See https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.0.2,5.0.3,5.0.4,5.0.5,5.0.6,5.0.7,5.0.8,5.0.9,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.13.0,5.12.0,5.11.2,5.11.1,5.10.0,5.9.0,5.8.2,5.8.1,5.7.2,5.7.1,5.7.0,5.6.3,5.5.0,5.4.2
     "hide_apps": [ "auth", "refresh_token"],
     "hide_models": [],
-    "order_with_respect_to": ["banners", "newsletters", "products", "purchases", "users"],
+    "order_with_respect_to": ["banners", "newsletters", "products", "purchases", "users", "graphql_auth"],
     "icons": {
         
         "auth": "fas fa-users-cog",
