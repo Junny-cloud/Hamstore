@@ -1,7 +1,7 @@
 import graphene
 import graphql_auth
 from graphene_django import DjangoObjectType
-from graphql_auth.schema import UserQuery, MeQuery
+from graphql_auth.schema import UserQuery as BaseUserQuery, MeQuery
 from graphql_auth import mutations
 from django.contrib.auth.models import User
 from graphql_auth.mutations import PasswordReset
@@ -49,7 +49,15 @@ class CustomUserType(DjangoObjectType):
           model = CustomUser
           fields = '__all__'
         
-
+class CustomUserQuery(BaseUserQuery):
+     @login_required
+     def resolve_user(self, info, **kwargs):
+          request = info.context.META
+          user_id =renvoyer_user(request)
+          user = CustomUser.objects.get(id=user_id)
+          if not user:
+               raise Exception('Veillez vous connecter')
+          return user
         
 class ListUsersQuery(graphene.ObjectType):
      ListUsers = graphene.List(CustomUserType)

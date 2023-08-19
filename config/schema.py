@@ -55,7 +55,7 @@ class ProductListType(graphene.ObjectType):
     products = graphene.List(ProductType) 
     
 class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery, graphene.ObjectType):
-    
+    user_connected =graphene.Field(CustomUserType, token=graphene.String())
     categories = graphene.List(CategoryType)
     category = graphene.Field(CategoryType, slug=graphene.String(required=True))
 
@@ -247,6 +247,14 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery,
         
 
         return ProductListType(total_count=total_count, products=products)
+
+    def resolve_user_connected(self, info, token=None):
+        request = info.context.META
+        user_id =renvoyer_user(request)
+        user = CustomUser.objects.get(id=user_id)
+        if not user:
+            raise Exception('Veillez vous connecter')
+        return user
 
     
     
