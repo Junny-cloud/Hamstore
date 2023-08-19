@@ -13,6 +13,10 @@ from django.utils import timezone
 from products.models import *
 from django.contrib.auth import get_user_model
 
+# Email
+from django.core.mail import  EmailMultiAlternatives, send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 User = get_user_model()
 
@@ -80,3 +84,33 @@ class FavoriteProducts(models.Model):
         verbose_name = "Produit favoris"
         verbose_name_plural = "Produits favoris"
         ordering = ['-id']
+    
+  
+@receiver(post_save, sender=Commandes)
+def envoie_de_mail_commande(sender, created, instance, **kwargs):
+     if created:
+          
+          # SEND MAIL CONFIG
+          html_content = render_to_string('purchases/email_commande.html', {
+          'title': 'Commande de produits',
+          'nom_entreprise': 'Athehams',
+          'obj': instance,
+          'link': 'http://127.0.0.1:8000/admin/',
+          #'link': 'http://ons.systech-ci.net/app/locations/',
+          })
+          text_content = strip_tags(html_content)
+          
+          subject = "COMMANDE HAMSTORE"
+          recipient_list =['junioressoh98@gmail.com']
+          from_email ='contact@cabinetfirdaws.org'
+          send_mail(
+               subject,
+               'JUNNY TEST',
+               from_email,
+               recipient_list,
+               fail_silently=False,
+               html_message=text_content,
+          )
+       
+          
+ 

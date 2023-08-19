@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{{ title }}</title>
+        <style>
+        /* Vos styles CSS ici */
+        body {
+            font-family: teko, sans-serif;
+        }
+        .header {
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+    </style>
+    </head>
+    <body>
+        <h3>{{ nom_entreprise }}</h3><br>
+        <p>Bonjour/Bonsoir {{ obj.user }},</p>
+        <p>Vous avez une nouvelle commandes sur votre plateforme </p>
+        
+        <p>Nous vous invitons à <a href="{{ link }}" target="_blank">cliquer ici</a> afin de voir plus de details sur la commande.</p>
+        <P>L'{{ obj.date_registry }}.</P>
+        <p style="color: aqua; text-decoration: overline;">CORDIALEMENT</p>
+        <footer>
+            <!-- Copyright -->
+            <div style="background-color: rgba(0, 0, 0, 0.2);">
+                © {% now "Y" %} Copyright:
+                <a href="#">hamstore</a>
+            </div>
+            <!-- Copyright -->
+        </footer>
+    </body>
+</html>

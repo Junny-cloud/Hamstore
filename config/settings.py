@@ -272,7 +272,17 @@ GRAPHQL_AUTH = {
 
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_TIMEOUT = 20
+EMAIL_USE_TLS = True
+#EMAIL_USE_SSL = True
+EMAIL_HOST = 'mail.cabinetfirdaws.org'
+EMAIL_HOST_USER = 'contact@cabinetfirdaws.org'
+EMAIL_HOST_PASSWORD = 'Abdelakim8810@'
+EMAIL_PORT =  587
+EMAIL_SUBJECT_PREFIX = 'Athehams : '
+
+
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
