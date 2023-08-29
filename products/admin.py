@@ -10,6 +10,7 @@ class CategoryAdmin(admin.ModelAdmin):
      list_filter = ('image','name', 'date_registry', 'status')
      list_display_links = ['name']
      search_fields =  ('name',)
+     list_per_page = 25
      fieldsets = [('Info Categorie', {'fields': [ 'name' ]}),
                     ('Visuel', {'fields': ['image', 'status']})
                     ]
@@ -22,6 +23,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
      list_filter =('name', 'category', 'date_registry','status')
      search_fields =  ('name', 'category', 'date_registry','status')
      list_display_links = ['name']
+     list_per_page = 25
      fieldsets = [('Info sous Categorie', {'fields': [ 'name', 'category', 'status']}),  ]
 
      def images_view(self, obj):
@@ -32,6 +34,7 @@ class VariantesAdmin(admin.ModelAdmin):
      list_filter = ('name', 'date_registry','status')
      search_fields =  ('name', 'date_registry','status')
      list_display_links = ['name']
+     list_per_page = 25
      fieldsets = [('Info Variantes', {'fields': [ 'name', 'status']}),  ]
      
 class DescriptionPreciseAdmin(admin.ModelAdmin):
@@ -39,6 +42,7 @@ class DescriptionPreciseAdmin(admin.ModelAdmin):
      list_filter = ('name', 'date_registry','status')
      search_fields =  ('name', 'date_registry','status')
      list_display_links = ['name']
+     list_per_page = 25
      fieldsets = [('Info Variantes', {'fields': [ 'name', 'valeur' ,'status']}),  ]
 
 class EventAdmin(admin.ModelAdmin):
@@ -46,6 +50,7 @@ class EventAdmin(admin.ModelAdmin):
      list_filter =('title', 'date_limite', 'user','status')
      search_fields =  ('title', 'date_limite', 'user')
      list_display_links = ['title']
+     list_per_page = 25
      fieldsets = [('Info sous Categorie', {'fields': [ 'title', 'subtitle','contenu', 'date_limite']}),
                     ('Visuel', {'fields': ['images', 'status']})
                     ]
@@ -76,6 +81,7 @@ class ProductsAdmin(admin.ModelAdmin):
      list_filter = ('sub_category', 'name','price', 'prix_promo','event')
      search_fields =  ('sub_category','name', 'price', 'prix_promo','event')
      list_display_links = ['name']
+     list_per_page = 25
      fieldsets = [
           ('Info Produit', {'fields': [ 'name', 'sub_category', 'extras']}),
           ('Info Prix', {'fields': ['price', 'prix_promo', 'event']}),
@@ -99,12 +105,15 @@ class ProductsAdmin(admin.ModelAdmin):
 
 
 class CommentairesAdmin(admin.ModelAdmin):
-     list_display = ('user','contenu','slug','note', 'product', 'status','date_registry')
-     list_filter = ('user','note', 'product', 'date_registry')
-     list_display_links = ['user']
-     search_fields =  ('user', 'product')
+     list_display = ('client','contenu','note', 'product', 'status','date_registry')
+     list_filter = ('client','note', 'product', 'date_registry')
+     list_display_links = ['client']
+     list_per_page = 25
+     search_fields =  ('client', 'product')
      fieldsets = [('Info commentaire', {'fields': [ 'user', 'product','contenu',  'note','status' ]}),
                     ]
+     def client(self, obj):
+          return obj.user.username
  
 
 def _register(model, admin_class):
@@ -117,4 +126,5 @@ _register(Variantes, VariantesAdmin)
 _register(Event, EventAdmin) 
 _register(Products, ProductsAdmin) 
 _register(DescriptionPrecise, DescriptionPreciseAdmin) 
+_register(Commentaires, CommentairesAdmin) 
 

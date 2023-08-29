@@ -102,7 +102,7 @@ def envoie_de_mail_commande(sender, created, instance, **kwargs):
           
           subject = "COMMANDE HAMSTORE"
           recipient_list =['junioressoh98@gmail.com']
-          from_email ='contact@cabinetfirdaws.org'
+          from_email ='contact@athehams.com'
           send_mail(
                subject,
                'JUNNY TEST',

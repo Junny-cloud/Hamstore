@@ -217,7 +217,7 @@ def auto_delete_image(sender, instance, **kwargs):
 
 
 class Commentaires(models.Model):
-     contenu = models.TextField( null=True, blank=True, verbose_name="description evenement")
+     contenu = models.TextField( null=True, blank=True, verbose_name="texte commentaire")
      note = models.IntegerField( null=True, blank=True, verbose_name="Note produit")
      product = models.ForeignKey(Products , null=True, blank=False, on_delete=models.CASCADE, verbose_name="produit concerne")
 
