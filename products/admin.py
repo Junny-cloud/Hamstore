@@ -78,8 +78,8 @@ class ProductsAdmin(admin.ModelAdmin):
      display_first_image.allow_tags = True
 
      list_display = ('display_first_image','name','slug','sub_category','get_variantes',  'price', 'prix_promo','date_registry','status')
-     list_filter = ('sub_category', 'name','price', 'prix_promo','event')
-     search_fields =  ('sub_category','name', 'price', 'prix_promo','event')
+     list_filter = ('sub_category', 'event')
+     search_fields =  ('name',)
      list_display_links = ['name']
      list_per_page = 25
      fieldsets = [
