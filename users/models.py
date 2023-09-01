@@ -26,7 +26,7 @@ class CustomUser(AbstractUser):
         return f"{self.get_full_name()}"
     
 
-@receiver(post_save, sender=CustomUser)
+'''@receiver(post_save, sender=CustomUser)
 def update_status_verified(sender, created, instance, **kwargs):
      
      try:
@@ -37,5 +37,5 @@ def update_status_verified(sender, created, instance, **kwargs):
            
                
      except CustomUser.DoesNotExist:
-        pass         
+        pass   '''      
                

@@ -10,7 +10,7 @@ from .models import *
 from django.contrib.auth import authenticate, get_user_model
 from newsletters.models import *
 import graphql_jwt
-from datetime import datetime
+from datetime import datetime, timedelta
 from graphql_auth.decorators import login_required
 from graphql_jwt.utils import get_payload
 from config.settings import GRAPHQL_JWT
@@ -25,13 +25,16 @@ REGISTER_MUTATION_FIELDS = [
 ]
 
 def jwt_payload(user, context=None):
-
+     expiration = datetime.utcnow() + timedelta(minutes=60)
+     expiration = expiration.isoformat()
      username = user.get_username()
      payload = {
         user.USERNAME_FIELD: username,
         'user_id': user.id,
         'email': user.email,
         'phone': user.telephone, 
+        'exp': expiration,
+        
   
      }
      return payload

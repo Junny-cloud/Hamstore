@@ -1,4 +1,5 @@
 from mimesis import Generic
+from mimesis.locales import Locale
 from django.core.files import File # Importez File pour traiter les liens d'image
 import os
 from django.core.files.temp import NamedTemporaryFile
@@ -16,7 +17,7 @@ from users.models import *
 from banners.models import *
 
 def generer_categories(number_of_categories):
-    generic = Generic()
+    generic = Generic(locale=Locale.FR)
 
     for _ in range(number_of_categories):
         name = generic.text.word()
@@ -120,7 +121,7 @@ def generer_events(nombre_events):
 
 def generate_random_integer():
     generic = Generic()
-    random_integer = generic.random.randint(100, 500000)  # Change the range as needed
+    random_integer = generic.random.randint(5000, 200000)  # Change the range as needed
     return random_integer
 
 def generer_produits(nombre_produits, nombre_images_par_produit):
@@ -132,13 +133,16 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
     
     for _ in range(nombre_produits):
       
-        name = generic.text.word()
+        name_1 = generic.text.word()
+        name_2 = generic.text.word()
+        name = name_1 + " " + name_2
         subcategory_aleatoire = generic.random.choice(subcategory)
         extras = generic.text.words()
         
         event_aleatoire = generic.random.choice(event)
         #variantes_aleatoire_id =[generic.random.choice(variantes) for _ in range(1)] 
         price = generate_random_integer()
+        price_promo = price - 2000
         description = generic.text.text()
 
        
