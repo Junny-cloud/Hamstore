@@ -19,6 +19,7 @@ from products.schema import Query as productsQuery, Mutation as productsMutation
 from purchases.schema import Mutation as purchasesMutation, Query as purchasesQuery
 from django.core.exceptions import FieldDoesNotExist
 from graphene import relay
+from .stats import *
 
 class ProductFilterInput(graphene.InputObjectType):
     # Ajoutez les champs que vous souhaitez filtrer
@@ -67,6 +68,8 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery,
     products_by_category_slug = graphene.Field(ProductListType, filter=ProductFilterCategoryInput())
     products_by_subcategory_slug= graphene.Field(ProductListType, filter=ProductFilterInput())
     product = graphene.Field(ProductType, slug=graphene.String(required=True))
+    
+    stats = graphene.Field(StatsType)
 
     def resolve_categories(self, info):
         return Category.objects.all()
@@ -255,6 +258,9 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery,
         if not user:
             raise Exception('Veillez vous connecter')
         return user
+    
+    def resolve_stats(self, info):
+        return stats_json
 
     
     
