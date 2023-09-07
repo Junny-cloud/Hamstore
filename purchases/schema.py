@@ -236,12 +236,34 @@ class DeleteFavoris(graphene.Mutation):
 
         return DeleteFavoris(success=True)  
 
+class DeleteAllFavoris(graphene.Mutation):
+    class Arguments:
+        pass
+       
+
+    success = graphene.Boolean()
+
+    @staticmethod
+    def mutate(root, info):
+        request = info.context.META
+        user_id = renvoyer_user(request)
+        try:
+            favoris_product = FavoriteProducts.objects.filter(user__id=user_id)
+        except FavoriteProducts.DoesNotExist:
+            raise Exception("produit favoris n'existe pas")
+
+        favoris_product.delete()
+
+        return DeleteAllFavoris(success=True)  
+
+
 class Mutation(graphene.ObjectType):
     create_commande = CreateCommande.Field()
     delete_commande = DeleteCommande.Field()
 
     add_favoris = AddFavoris.Field()
     delete_favoris = DeleteFavoris.Field()
+    delete_all_favoris = DeleteAllFavoris.Field()
     
     
 #schema = graphene.Schema(query=Query, mutation=Mutation)
