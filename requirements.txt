@@ -6,3 +6,5 @@ django-graphql-jwt
 django-jazzmin
 python-decouple
 Pillow
+mimesis
+Faker

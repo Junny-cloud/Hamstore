@@ -184,15 +184,25 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = '/static/'
+'''STATIC_URL = '/static/'
 STATIC_ROOT = '/home/c2154647c/public_html/hamstore/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = '/home/c2154647c/public_html/hamstore/media/'
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (os.path.join('static'),)
+STATICFILES_DIRS = (os.path.join('static'),)'''
 
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'config/../config/static/'),
+)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -236,9 +246,9 @@ GRAPHQL_JWT = {
     'JWT_ALLOW_ARGUMENT': True,
     
     "JWT_VERIFY_EXPIRATION": True,
-    "JWT_EXPIRATION_DELTA": timedelta(minutes=60),
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=1),
     # optional
-    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": False,
     'JWT_PAYLOAD_HANDLER': 'users.schema.jwt_payload',
     "JWT_ALLOW_ANY_CLASSES": [
         "graphql_auth.mutations.Register",
@@ -287,15 +297,15 @@ EMAIL_SUBJECT_PREFIX = 'Athehams : '
 AUTH_USER_MODEL = 'users.CustomUser'
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Hamstore",
-    "site_header": "Admin Hamstore",
-    "site_brand": "Hamstore",
-    "site_icon": "/admin/img/logo.png",    
+    "site_title": "Athehams",
+    "site_header": "Boutique Athehams",
+    "site_brand": "Athehams",
+    "site_icon": "assets/img/logo.png",    
     # Add your own branding here
-    "site_logo": "/admin/img/logo.png",
-    "welcome_sign": "Bienvenue sur Hamstore",
+    "site_logo": "assets/img/oh.png",
+    "welcome_sign": "Bienvenue sur Athehams",
     # Copyright on the footer
-    "copyright": "AKAT",
+    "copyright": "IT System",
     "user_avatar": None,
     ############
     # Top Menu #
@@ -341,8 +351,10 @@ JAZZMIN_SETTINGS = {
     #############
     # Relative paths to custom CSS/JS scripts (must be present in static files)
     # Uncomment this line once you create the bootstrap-dark.css file
-    "custom_css": "/config/static/assets/css/customiz_admin.css",
-    "custom_js": None,
+    "custom_css": "assets/css/customiz_admin.css",
+    # Background image for the login page
+    "login_bg": "assets/img/bg.jpg",
+    "custom_js": "assets/js/customiz_admin.js",
     # Whether to show the UI customizer on the sidebar
     "show_ui_builder": True,
     ###############
@@ -358,29 +370,29 @@ JAZZMIN_SETTINGS = {
 
 JAZZMIN_UI_TWEAKS = {
     "navbar_small_text": False,
-    "footer_small_text": True,
-    "body_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": True,
     "brand_small_text": False,
     "brand_colour": "navbar-navy",
-    "accent": "accent-lightblue",
+    "accent": "accent-navy",
     "navbar": "navbar-navy navbar-dark",
     "no_navbar_border": False,
     "navbar_fixed": True,
     "layout_boxed": False,
     "footer_fixed": True,
-    "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-navy",
-    "sidebar_nav_small_text": True,
-    "sidebar_disable_expand": False,
-    "sidebar_nav_child_indent": False,
-    "sidebar_nav_compact_style": False,
+    "sidebar_fixed": False,
+    "sidebar": "sidebar-light-navy",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": True,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": True,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": True,
-    "theme": "cyborg",
+    "theme": "cerulean",
     "dark_mode_theme": None,
     "button_classes": {
-        "primary": "btn-primary",
-        "secondary": "btn-secondary",
+        "primary": "btn-outline-primary",
+        "secondary": "btn-outline-secondary",
         "info": "btn-info",
         "warning": "btn-warning",
         "danger": "btn-danger",
