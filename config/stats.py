@@ -49,17 +49,27 @@ month_commandes_count =Commandes.objects.filter(Q(date_registry__year=year, date
 month_commandes_total =Commandes.objects.filter(Q(date_registry__year=year, date_registry__month=month)).aggregate(somme_prix=Coalesce(Sum('total_amount'), 0))['somme_prix']
 
 year_commandes_valide_count = Commandes.objects.filter(Q(date_registry__year=year, status=True)).count() 
+today_commandes_valide_count = Commandes.objects.filter(Q(date_registry=date.today(), status=True)).count() 
 year_commandes_count = Commandes.objects.filter(Q(date_registry__year=year, status=True)).count() 
 year_commandes_total = Commandes.objects.filter(Q(date_registry__year=year, status=True)).aggregate(somme_prix=Coalesce(Sum('total_amount'), 0))['somme_prix']
 
 montant_vente_per_month = vente_data()
 
-produits_count_commandes = [obj for obj in ProduitsCommandes.objects.values('product__name', 'product__price','product__image').annotate(Sum('product__name')).order_by('product__name') if obj['product__name__sum'] >0]
-
+produits_count_commandes_data = []
+tx =[obj for obj in ProduitsCommandes.objects.values('product__name', 'product__price','product__id').annotate(nombre =Sum('quantity')).order_by('product__id')]
+for obj in tx:
+    img = Image.objects.filter(product__id=obj['product__id']).first()
+    img_url = img.image.name
+    obj['image']= img_url
+    produits_count_commandes_data.append(obj)
+    
 product_count = Products.objects.all().count()
+new_product_count = Products.objects.filter(date_registry__year=year, date_registry__month=month).count()
 client_count = CustomUser.objects.filter(is_staff=False).count() 
 commentaires_count = Commentaires.objects.all().count()
+today_commentaires_count = Commentaires.objects.filter(date_registry=date.today()).count()
 admin_count = CustomUser.objects.filter(is_staff=True).count() 
+new_admin_count = CustomUser.objects.filter(Q(date_joined__year=year, date_joined__month=month, is_superuser=True)).count() 
 
 # Votre JSON en tant que variable
 stats_json = {
@@ -70,24 +80,29 @@ stats_json = {
     "month_commandes_total": month_commandes_total,
     
      "year_commandes_valide_count":year_commandes_valide_count,
+     'today_commandes_valide_count':today_commandes_valide_count,
     "year_commandes_count": year_commandes_count,
      "year_commandes_total": year_commandes_total,
     
     "montant_vente_per_month": montant_vente_per_month,
-    "produits_count_commandes": produits_count_commandes,
+    "produits_count_commandes": produits_count_commandes_data,
     
     "product_count":product_count,
+    'new_product_count':new_product_count,
     "client_count": client_count,
     
     "commentaires_count": commentaires_count,
+    'today_commentaires_count':today_commentaires_count,
     "admin_count": admin_count,
+    'new_admin_count':new_admin_count,
 }
 
 class ProduitsCountCommandesType(graphene.ObjectType):
     product__name =graphene.String()
     product__price =graphene.Int()
-    product__image = graphene.String()
-    product__name__sum = graphene.Int()
+    product__id = graphene.String()
+    nombre = graphene.Int()
+    image = graphene.String()
 # Définissez un type GraphQL pour votre JSON
 class StatsType(graphene.ObjectType):
     
@@ -96,12 +111,16 @@ class StatsType(graphene.ObjectType):
     month_commandes_count =graphene.Int()
     month_commandes_total =graphene.Int()
     year_commandes_valide_count =graphene.Int()
+    today_commandes_valide_count=graphene.Int()
     year_commandes_count =graphene.Int()
     year_commandes_total  =graphene.Int()
     montant_vente_per_month =graphene.List(graphene.Int) 
     produits_count_commandes  =graphene.List(ProduitsCountCommandesType) 
     product_count =graphene.Int()
+    new_product_count=graphene.Int()
     client_count =graphene.Int()
     commentaires_count =graphene.Int()
+    today_commentaires_count=graphene.Int()
     admin_count =graphene.Int()
+    new_admin_count=graphene.Int()
     

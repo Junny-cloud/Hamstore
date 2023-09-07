@@ -184,15 +184,25 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = '/static/'
+'''STATIC_URL = '/static/'
 STATIC_ROOT = '/home/c2154647c/public_html/hamstore/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = '/home/c2154647c/public_html/hamstore/media/'
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (os.path.join('static'),)
+STATICFILES_DIRS = (os.path.join('static'),)'''
 
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'config/../config/static/'),
+)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -287,15 +297,15 @@ EMAIL_SUBJECT_PREFIX = 'Athehams : '
 AUTH_USER_MODEL = 'users.CustomUser'
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Hamstore",
-    "site_header": "Admin Hamstore",
-    "site_brand": "Hamstore",
-    "site_icon": "/admin/img/logo.png",    
+    "site_title": "Athehams",
+    "site_header": "Boutique Athehams",
+    "site_brand": "Athehams",
+    "site_icon": "assets/img/logo.png",    
     # Add your own branding here
-    "site_logo": "/admin/img/logo.png",
-    "welcome_sign": "Bienvenue sur Hamstore",
+    "site_logo": "assets/img/oh.png",
+    "welcome_sign": "Bienvenue sur Athehams",
     # Copyright on the footer
-    "copyright": "AKAT",
+    "copyright": "IT System",
     "user_avatar": None,
     ############
     # Top Menu #
@@ -341,8 +351,10 @@ JAZZMIN_SETTINGS = {
     #############
     # Relative paths to custom CSS/JS scripts (must be present in static files)
     # Uncomment this line once you create the bootstrap-dark.css file
-    "custom_css": "/config/static/assets/css/customiz_admin.css",
-    "custom_js": None,
+    "custom_css": "assets/css/customiz_admin.css",
+    # Background image for the login page
+    "login_bg": "assets/img/bg.jpg",
+    "custom_js": "assets/js/customiz_admin.js",
     # Whether to show the UI customizer on the sidebar
     "show_ui_builder": True,
     ###############
