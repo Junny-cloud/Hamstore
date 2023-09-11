@@ -1,6 +1,6 @@
-body {
-   /* background-color: #0497dbd0;  Set a background color if the image doesn't cover the entire page */
-   background-image: url("https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+.jazzmin-login-page {
+    /* background-color: #0497dbd0;  Set a background color if the image doesn't cover the entire page */
+    background-image: url("https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -35,14 +35,16 @@ brand-link navbar-success:hover {
     color: #ffffff !important;
 }
 
-.login-box .card{
+.login-box .card {
     background-color: #ffffff85 !important;
     padding: 50px 50px !important;
 }
-.login-box  .input-group{
+
+.login-box .input-group {
     margin-bottom: 30px !important;
 }
-.login-box  input{
+
+.login-box input {
     height: 40px;
     font-size: 18px;
     background-color: #ffffff85;
@@ -51,29 +53,28 @@ brand-link navbar-success:hover {
     margin-bottom: 20px;
 }
 
-.input-group-text{
+.input-group-text {
     background-color: rgb(0, 190, 248) !important;
     color: white !important;
 }
-.login-box  input::placeholder {
-color: rgb(73, 73, 73) !important;
+
+.login-box input::placeholder {
+    color: rgb(73, 73, 73) !important;
 }
 
-.login-box-msg{
+.login-box-msg {
     font-size: 25px;
     font-family: roboto condescend, sans-serif;
     font-weight: 600;
     color: #00aeff !important;
     text-shadow: 2px 2px black;
-
 }
 
-.login-box button{
+.login-box button {
     color: white !important;
     background-color: rgb(0, 190, 248) !important;
     font-size: 18px;
     font-family: roboto condescend, sans-serif;
     font-weight: 600;
     padding: 10px 0px !important;
-
 }

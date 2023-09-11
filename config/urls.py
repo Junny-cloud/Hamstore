@@ -20,10 +20,12 @@ from django.conf.urls.static import static
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 from graphene_django.views import GraphQLView
+from .views import CustomLogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path('logout/', CustomLogoutView.as_view(), name='custom_logout'),
 ]
 
 if settings.DEBUG :

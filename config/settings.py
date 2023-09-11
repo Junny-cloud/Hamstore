@@ -286,11 +286,11 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_TIMEOUT = 20
 EMAIL_USE_TLS = True
 #EMAIL_USE_SSL = True
-EMAIL_HOST = 'mail.cabinetfirdaws.org'
-EMAIL_HOST_USER = 'contact@cabinetfirdaws.org'
-EMAIL_HOST_PASSWORD = 'Abdelakim8810@'
+EMAIL_HOST = 'mail.athehams.com'
+EMAIL_HOST_USER = 'contact@athehams.com'
+EMAIL_HOST_PASSWORD = 'Hamed@2023'
 EMAIL_PORT =  587
-EMAIL_SUBJECT_PREFIX = 'Athehams : '
+EMAIL_SUBJECT_PREFIX = 'Athehams Boutique : '
 
 
 
@@ -369,34 +369,34 @@ JAZZMIN_SETTINGS = {
 }
 
 JAZZMIN_UI_TWEAKS = {
-    "navbar_small_text": False,
-    "footer_small_text": False,
-    "body_small_text": True,
+    "navbar_small_text": True,
+    "footer_small_text": True,
+    "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": "navbar-navy",
-    "accent": "accent-navy",
-    "navbar": "navbar-navy navbar-dark",
-    "no_navbar_border": False,
-    "navbar_fixed": True,
+    "brand_colour": "navbar-info",
+    "accent": "accent-info",
+    "navbar": "navbar-info navbar-dark",
+    "no_navbar_border": True,
+    "navbar_fixed": False,
     "layout_boxed": False,
     "footer_fixed": True,
-    "sidebar_fixed": False,
-    "sidebar": "sidebar-light-navy",
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-light-info",
     "sidebar_nav_small_text": False,
-    "sidebar_disable_expand": True,
-    "sidebar_nav_child_indent": True,
-    "sidebar_nav_compact_style": True,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": True,
-    "theme": "cerulean",
+    "theme": "pulse",
     "dark_mode_theme": None,
     "button_classes": {
         "primary": "btn-outline-primary",
         "secondary": "btn-outline-secondary",
-        "info": "btn-info",
-        "warning": "btn-warning",
-        "danger": "btn-danger",
-        "success": "btn-success"
+        "info": "btn-outline-info",
+        "warning": "btn-outline-warning",
+        "danger": "btn-outline-danger",
+        "success": "btn-outline-success"
     },
     "actions_sticky_top": True
 }

@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from products.models import *
 from django.contrib.auth import get_user_model
-
+from users.models import *
 # Email
 from django.core.mail import  EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
@@ -96,16 +96,16 @@ def envoie_de_mail_commande(sender, created, instance, **kwargs):
           'nom_entreprise': 'Athehams',
           'obj': instance,
           'link': 'http://127.0.0.1:8000/admin/',
-          #'link': 'http://ons.systech-ci.net/app/locations/',
+          #'link': 'http://athehams.com',
           })
           text_content = strip_tags(html_content)
           
-          subject = "COMMANDE HAMSTORE"
-          recipient_list =['junioressoh98@gmail.com']
+          subject = "NOUVELLE COMMANDE"
+          recipient_list =[obj['email'] for obj in CustomUser.objects.values('email').filter(is_superuser=True)]
           from_email ='contact@athehams.com'
           send_mail(
                subject,
-               'JUNNY TEST',
+               'Commandes Boutique',
                from_email,
                recipient_list,
                fail_silently=False,

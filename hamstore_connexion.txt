@@ -3,3 +3,6 @@ BD access :
 bd_name : c2154647c_hamstore
 user_name : c2154647c_hamstore_admin	
 password : .[,s6baxHBe5
+
+email: contact@athehams.com
+password : Hamed@2023
