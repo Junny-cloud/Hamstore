@@ -128,10 +128,14 @@ CORS_ALLOW_HEADERS = [
     'http://127.0.0.1:8000/',
 ] '''# If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -143,6 +147,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -368,8 +373,8 @@ JAZZMIN_SETTINGS = {
     },
 }
 
-JAZZMIN_UI_TWEAKS = {
-    "navbar_small_text": True,
+JAZZMIN_UI_TWEAKS = 
+    "navbar_small_text": Fals
     "footer_small_text": True,
     "body_small_text": False,
     "brand_small_text": False,
@@ -383,8 +388,8 @@ JAZZMIN_UI_TWEAKS = {
     "sidebar_fixed": True,
     "sidebar": "sidebar-light-info",
     "sidebar_nav_small_text": False,
-    "sidebar_disable_expand": False,
-    "sidebar_nav_child_indent": False,
+    "sidebar_disable_expand": True,
+    "sidebar_nav_child_indent": True,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": True,

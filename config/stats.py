@@ -80,7 +80,8 @@ stats_json = {
     "month_commandes_total": month_commandes_total,
     
      "year_commandes_valide_count":year_commandes_valide_count,
-     'today_commandes_valide_count':today_commandes_valide_count,
+     "today_commandes_valide_count":today_commandes_valide_count,
+     "today_commandes_valide":today_commandes_valide_count,
     "year_commandes_count": year_commandes_count,
      "year_commandes_total": year_commandes_total,
     
@@ -88,13 +89,13 @@ stats_json = {
     "produits_count_commandes": produits_count_commandes_data,
     
     "product_count":product_count,
-    'new_product_count':new_product_count,
+    "new_product_count":new_product_count,
     "client_count": client_count,
     
     "commentaires_count": commentaires_count,
-    'today_commentaires_count':today_commentaires_count,
+    "today_commentaires_count":today_commentaires_count,
     "admin_count": admin_count,
-    'new_admin_count':new_admin_count,
+    "new_admin_count":new_admin_count,
 }
 
 class ProduitsCountCommandesType(graphene.ObjectType):
@@ -112,6 +113,7 @@ class StatsType(graphene.ObjectType):
     month_commandes_total =graphene.Int()
     year_commandes_valide_count =graphene.Int()
     today_commandes_valide_count=graphene.Int()
+    today_commandes_valide=graphene.Int()
     year_commandes_count =graphene.Int()
     year_commandes_total  =graphene.Int()
     montant_vente_per_month =graphene.List(graphene.Int) 

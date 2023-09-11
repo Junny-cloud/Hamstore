@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True))),
     path('logout/', CustomLogoutView.as_view(), name='custom_logout'),
+
 ]
 
 if settings.DEBUG :
