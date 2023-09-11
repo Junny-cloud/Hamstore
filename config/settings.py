@@ -128,10 +128,14 @@ CORS_ALLOW_HEADERS = [
     'http://127.0.0.1:8000/',
 ] '''# If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -143,6 +147,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -370,22 +375,22 @@ JAZZMIN_SETTINGS = {
 
 JAZZMIN_UI_TWEAKS = {
     "navbar_small_text": False,
-    "footer_small_text": False,
-    "body_small_text": True,
+    "footer_small_text": True,
+    "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": "navbar-navy",
-    "accent": "accent-navy",
-    "navbar": "navbar-navy navbar-dark",
-    "no_navbar_border": False,
-    "navbar_fixed": True,
+    "brand_colour": "navbar-info",
+    "accent": "accent-info",
+    "navbar": "navbar-info navbar-dark",
+    "no_navbar_border": True,
+    "navbar_fixed": False,
     "layout_boxed": False,
     "footer_fixed": True,
-    "sidebar_fixed": False,
-    "sidebar": "sidebar-light-navy",
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-light-info",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": True,
     "sidebar_nav_child_indent": True,
-    "sidebar_nav_compact_style": True,
+    "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": True,
     "theme": "cerulean",
@@ -393,10 +398,10 @@ JAZZMIN_UI_TWEAKS = {
     "button_classes": {
         "primary": "btn-outline-primary",
         "secondary": "btn-outline-secondary",
-        "info": "btn-info",
-        "warning": "btn-warning",
-        "danger": "btn-danger",
-        "success": "btn-success"
+        "info": "btn-outline-info",
+        "warning": "btn-outline-warning",
+        "danger": "btn-outline-danger",
+        "success": "btn-outline-success"
     },
     "actions_sticky_top": True
 }
