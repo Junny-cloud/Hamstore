@@ -157,7 +157,8 @@ def generer_produits(nombre_produits, nombre_images_par_produit):
         # Générer des variantes fictives et les associer au produit
         for _ in range(3):  # Générer 3 variantes par produit
             name = generic.food.dish()
-            variante = Variantes.objects.create(name=name)
+            quantite_en_stock = generic.random.randint(2, 100)
+            variante = Variantes.objects.create(name=name, quantite_en_stock=quantite_en_stock)
             product.variantes.add(variante)
             
         for _ in range(2):

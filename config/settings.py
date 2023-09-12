@@ -373,8 +373,8 @@ JAZZMIN_SETTINGS = {
     },
 }
 
-JAZZMIN_UI_TWEAKS = 
-    "navbar_small_text": Fals
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
     "footer_small_text": True,
     "body_small_text": False,
     "brand_small_text": False,

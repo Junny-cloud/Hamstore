@@ -1,9 +1,10 @@
 from django.contrib import admin
 from .models import *
+from purchases.models import *
 from django.urls import reverse
 from django.utils.html import format_html
 
-class BannersAdmin(admin.ModelAdmin):
+class DashboardAdmin(admin.ModelAdmin):
     change_list_template = "admin/banners/list_banners.html"
 
     def ma_page_link(self):
@@ -12,4 +13,8 @@ class BannersAdmin(admin.ModelAdmin):
 
     ma_page_link.short_description = "Lien vers ma page personnalisée"
 
-admin.site.register(Banners, BannersAdmin)
+
+    
+    
+admin.site.register(Banners, DashboardAdmin)
+

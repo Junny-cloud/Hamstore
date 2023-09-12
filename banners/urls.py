@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import *
+from . import views
 
 urlpatterns = [
-    path('', BannerView.as_view(), name='list_banners'),
+    path('banners/', views.banners, name='list_banners'),
 ]

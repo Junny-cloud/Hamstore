@@ -35,10 +35,27 @@ day = today.day
 
 def vente_data():
     data_month = []
+    data_month_all = [
+            ['Janvier', 10],
+            ['Fevrier', 10],
+            ['Mars', 10],
+            ['Avril', 10],
+            ['Mai', 10],
+            ['Juin', 10],
+            ['Juillet', 10],
+            ['Août', 10],
+            ['Septembre', 10],
+            ['Octobre', 10],
+            ['Novembre', 10],
+            ['Decembre', 10],
+           
+        ]
     for m in range(1, 13):
+        x_month = m-1
         total = Commandes.objects.filter(Q(date_registry__year=year, date_registry__month=m)).aggregate(somme_prix=Coalesce(Sum('total_amount'), 0))['somme_prix']
+        data_month_all[x_month][1]=total
         data_month.append(int(total))
-    return data_month
+    return data_month_all
     
 
 

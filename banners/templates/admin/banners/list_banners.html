@@ -21,7 +21,21 @@
   href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
   rel="stylesheet"
 />
+ <!-- highcharts -->     
+<!-- JQUERY -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<!-- AXIOS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"
+    integrity="sha512-u9akINsQsAkG9xjc1cnGF4zw5TFDwkxuc9vUp5dltDWYCSmyd0meygbvgXrlc/z7/o4a19Fb5V0OUE58J7dcyw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 
+<!-- AJAX -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <style>
     .highcharts-figure,
 .highcharts-data-table table {
@@ -75,7 +89,7 @@
 
 {% block content %}
 <!-- EXEMPLE DE CONTENUE -->
-<main class="col-md-12">
+<div class="col-md-12" id="app">
     <div class="container-fluid">
 
      
@@ -93,7 +107,7 @@
                         <div class="col-md-8 p-0 text-right">
                             <h2 class="h3 text-primary">0 F</h2>
                             
-                            <p class="h4 card-subtitle mb-2 text-muted">Montant à reverser</p>
+                            <p class="h4 card-subtitle mb-2 text-muted info-1" id="dt-month"></p>
                         </div>
                     </div>
                 </div>
@@ -167,7 +181,7 @@
                     <div class="card-body">
                         <ul class="list-group">
                            
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
                                 <div class="ms-2 me-auto">
                                     <div class="row">
                                         <div class="mx-3">
@@ -181,7 +195,7 @@
                                  <span class="badge  bg-gradient-red py-1 px-2 bg-opacity-75  rounded-pill" style="font-size: 14px;">50</span>
                             </li>
 
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
                                 <div class="ms-2 me-auto">
                                     <div class="row">
                                         <div class="mx-3">
@@ -195,7 +209,7 @@
                                  <span class="badge  bg-gradient-pink py-1 px-2 bg-opacity-75  rounded-pill" style="font-size: 14px;">50</span>
                             </li>
 
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
                                 <div class="ms-2 me-auto">
                                     <div class="row">
                                         <div class="mx-3">
@@ -209,7 +223,7 @@
                                  <span class="badge  bg-gradient-blue py-1 px-2 bg-opacity-75  rounded-pill" style="font-size: 14px;">50</span>
                             </li>
 
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
                                 <div class="ms-2 me-auto">
                                     <div class="row">
                                         <div class="mx-3">
@@ -223,7 +237,7 @@
                                  <span class="badge  bg-gradient-orange py-1 px-2 bg-opacity-75  rounded-pill" style="font-size: 14px;">50</span>
                             </li>
 
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
                                 <div class="ms-2 me-auto">
                                     <div class="row">
                                         <div class="mx-3">
@@ -237,7 +251,7 @@
                                  <span class="badge  bg-gradient-green py-1 px-2 bg-opacity-75  rounded-pill" style="font-size: 14px;">50</span>
                             </li>
 
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
                                 <div class="ms-2 me-auto">
                                     <div class="row">
                                         <div class="mx-3">
@@ -461,21 +475,36 @@
         </div>
 
     </div>
-</main>
+</div>
 <!-- EXEMPLE DE CONTENUE -->
 
- <!-- highcharts -->     
- <script
-  src="https://code.jquery.com/jquery-3.7.1.min.js"
-  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-  crossorigin="anonymous"></script> 
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+    var stats_data ;
+    axios.defaults.xsrfCookieName = "csrftoken";
+    axios.defaults.xsrfHeaderName = "X-CSRFtoken";
+     
+    axios.post("/stats/")
+        .then(response => {
+            // Traitez les données GraphQL ici
+            stats_data = response.data;
+            console.log(stats_data);
 
-<script type="text/javascript">
-    var table = $("#data").dataTable({
+        })
+        .catch((err) => {
+            console.log(err) 
+        });
+    
+     console.log(stats_data);
+    // Mettre à jour le contenu de l'élément avec la variable
+    var monParagraphe = document.getElementById("dt-month");
+    monParagraphe.textContent = 500;
+</script>
+
+<script>
+
+
+    $('#data').DataTable({
         deferRender: true,
         paging: true,
         pageLength: 10,
@@ -533,21 +562,7 @@
         ],
         colorByPoint: true,
         groupPadding: 0,
-        data: [
-            ['Janvier', 37.33],
-            ['Fevrier', 31.18],
-            ['Mars', 27.79],
-            ['Avril', 22.23],
-            ['Mai', 21.91],
-            ['Juin', 21.74],
-            ['Juillet', 21.32],
-            ['Août', 20.89],
-            ['Septembre', 20.67],
-            ['Octobre', 19.11],
-            ['Novembre', 16.45],
-            ['Decembre', 16.38],
-           
-        ],
+        data:stats.montant_vente_per_month,
         dataLabels: {
             enabled: true,
             rotation: -90,
@@ -563,6 +578,8 @@
     }]
 });
 
+    });
+    
 </script>
 
 
