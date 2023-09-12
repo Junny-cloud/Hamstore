@@ -14,6 +14,8 @@ from django.core.exceptions import FieldDoesNotExist
 from django.dispatch import receiver
 import os
 import requests
+import random
+import string
 
 User = settings.AUTH_USER_MODEL
 
@@ -90,6 +92,8 @@ class SubCategory(models.Model):
      
 class Variantes(models.Model):
      name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom sous-categorie")
+     reference = models.CharField(max_length=8, unique=True)
+     quantite_en_stock = models.IntegerField(default=0, null=True, blank=True, verbose_name="quantité en stock")
 
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
@@ -99,9 +103,23 @@ class Variantes(models.Model):
           verbose_name = "Variante"
           verbose_name_plural = "Variantes"
           ordering = ['-id']
+     
+     def save(self, *args, **kwargs):
+        if not self.reference:
+            # Générer un code unique de 8 caractères avec 2 lettres majuscules au milieu et le reste des chiffres
+            middle_chars = random.choices(string.ascii_uppercase, k=2)
+            random_chars = random.choices(string.digits, k=6)
+            unique_code = ''.join(random_chars[:3] + middle_chars + random_chars[3:])
+            # Assurez-vous que le code généré est vraiment unique
+            while Variantes.objects.filter(reference=unique_code).exists():
+                middle_chars = random.choices(string.ascii_uppercase, k=2)
+                random_chars = random.choices(string.digits, k=6)
+                unique_code = ''.join(random_chars[:3] + middle_chars + random_chars[3:])
+            self.reference = unique_code
+        super().save(*args, **kwargs)
 
      def __str__(self):
-          return f"{self.name}"
+          return f"{self.reference}"
      
 
 class Event(models.Model):

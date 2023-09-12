@@ -17,12 +17,13 @@ from users.models import *
 from django.core.mail import  EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-
+import random
+import string
 User = get_user_model()
 
     
 class Commandes(models.Model):
-     reference = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, verbose_name="reference commande")
+     reference = models.CharField(max_length=12, unique=True, verbose_name="reference commande")
      products = models.ManyToManyField(Products, through='ProduitsCommandes')
      user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
      total_amount = models.PositiveIntegerField(default=0, verbose_name="prix commande")
@@ -36,6 +37,16 @@ class Commandes(models.Model):
           verbose_name = "Commande"
           verbose_name_plural = "Commandes"
           ordering = ['-id']
+          
+     def save(self, *args, **kwargs):
+          if not self.reference:
+               # Générer un code unique aléatoire de 8 caractères
+               unique_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
+               # Assurez-vous que le code généré est vraiment unique
+               while Commandes.objects.filter(reference=unique_code).exists():
+                    unique_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
+               self.reference = unique_code
+          super().save(*args, **kwargs)
         
      def __str__(self):
           return f"Commande #{self.reference} - {self.user.last_name}"

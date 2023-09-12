@@ -30,9 +30,9 @@ class SubCategoryAdmin(admin.ModelAdmin):
           return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url=obj.category.image.url)) 
 
 class VariantesAdmin(admin.ModelAdmin):
-     list_display = ('name', 'date_registry','status')
+     list_display = ('reference','name', 'date_registry','status')
      list_filter = ('name', 'date_registry','status')
-     search_fields =  ('name', 'date_registry','status')
+     search_fields =  ('name', 'reference','status')
      list_display_links = ['name']
      list_per_page = 25
      fieldsets = [('Info Variantes', {'fields': [ 'name', 'status']}),  ]
