@@ -36,6 +36,9 @@
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/fr.js"></script> <!-- Inclure le support du français -->
 <style>
     .highcharts-figure,
 .highcharts-data-table table {
@@ -105,9 +108,14 @@
                         <i class="fas fa-recycle text-white fa-2x"></i>
                         </div>
                         <div class="col-md-8 p-0 text-right">
-                            <h2 class="h3 text-primary">0 F</h2>
+                            <h2 class="h3 text-primary" id="today-commandes"></h2>
                             
-                            <p class="h4 card-subtitle mb-2 text-muted info-1" id="dt-month"></p>
+                            <p class="h4 card-subtitle mb-2 text-muted info-1" >Commandes aujourd'hui</p>
+                            <small class="h6 card-subtitle mb-2 text-muted"> 
+                                Montant : 
+                                <span class="text-primary h6" id="sub-today-commandes"></span> 
+                                
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -121,9 +129,13 @@
                         <i class="fas fa-recycle text-white fa-2x"></i>
                         </div>
                         <div class="col-md-8 p-0 text-right">
-                            <h2 class="h3 text-danger">0 F</h2>
+                            <h2 class="h3 text-danger" id="commandes-valides">0 F</h2>
                             
-                            <p class="h4 card-subtitle mb-2 text-muted">Montant à reverser</p>
+                            <p class="h4 card-subtitle font-weight-bold  text-muted">Commandes validées</p>
+                            <small class="h6 card-subtitle mb-2 text-muted"> 
+                                <span class="text-danger" id="sub-commandes-valides">5</span> 
+                                commande validés pour Aujourd'hui
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -137,9 +149,13 @@
                         <i class="fas fa-recycle text-white fa-2x"></i>
                         </div>
                         <div class="col-md-8 p-0 text-right">
-                           <h2 class="h3 text-warning">0 F</h2>
+                           <h2 class="h3 text-warning" id="total-commandes">0 F</h2>
                             
-                            <p class="h4 card-subtitle mb-2 text-muted">Montant à reverser</p>
+                            <p class="h4 card-subtitle mb-2 text-muted">Total commandes</p>
+                            <small class="h6 card-subtitle mb-2 text-muted"> 
+                                <span class="text-warning" id="sub-commandes-valides">0</span> 
+                                 commande pour ce mois
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -153,9 +169,14 @@
                         <i class="fas fa-recycle text-white fa-2x"></i>
                         </div>
                         <div class="col-md-8 p-0 text-right">
-                            <h2 class="h3 text-info">0 F</h2>
+                            <h2 class="h3 text-info" id="montant-commandes">0 F</h2>
                             
-                            <p class="h4 card-subtitle mb-2 text-muted">Montant à reverser</p>
+                            <p class="h4 card-subtitle mb-2 text-muted">Montant commandes</p>
+                            <small class="h6 card-subtitle mb-2 text-muted"> 
+                                Montant du mois :
+                                <span class="text-danger" id="sub-commandes-valides">0</span> 
+                                
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -167,105 +188,25 @@
         <!-- CHART -->
         <div class="row">
             <div class="col-sm-8">
-                <div class="card">
-                    <div class="card-body">
-                        <div id="chart-annuelle" style="width: 100%; height: 350px;"></div>
+                <div class="card p-4">
+                    <div class="card-header bg-white">
+                        <h2 class="font-weight-bold">Etat des Ventes</h2>
                     </div>
+                    <div class="card-body">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                    
                 </div>
             </div>
            <div class="col-sm-4">
-                <div class="card rounded-0" style="border-bottom: 2px solid rgb(255, 145, 19);">
-                    <div class="card-header text-primary">
-                        <h5>Produits plus commandés</h5>
+                <div class="card p-4 rounded-0" style="border-bottom: 2px solid rgb(255, 145, 19);">
+                     <div class="card-header bg-white">
+                        <h2 class="font-weight-bold">Produits Populaires</h2>
                     </div>
                     <div class="card-body">
-                        <ul class="list-group">
-                           
-                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
-                                <div class="ms-2 me-auto">
-                                    <div class="row">
-                                        <div class="mx-3">
-                                            <img class="img-circle rounded-circle" src="https://resizing.flixster.com/pUAP_QkZ-wYjEAgZMc96DLaKcP8=/218x280/v2/https://flxt.tmsimg.com/assets/276691_v9_bd.jpg" alt="" height="30" width="30">
-                                        
-                                        </div>
-                                        <div class="fw-bold h5 text-gray">Kite Nivea homme</div>
-                                    </div>
-                                    
-                                </div>
-                                 <span class="badge  bg-gradient-red py-1 px-2 bg-opacity-75  rounded-pill" style="font-size: 14px;">50</span>
-                            </li>
-
-                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
-                                <div class="ms-2 me-auto">
-                                    <div class="row">
-                                        <div class="mx-3">
-                                            <img class="img-circle rounded-circle" src="https://resizing.flixster.com/pUAP_QkZ-wYjEAgZMc96DLaKcP8=/218x280/v2/https://flxt.tmsimg.com/assets/276691_v9_bd.jpg" alt="" height="30" width="30">
-                                        
-                                        </div>
-                                        <div class="fw-bold h5 text-gray">Kite Nivea homme</div>
-                                    </div>
-                                    
-                                </div>
-                                 <span class="badge  bg-gradient-pink py-1 px-2 bg-opacity-75  rounded-pill" style="font-size: 14px;">50</span>
-                            </li>
-
-                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
-                                <div class="ms-2 me-auto">
-                                    <div class="row">
-                                        <div class="mx-3">
-                                            <img class="img-circle rounded-circle" src="https://resizing.flixster.com/pUAP_QkZ-wYjEAgZMc96DLaKcP8=/218x280/v2/https://flxt.tmsimg.com/assets/276691_v9_bd.jpg" alt="" height="30" width="30">
-                                        
-                                        </div>
-                                        <div class="fw-bold h5 text-gray">Kite Nivea homme</div>
-                                    </div>
-                                    
-                                </div>
-                                 <span class="badge  bg-gradient-blue py-1 px-2 bg-opacity-75  rounded-pill" style="font-size: 14px;">50</span>
-                            </li>
-
-                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
-                                <div class="ms-2 me-auto">
-                                    <div class="row">
-                                        <div class="mx-3">
-                                            <img class="img-circle rounded-circle" src="https://resizing.flixster.com/pUAP_QkZ-wYjEAgZMc96DLaKcP8=/218x280/v2/https://flxt.tmsimg.com/assets/276691_v9_bd.jpg" alt="" height="30" width="30">
-                                        
-                                        </div>
-                                        <div class="fw-bold h5 text-gray">Kite Nivea homme</div>
-                                    </div>
-                                    
-                                </div>
-                                 <span class="badge  bg-gradient-orange py-1 px-2 bg-opacity-75  rounded-pill" style="font-size: 14px;">50</span>
-                            </li>
-
-                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
-                                <div class="ms-2 me-auto">
-                                    <div class="row">
-                                        <div class="mx-3">
-                                            <img class="img-circle rounded-circle" src="https://resizing.flixster.com/pUAP_QkZ-wYjEAgZMc96DLaKcP8=/218x280/v2/https://flxt.tmsimg.com/assets/276691_v9_bd.jpg" alt="" height="30" width="30">
-                                        
-                                        </div>
-                                        <div class="fw-bold h5 text-gray">Kite Nivea homme</div>
-                                    </div>
-                                    
-                                </div>
-                                 <span class="badge  bg-gradient-green py-1 px-2 bg-opacity-75  rounded-pill" style="font-size: 14px;">50</span>
-                            </li>
-
-                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white">
-                                <div class="ms-2 me-auto">
-                                    <div class="row">
-                                        <div class="mx-3">
-                                            <img class="img-circle rounded-circle" src="https://resizing.flixster.com/pUAP_QkZ-wYjEAgZMc96DLaKcP8=/218x280/v2/https://flxt.tmsimg.com/assets/276691_v9_bd.jpg" alt="" height="30" width="30">
-                                        
-                                        </div>
-                                        <div class="fw-bold h5 text-gray">Kite Nivea homme</div>
-                                    </div>
-                                    
-                                </div>
-                                 <span class="badge  bg-gradient-cyan py-1 px-2 bg-opacity-75  rounded-pill" style="font-size: 14px;">50</span>
-                            </li>
-                           
-
+                      
+                        <ul class="list-group" id="produits-populaires">
+                        
                         </ul>
                     </div>
                 </div>
@@ -283,8 +224,8 @@
                             <i class="fas fa-users bg-opacity-25 bg-yellow text-white text-lg p-4 rounded-circle"></i>
                         </div>
                         <div class="col-sm-8 text-right">
-                             <h2 class="h3 text-yellow">0 F</h2>
-                            <p class="h4 card-subtitle mb-2 text-muted">Montant à reverser</p>
+                             <h2 class="h3 text-yellow" id="total-produits"></h2>
+                            <p class="h4 card-subtitle mb-2 text-muted">Total produits</p>
                         </div>
                     </div>
                     </div>
@@ -298,8 +239,8 @@
                             <i class="fas fa-users bg-opacity-25 bg-purple text-white text-lg p-4 rounded-circle"></i>
                         </div>
                         <div class="col-sm-8 text-right">
-                             <h2 class="h3 text-purple">0 F</h2>
-                            <p class="h4 card-subtitle mb-2 text-muted">Montant à reverser</p>
+                             <h2 class="h3 text-purple" id="total-user"></h2>
+                            <p class="h4 card-subtitle mb-2 text-muted">Total utilisateurs</p>
                         </div>
                     </div>
                     </div>
@@ -313,8 +254,8 @@
                             <i class="fas fa-users bg-opacity-25 bg-gradient-danger text-white text-lg p-4 rounded-circle"></i>
                         </div>
                         <div class="col-sm-8 text-right">
-                             <h2 class="h3 text-danger">0 F</h2>
-                            <p class="h4 card-subtitle mb-2 text-muted">Montant à reverser</p>
+                             <h2 class="h3 text-danger" id="total-comments"></h2>
+                            <p class="h4 card-subtitle mb-2 text-muted">Total commentaires</p>
                         </div>
                     </div>
                     </div>
@@ -328,8 +269,8 @@
                             <i class="fas fa-users bg-opacity-25 bg-green text-white text-lg p-4 rounded-circle"></i>
                         </div>
                         <div class="col-sm-8 text-right">
-                             <h2 class="h3 text-green">0 F</h2>
-                            <p class="h4 card-subtitle mb-2 text-muted">Montant à reverser</p>
+                             <h2 class="h3 text-green" id="total-admin"></h2>
+                            <p class="h4 card-subtitle mb-2 text-muted">Gestionnaires (admin)</p>
                         </div>
                     </div>
                     </div>
@@ -342,14 +283,14 @@
 
         <div class="row mb-5">
            <div class="col-sm-4">
-                <div class="card rounded-0" style="border-bottom: 2px solid rgb(255, 145, 19);">
-                    <div class="card-header text-primary">
-                        <h5>Produits plus commandés</h5>
+                <div class="card  p-4 rounded-0" style="border-bottom: 2px solid rgb(255, 145, 19);">
+                    <div class="card-header bg-white">
+                        <h2 class="font-weight-bold">Commentaires Recents</h2>
                     </div>
                     <div class="card-body">
-                        <ul class="list-group">
+                        <ul class="list-group" id="commentaire-recents">
                            
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <li class="list-group-item d-flex justify-content-between align-items-start bg-white" style="border-bottom: 1px solid #e0e0e0;">
                                 <div class="ms-2 me-auto">
                                     <div class="row">
                                         <div class="mx-3">
@@ -357,113 +298,44 @@
                                         
                                         </div>
                                         <div class="fw-bold h5 text-gray">
-
-                                             <h4 class="text-gray">Jaden Smith</h4> 
-                                            <small class="text-gray-dark">voici mon commentaire...</small>
+                                            <div class="font-weight-bold">
+                                                Jaden Smith
+                                            </div>
+                                            <span class="h6 text-gray">voici mon commentaire...</span>
                                         </div>
                                     </div>
                                     
                                 </div>
                                  <span class="" style="font-size: 14px;">il y'a 1 min...</span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
-                                <div class="ms-2 me-auto">
-                                    <div class="row">
-                                        <div class="mx-3">
-                                            <img class="img-circle rounded-circle" src="https://resizing.flixster.com/pUAP_QkZ-wYjEAgZMc96DLaKcP8=/218x280/v2/https://flxt.tmsimg.com/assets/276691_v9_bd.jpg" alt="" height="30" width="30">
-                                        
-                                        </div>
-                                        <div class="fw-bold h5 text-gray">
-
-                                             <h4 class="text-gray">Jaden Smith</h4> 
-                                            <small class="text-gray-dark">voici mon commentaire...</small>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-                                 <span class="" style="font-size: 14px;">il y'a 1 min...</span>
-                            </li>
-
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
-                                <div class="ms-2 me-auto">
-                                    <div class="row">
-                                        <div class="mx-3">
-                                            <img class="img-circle rounded-circle" src="https://resizing.flixster.com/pUAP_QkZ-wYjEAgZMc96DLaKcP8=/218x280/v2/https://flxt.tmsimg.com/assets/276691_v9_bd.jpg" alt="" height="30" width="30">
-                                        
-                                        </div>
-                                        <div class="fw-bold h5 text-gray">
-
-                                             <h4 class="text-gray">Jaden Smith</h4> 
-                                            <small class="text-gray-dark">voici mon commentaire...</small>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-                                 <span class="" style="font-size: 14px;">il y'a 1 min...</span>
-                            </li>
-
-                            <li class="list-group-item d-flex justify-content-between align-items-start">
-                                <div class="ms-2 me-auto">
-                                    <div class="row">
-                                        <div class="mx-3">
-                                            <img class="img-circle rounded-circle" src="https://resizing.flixster.com/pUAP_QkZ-wYjEAgZMc96DLaKcP8=/218x280/v2/https://flxt.tmsimg.com/assets/276691_v9_bd.jpg" alt="" height="30" width="30">
-                                        
-                                        </div>
-                                        <div class="fw-bold h5 text-gray">
-
-                                             <h4 class="text-gray">Jaden Smith</h4> 
-                                            <small class="text-gray-dark">voici mon commentaire...</small>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-                                 <span class="" style="font-size: 14px;">il y'a 1 min...</span>
-                            </li>
-
-
-                           
+                            
+                            
 
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="col-md-8">
-                <div class="card rounded-0">
-                    <div class="card-header">
-                        <div class="row">
-                                
-                        
-
-                            <h3 class="ml-3"> Commandes recentes</h3>
-                        </div>
+                <div class="card  p-4 rounded-0" style="border-bottom: 2px solid rgb(255, 145, 19);">
+                    <div class="card-header bg-white">
+                        <h2 class="font-weight-bold">Commandes Recentes</h2>
                     </div>
-                    <div class="card-body" style="border-bottom: 2px solid rgb(42, 220, 255);border-radius: 0px;">
+                    <div class="card-body" >
                         <div class="table-responsive">
                             <table class="table align-middle mb-0 bg-white table-sm table-hover" id="data">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
-                                        <th>Locataire</th>
+                                        <th># Reference</th>
+                                        <th>Nom & Prenoms Client</th>
                                         <th>Contact</th>
-                                        <th>Location</th>
-                                        <th>Adresse</th>
-                                        <th>Loyer</th>
-                                        <th>Statut</th>
-                                        <th>Caissière</th>
+                                        <th>Coût Total</th>
+                                        <th>Etat de la commande</th>
+                                        <th>Date</th>
+                                        
                                     </tr>
                                 </thead>
-                                <tbody class="text-capitalize">
+                                <tbody class="text-capitalize" id="commandes-recentes">
                                    
-                                        <tr>
-                                            <td>1</td>                                 
-                                            <td>AZERTY</td>                                 
-                                            <td>AZERTY</td>                                 
-                                            <td>AZERTY</td>                                 
-                                            <td>AZERTY</td>                                 
-                                            <td>0 F</td>                                 
-                                            <td>AZERTY</td>                                 
-                                            <td>AZERTY</td>                                                  
-                                        </tr>
                                    
                                 </tbody>
                             </table>
@@ -479,107 +351,129 @@
 <!-- EXEMPLE DE CONTENUE -->
 
 <script>
-    $(document).ready(function () {
-    var stats_data ;
+    $(document).ready(async function () {
+    var host = '/media/';
+    var money_format = new Intl.NumberFormat('fr-FR', {
+    style: 'currency',
+    currency: 'XOF',
+    currencyDisplay: 'symbol',
+    });
     axios.defaults.xsrfCookieName = "csrftoken";
     axios.defaults.xsrfHeaderName = "X-CSRFtoken";
-     
-    axios.post("/stats/")
-        .then(response => {
-            // Traitez les données GraphQL ici
-            stats_data = response.data;
-            console.log(stats_data);
 
-        })
-        .catch((err) => {
-            console.log(err) 
-        });
+    const getData = await axios.post("/stats/");
+    var stats_data=getData.data ;
+    console.log(stats_data.liste_comments);
+   
     
-     console.log(stats_data);
-    // Mettre à jour le contenu de l'élément avec la variable
-    var monParagraphe = document.getElementById("dt-month");
-    monParagraphe.textContent = 500;
-</script>
+console.log(stats_data.produits_count_commandes);
+$("#today-commandes").text(stats_data.today_commandes_count + ' total');
+$("#sub-today-commandes").text(money_format.format(stats_data.today_commandes_total) );
+$("#commandes-valides").text(stats_data.year_commandes_valide_count + ' total');
+$("#sub-commandes-valides").text(stats_data.today_commandes_valide_count );
+$("#total-commandes").text(stats_data.year_commandes_count + ' total');
+$("#sub-total-commandes").text(stats_data.month_commandes_count );
+$("#montant-commandes").text(money_format.format(stats_data.year_commandes_total) );
+$("#sub-montant-commandes").text(money_format.format(stats_data.month_commandes_total) );
+$("#total-produits").text(stats_data.product_count);
+$("#total-user").text(stats_data.client_count );
+$("#total-comments").text(stats_data.commentaires_count );
+$("#total-admin").text(stats_data.admin_count );
 
-<script>
-
-
-    $('#data').DataTable({
-        deferRender: true,
-        paging: true,
-        pageLength: 10,
-        lengthChange: true,
-        responsive: true,
-        autoWidth: false,
-        bInfo: true,
-        bSort: true,
-        processing: true,
-        order: [],
-
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/1.12.1/i18n/fr-FR.json"
-        },
-    });
-
-    Highcharts.chart('chart-annuelle', {
-    chart: {
-        type: 'column'
+const ctx = document.getElementById('myChart');
+const data = stats_data.montant_vente_per_month;
+ const labels =['Janvier', 'Fevrier', 'Mars', 'Avril','Mai', 'Juin','Juillet','Août', 'Septembre','Octobre','Novembre','Decembre'];   
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Vente par mois',
+        data: data,
+        borderWidth: 1
+      }]
     },
-    title: {
-        text: 'World\'s largest cities per 2021'
-    },
-    subtitle: {
-        text: 'Source: <a href="https://worldpopulationreview.com/world-cities" target="_blank">World Population Review</a>'
-    },
-    xAxis: {
-        type: 'category',
-        labels: {
-            rotation: -45,
-            style: {
-                fontSize: '13px',
-                fontFamily: 'Verdana, sans-serif'
-            }
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
         }
-    },
-    yAxis: {
-        min: 0,
-        title: {
-            text: 'Population (millions)'
-        }
-    },
-    legend: {
-        enabled: false
-    },
-    tooltip: {
-        pointFormat: 'Population in 2021: <b>{point.y:.1f} millions</b>'
-    },
-    series: [{
-        name: 'Population',
-        colors: [
-            '#6225ed', '#5b30e7', '#533be1', '#4c46db', '#4551d5', '#3e5ccf',
-            '#3667c9', '#2f72c3', '#277dbd', '#1f88b7', '#1693b1', '#0a9eaa',
-            '#03c69b',  '#00f194'
-        ],
-        colorByPoint: true,
-        groupPadding: 0,
-        data:stats.montant_vente_per_month,
-        dataLabels: {
-            enabled: true,
-            rotation: -90,
-            color: '#FFFFFF',
-            align: 'right',
-            format: '{point.y:.1f}', // one decimal
-            y: 10, // 10 pixels down from the top
-            style: {
-                fontSize: '13px',
-                fontFamily: 'Verdana, sans-serif'
-            }
-        }
-    }]
-});
+      }
+    }
+  });
+  var dataProduitPopulaire =stats_data.produits_count_commandes;
+  var elementsLimites = dataProduitPopulaire.slice(0, 6);
+function ajouterContenu() {
+            var liste = $("#produits-populaires");
 
-    });
-    
+            // Parcourir la liste d'objets JSON et ajouter chaque élément à la liste
+            $.each(elementsLimites, function (index, objet) {
+                var dt = '<li class="list-group-item d-flex justify-content-between align-items-start bg-white" style="border-bottom: 1px solid #d1d1d1;"><div class="ms-2 me-auto"><div class="row"><div class="col-span-1 border-gray-200 mr-3"><img class="w-full h-full" src="'+ host +  objet.image +'" alt="" height="50" width="50"></div><div class="fw-bold text-gray"><div class=" font-weight-bold " style="font-size: 18px;">'+ objet.product__name +'</div> <span id="h6 price">'+ money_format.format(objet.product__price )+'</span></div></div></div><span class="badge  bg-gradient-red mt-4 pb-1 px-2  rounded-pill" style="font-size: 14px;">'+ objet.nombre +'</span></li>';
+                liste.append(dt);
+            });
+        };
+
+ ajouterContenu();
+
+var dataCommentaireRecents =stats_data.liste_comments;
+var commentaireLimites = dataCommentaireRecents.slice(0, 6);
+function ajouterCommentaire() {
+            var liste = $("#commentaire-recents");
+
+            // Parcourir la liste d'objets JSON et ajouter chaque élément à la liste
+            $.each(elementsLimites, function (index, objet) {
+                var dt = '<li class="list-group-item d-flex justify-content-between align-items-start bg-white" style="border-bottom: 1px solid #e0e0e0;"><div class="ms-2 me-auto"><div class="row"><div class="mx-3"><img class="img-circle rounded-circle" src="https://resizing.flixster.com/pUAP_QkZ-wYjEAgZMc96DLaKcP8=/218x280/v2/https://flxt.tmsimg.com/assets/276691_v9_bd.jpg" alt="" height="30" width="30"></div><div class="fw-bold h5 text-gray"><div class="font-weight-bold">'+ objet.client__firstname +'</div><span class="h6 text-gray">'+ objet.contenu +'</span></div></div></div><span class="" style="font-size: 14px;">il y\'a '+ objet.date_registry +'</span></li>';
+                liste.append(dt);
+            });
+        };
+
+var dataCommandesRecentes =stats_data.list_commandes;
+var commandesLimites = dataCommandesRecentes.slice(0, 6);
+console.log(dataCommandesRecentes);
+moment.locale('fr');
+function ajoutercommandes() {
+            var liste = $("#commandes-recentes");
+            
+            // Parcourir la liste d'objets JSON et ajouter chaque élément à la liste
+            $.each(commandesLimites, function (index, objet) {
+                var etat = null;
+                var fullName =null;
+                var contact = null;
+                var date_commande = objet.date_registry
+                date_commande =  moment(date_commande, 'YYYYMMDDHHmm').format('LLL');
+                console.log(date_commande);
+                if (objet.etat_commande == "En cours") {
+                    etat = '<span class="badge bg-gradient-warning text-white p-2">'+ objet.etat_commande +'</span>'
+                    
+                }else if(objet.etat_commande == "Validé"){
+                    etat = '<span class="badge bg-gradient-green text-white p-2">'+ objet.etat_commande +'</span>'
+                }else{
+                    etat = '<span class="badge bg-gradient-danger text-white p-2">'+ objet.etat_commande +'</span>'
+                };
+
+                if (objet.user__last_name !== "" || objet.user__first_name !== ""){
+                    fullName = objet.user__first_name + ' '+ objet.user__last_name;
+                }else{
+                    fullName="Inconnu"
+                };
+
+                if (objet.user__telephone !== null ){
+                    contact = objet.user__telephone ;
+                }else{
+                    contact="00-00-00-00-00"
+                };
+                
+                var dt = '<tr><td>'+ objet.reference +'</td><td>'+ fullName +'</td><td>'+ contact +'</td><td>'+ money_format.format(objet.total_amount) +'</td><td>'+ etat +'</td><td>'+ date_commande+'</td></tr>';
+                liste.append(dt);
+            });
+        };
+
+ajoutercommandes()
+
+
+
+     });  
+
 </script>
 
 
