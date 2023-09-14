@@ -13,12 +13,15 @@ from django.utils import timezone
 from products.models import *
 from django.contrib.auth import get_user_model
 from users.models import *
+
 # Email
 from django.core.mail import  EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import random
 import string
+
+
 User = get_user_model()
 
     
@@ -122,6 +125,31 @@ def envoie_de_mail_commande(sender, created, instance, **kwargs):
                fail_silently=False,
                html_message=text_content,
           )
+          
+          # ----------------- NEW EMAIL SENDER -----------------------------
+          ''' link = "https://athehams.com"
+          subject = "NOUVELLE COMMANDE"
+          recipient_list =[obj['email'] for obj in CustomUser.objects.values('email').filter(is_superuser=True)]
+          produits_commandes= Commandes.objects.select_related('user').prefetch_related('products').get(id=instance.id)
+          context = {
+            "link": link,
+            "produits_commandes":produits_commandes,
+          }
+            
+          #print(my_recipient)
+          html_message = render_to_string("purchases/email.html", context=context)
+          plain_message = strip_tags(html_message)
+
+          message = EmailMultiAlternatives(
+               subject = subject, 
+               body = plain_message,
+               from_email = None ,
+               to= ['junioressoh98@gmail.com',]
+          )
+
+          message.attach_alternative(html_message, "text/html")
+          message.send()'''
+
        
           
  
