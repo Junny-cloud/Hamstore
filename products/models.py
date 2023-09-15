@@ -92,7 +92,7 @@ class SubCategory(models.Model):
      
 class Variantes(models.Model):
      name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom sous-categorie")
-     reference = models.CharField(max_length=8, unique=True)
+     reference = models.CharField(max_length=8, unique=True,  null=True, blank=True)
      quantite_en_stock = models.IntegerField(default=0, null=True, blank=True, verbose_name="quantité en stock")
 
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
@@ -152,7 +152,7 @@ class Event(models.Model):
         
 class DescriptionPrecise(models.Model):
      name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom")
-     slug = models.SlugField(unique=True, null=True)
+     #slug = models.SlugField(unique=True, null=True)
      valeur = models.CharField(max_length=200, null=True, blank=True, verbose_name="valeur")
      
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
@@ -167,10 +167,10 @@ class DescriptionPrecise(models.Model):
      def __str__(self):
           return f"{self.name}"
      
-     def save(self, *args, **kwargs):
+     '''def save(self, *args, **kwargs):
         # Générer le slug à partir du nom de la catégorie avant de sauvegarder
         self.slug = slugify(self.name)
-        super(DescriptionPrecise, self).save(*args, **kwargs)
+        super(DescriptionPrecise, self).save(*args, **kwargs)'''
      
 class Products(models.Model):
      name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom produit")
@@ -240,13 +240,13 @@ class Commentaires(models.Model):
      product = models.ForeignKey(Products , null=True, blank=False, on_delete=models.CASCADE, verbose_name="produit concerne")
 
      client = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
-     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
+     date_registry = models.DateTimeField(default=timezone.now,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=True, verbose_name='Etat')
 
      class Meta:
           verbose_name = "Commentaire"
-          verbose_name_plural = "Commentaires"
+          verbose_name_plural = "Commentaires Recents"
           ordering = ['-id']
 
      def __str__(self):

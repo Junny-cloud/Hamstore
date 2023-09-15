@@ -92,14 +92,6 @@ X_FRAME_OPTIONS = 'ALLOWALL'
 
 CORS_ALLOW_ALL_ORIGINS =True
 
-CORS_ALLOW_HEADERS = (
-    "accept",
-    "authorization",
-    "content-type",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-)
 
 #CORS_ALLOWED_ORIGINS = ['*']
 
@@ -253,7 +245,7 @@ GRAPHQL_JWT = {
     "JWT_VERIFY_EXPIRATION": True,
     "JWT_EXPIRATION_DELTA": timedelta(minutes=60),
     # optional
-    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": False,
     #'JWT_PAYLOAD_HANDLER': 'users.schema.jwt_payload',
     "JWT_ALLOW_ANY_CLASSES": [
         "graphql_auth.mutations.Register",

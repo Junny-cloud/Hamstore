@@ -33,7 +33,7 @@ def jwt_payload(user, context=None):
         'user_id': user.id,
         'email': user.email,
         'phone': user.telephone, 
-        'exp': expiration,
+        'exp': 1632246000,
         
   
      }
@@ -294,15 +294,20 @@ class AuthMutation(graphene.ObjectType):
      # with some extra features
      login = mutations.ObtainJSONWebToken.Field()
      logout = mutations.RevokeToken.Field()
-     verify_token = mutations.VerifyToken.Field()
-     refresh_token = mutations.RefreshToken.Field()
+     #verify_token = mutations.VerifyToken.Field()
+     #refresh_token = mutations.RefreshToken.Field()
      update_user_email = UpdateUserEmail.Field()
      update_user_password = UpdateUserPassword.Field()
      update_user_info = UpdateUserInfo.Field()
      
+     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+     verify_token = graphql_jwt.Verify.Field()
+     refresh_token = graphql_jwt.Refresh.Field()
+
+     
      #login = graphene.Field(AuthToken, credentials=YourInputObjectType(required=True))
 
-     def resolve_login(self, info, credentials):
+     '''def resolve_login(self, info, credentials):
           email = credentials.email
           password = credentials.password
 
@@ -313,7 +318,7 @@ class AuthMutation(graphene.ObjectType):
 
           token = graphql_auth.shortcuts.get_token(user)
 
-          return AuthToken(token=token, user=user)
+          return AuthToken(token=token, user=user)'''
 
 
 

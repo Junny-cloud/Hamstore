@@ -4,6 +4,7 @@ from graphene_django import DjangoObjectType
 from graphql_auth.schema import UserQuery, MeQuery
 from graphql_auth import mutations
 import graphql
+from graphql_jwt.utils import jwt_decode, jwt_encode
 from django.core.exceptions import FieldDoesNotExist
 from graphene import relay
 from graphql import GraphQLError
@@ -206,7 +207,13 @@ class AddFavoris(graphene.Mutation):
 
     def mutate(self, info, product_id):
         request = info.context.META
+        test_a =request.get('HTTP_AUTHORIZATION')
+        test_a=test_a.replace('Bearer ', '')
+        print(jwt_decode(test_a))
+        dx =jwt_decode(test_a, context=None)
+        print(dx)
         user_id =renvoyer_user(request)
+        
         user = CustomUser.objects.get(id=user_id)
         if not user:
             raise Exception('Veillez vous connecter')

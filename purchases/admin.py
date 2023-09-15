@@ -1,10 +1,12 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from .models import *
+from django.urls import reverse
+from django.utils.html import format_html
 
 class ProduitsCommandesInline(admin.TabularInline):
     model = ProduitsCommandes
-class CommandesAdmin(admin.ModelAdmin):
+'''class CommandesAdmin(admin.ModelAdmin):
     
     inlines = (ProduitsCommandesInline,)
     list_display = ('reference','user', 'display_products','total_amount','date_registry', 'status')
@@ -17,8 +19,17 @@ class CommandesAdmin(admin.ModelAdmin):
     
     def display_products(self, obj):
         products = obj.products.all()
-        return ', '.join([product.name for product in products])
-        
+        return ', '.join([product.name for product in products])'''
+
+class CommandesAdmin(admin.ModelAdmin):
+    change_list_template = "admin/purchases/list_commandes.html"
+
+    def ma_page_link(self):
+        link = reverse("/")
+        return format_html(f'<a href="{link}">Commandes</a>')
+
+    ma_page_link.short_description = "Lien vers ma page personnalisée"
+     
         
 class ProduitsCommandesAdmin(admin.ModelAdmin):
     list_display = ('slug','commande', 'product','price_unitaire', 'quantity', 'subtotal','date_registry', 'status')

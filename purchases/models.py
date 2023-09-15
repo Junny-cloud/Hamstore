@@ -32,7 +32,7 @@ class Commandes(models.Model):
      total_amount = models.PositiveIntegerField(default=0, verbose_name="prix commande")
      date_commande = models.DateField(auto_now_add=True)
      etat_commande = models.CharField(max_length=200, default="En cours",null=True, blank=True, verbose_name="etat de la commande")
-     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
+     date_registry = models.DateTimeField(default=timezone.now,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=False, verbose_name='Etat')
      
@@ -59,12 +59,12 @@ class Commandes(models.Model):
 class ProduitsCommandes(models.Model):
      commande = models.ForeignKey(Commandes, null=True, blank=True, on_delete=models.CASCADE, verbose_name="commande concerné")
      product = models.ForeignKey(Products,  null=True, blank=True, on_delete=models.CASCADE, verbose_name="Produit")
-     variante = models.CharField(max_length=200, null=True, blank=True, verbose_name="variante choisie")
+     variante = models.ForeignKey(Variantes,  null=True, blank=True, on_delete=models.CASCADE, verbose_name="variante choisie")
      price_unitaire = models.PositiveIntegerField(default=0, verbose_name="prix produit")
      quantity = models.PositiveIntegerField(default=1)
      subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0,verbose_name="Total du produit")
      
-     date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")
+     date_registry = models.DateTimeField(auto_now_add=True,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=False, verbose_name='Etat')
      
@@ -100,7 +100,7 @@ class FavoriteProducts(models.Model):
         ordering = ['-id']
     
   
-@receiver(post_save, sender=Commandes)
+'''@receiver(post_save, sender=Commandes)
 def envoie_de_mail_commande(sender, created, instance, **kwargs):
      if created:
           
@@ -127,7 +127,7 @@ def envoie_de_mail_commande(sender, created, instance, **kwargs):
           )
           
           # ----------------- NEW EMAIL SENDER -----------------------------
-          ''' link = "https://athehams.com"
+          link = "https://athehams.com"
           subject = "NOUVELLE COMMANDE"
           recipient_list =[obj['email'] for obj in CustomUser.objects.values('email').filter(is_superuser=True)]
           produits_commandes= Commandes.objects.select_related('user').prefetch_related('products').get(id=instance.id)
