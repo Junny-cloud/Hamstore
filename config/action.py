@@ -194,21 +194,25 @@ def generer_commandes(nombre_commandes, nombre_produits):
     users = CustomUser.objects.all()
     #variantes=[obj['id'] for obj in Variantes.objects.all().values()]
     quantity_def = [1,2,3,4,5,6,7,8,9]
+    prix_event =[15000, 2555, 38000, 47000, 85000]
     for _ in range(nombre_commandes):
       
         user = generic.random.choice(users)
-
+        total_amount =generic.random.choice(prix_event)
         # Créez l'objet Product sans enregistrement dans la base de données
-        commande = Commandes(user=user)
+        commande = Commandes(user=user, total_amount=total_amount)
+
         #variantes_aleatoire = Variantes.objects.filter(id__in=variantes_aleatoire_id)
         #product.variantes.set(variantes_aleatoire)
         commande.save()
 
         for _ in range(nombre_produits):
             product = generic.random.choice(products)
+            price_unitaire=product.price
             quantity = generic.random.choice(quantity_def)
-
-            produits_commandes = ProduitsCommandes(commande=commande,product=product, quantity=quantity)
+            variante_choice = Variantes.objects.filter(products=product) 
+            variante = generic.random.choice(variante_choice)
+            produits_commandes = ProduitsCommandes(commande=commande,product=product, quantity=quantity, variante=variante, price_unitaire=price_unitaire)
             produits_commandes.save()
             
 
@@ -247,7 +251,7 @@ def replace_prix_event():
         
         random_pair = random.choice(prix_event)
         
-        product.prix_promo = random_pair
+        product.price = random_pair
         product.save()
         
         

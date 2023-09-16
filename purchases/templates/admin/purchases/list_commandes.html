@@ -1,199 +1,186 @@
-{% extends "admin/base.html" %}
-
-{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
-
-{% block branding %}
+{% extends "admin/base.html" %} {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %} {% block branding %}
 <div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
-{% if user.is_anonymous %}
-  {% include "admin/color_theme_toggle.html" %}
-{% endif %}
-{% endblock %}
-
-{% block nav-global %}{% endblock %}
-{% block extrastyle %}
+{% if user.is_anonymous %} {% include "admin/color_theme_toggle.html" %} {% endif %} {% endblock %} {% block nav-global %}{% endblock %} {% load static %} {% block extrastyle %}
 <!-- Font Awesome -->
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-  rel="stylesheet"
-/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 <!-- Google Fonts -->
-<link
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-  rel="stylesheet"
-/>
- <!-- highcharts -->     
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+<!-- highcharts -->
 <!-- JQUERY -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-<!-- AXIOS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"
-    integrity="sha512-u9akINsQsAkG9xjc1cnGF4zw5TFDwkxuc9vUp5dltDWYCSmyd0meygbvgXrlc/z7/o4a19Fb5V0OUE58J7dcyw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 
-<!-- AJAX -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/fr.js"></script> <!-- Inclure le support du français -->
+<!--END-->
+<!-- DATATABLE CDN -->
+<link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<!-- Inclure le support du français -->
 <style>
-
+    #table_id_filter {
+        width: 100% !important;
+    }
+    
+    #table_id_filter label {
+        width: 100% !important;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 20px;
+    }
+    
+    #table_id_filter label input {
+        width: 50% !important;
+        height: 40px;
+        font-size: 18px;
+    }
 </style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <!-- EXEMPLE DE CONTENUE -->
 <div class="col-md-12" id="app">
     <div class="container-fluid">
 
-     
-    
+
+
         <!--    STATS FINANCE -->
         <div class="col-md-12 bg-white mb-4 p-2 shadow-2-soft" style="border-bottom: 2px solid rgb(203, 19, 19);">
-        <div class="row">
-            <div class="col-xl-3 col-sm-6 col-12 pt-2" style="border-right: 1px solid #e4e4e4;">
-                <div class="card pb-0 rounded-0  border-0 shadow-none">
-                    <div class="card-body p-2 shadow-0" >
-                    <div  class="d-flex justify-content-between px-md-1">
-                        <div class="align-self-center bg-opacity-10 bg-primary rounded-circle p-3">
-                        <i class="fas fa-recycle text-white fa-2x"></i>
-                        </div>
-                        <div class="col-md-8 p-0 text-right">
-                            <h2 class="h3 text-primary" id="today-commandes"></h2>
-                            
-                            <p class="h4 card-subtitle mb-2 text-muted info-1" >Commandes aujourd'hui</p>
-                            <small class="h6 card-subtitle mb-2 text-muted"> 
+            <div class="row">
+                <div class="col-xl-3 col-sm-6 col-12 pt-2" style="border-right: 1px solid #e4e4e4;">
+                    <div class="card pb-0 rounded-0  border-0 shadow-none">
+                        <div class="card-body p-2 shadow-0">
+                            <div class="d-flex justify-content-between px-md-1">
+                                <div class="align-self-center bg-opacity-10 bg-primary rounded-circle p-3">
+                                    <i class="fas fa-recycle text-white fa-2x"></i>
+                                </div>
+                                <div class="col-md-8 p-0 text-right">
+                                    <h2 class="h3 text-primary" id="today-commandes"></h2>
+
+                                    <p class="h4 card-subtitle mb-2 text-muted info-1">Commandes aujourd'hui</p>
+                                    <small class="h6 card-subtitle mb-2 text-muted"> 
                                 Montant : 
                                 <span class="text-primary h6" id="sub-today-commandes"></span> 
                                 
                             </small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                </div>
-            </div>
-            <div class="col-xl-3 col-sm-6 col-12 pt-2" style="border-right: 1px solid #e4e4e4;">
-                <div class="card pb-0 rounded-0  border-0 shadow-none">
-                    <div class="card-body p-2 shadow-0" >
-                    <div  class="d-flex justify-content-between px-md-1">
-                        <div class="align-self-center bg-opacity-10 bg-danger rounded-circle p-3">
-                        <i class="fas fa-recycle text-white fa-2x"></i>
-                        </div>
-                        <div class="col-md-8 p-0 text-right">
-                            <h2 class="h3 text-danger" id="commandes-valides">0 F</h2>
-                            
-                            <p class="h4 card-subtitle font-weight-bold  text-muted">Commandes validées</p>
-                            <small class="h6 card-subtitle mb-2 text-muted"> 
+                <div class="col-xl-3 col-sm-6 col-12 pt-2" style="border-right: 1px solid #e4e4e4;">
+                    <div class="card pb-0 rounded-0  border-0 shadow-none">
+                        <div class="card-body p-2 shadow-0">
+                            <div class="d-flex justify-content-between px-md-1">
+                                <div class="align-self-center bg-opacity-10 bg-danger rounded-circle p-3">
+                                    <i class="fas fa-recycle text-white fa-2x"></i>
+                                </div>
+                                <div class="col-md-8 p-0 text-right">
+                                    <h2 class="h3 text-danger" id="commandes-valides">0 F</h2>
+
+                                    <p class="h4 card-subtitle font-weight-bold  text-muted">Commandes validées</p>
+                                    <small class="h6 card-subtitle mb-2 text-muted"> 
                                 <span class="text-danger" id="sub-commandes-valides">5</span> 
                                 commande validés pour Aujourd'hui
                             </small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                </div>
-            </div>
-            <div class="col-xl-3 col-sm-6 col-12 pt-2 " style="border-right: 1px solid #e4e4e4;">
-                <div class="card pb-0 rounded-0  border-0 shadow-none">
-                    <div class="card-body p-2 shadow-0" >
-                    <div  class="d-flex justify-content-between px-md-1">
-                        <div class="align-self-center bg-opacity-10 bg-warning rounded-circle p-3">
-                        <i class="fas fa-recycle text-white fa-2x"></i>
-                        </div>
-                        <div class="col-md-8 p-0 text-right">
-                           <h2 class="h3 text-warning" id="total-commandes">0 F</h2>
-                            
-                            <p class="h4 card-subtitle mb-2 text-muted">Total commandes</p>
-                            <small class="h6 card-subtitle mb-2 text-muted"> 
+                <div class="col-xl-3 col-sm-6 col-12 pt-2 " style="border-right: 1px solid #e4e4e4;">
+                    <div class="card pb-0 rounded-0  border-0 shadow-none">
+                        <div class="card-body p-2 shadow-0">
+                            <div class="d-flex justify-content-between px-md-1">
+                                <div class="align-self-center bg-opacity-10 bg-warning rounded-circle p-3">
+                                    <i class="fas fa-recycle text-white fa-2x"></i>
+                                </div>
+                                <div class="col-md-8 p-0 text-right">
+                                    <h2 class="h3 text-warning" id="total-commandes">0 F</h2>
+
+                                    <p class="h4 card-subtitle mb-2 text-muted">Total commandes</p>
+                                    <small class="h6 card-subtitle mb-2 text-muted"> 
                                 <span class="text-warning" id="sub-commandes-valides">0</span> 
                                  commande pour ce mois
                             </small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                </div>
-            </div>
-            <div class="col-xl-3 col-sm-6 col-12 pt-2" >
-                <div class="card pb-0 rounded-0  border-0 shadow-none">
-                    <div class="card-body p-2 shadow-0" >
-                    <div  class="d-flex justify-content-between px-md-1">
-                        <div class="align-self-center bg-opacity-10 bg-info rounded-circle p-3">
-                        <i class="fas fa-recycle text-white fa-2x"></i>
-                        </div>
-                        <div class="col-md-8 p-0 text-right">
-                            <h2 class="h3 text-info" id="montant-commandes">0 F</h2>
-                            
-                            <p class="h4 card-subtitle mb-2 text-muted">Montant commandes</p>
-                            <small class="h6 card-subtitle mb-2 text-muted"> 
+                <div class="col-xl-3 col-sm-6 col-12 pt-2">
+                    <div class="card pb-0 rounded-0  border-0 shadow-none">
+                        <div class="card-body p-2 shadow-0">
+                            <div class="d-flex justify-content-between px-md-1">
+                                <div class="align-self-center bg-opacity-10 bg-info rounded-circle p-3">
+                                    <i class="fas fa-recycle text-white fa-2x"></i>
+                                </div>
+                                <div class="col-md-8 p-0 text-right">
+                                    <h2 class="h3 text-info" id="montant-commandes">0 F</h2>
+
+                                    <p class="h4 card-subtitle mb-2 text-muted">Montant commandes</p>
+                                    <small class="h6 card-subtitle mb-2 text-muted"> 
                                 Montant du mois :
                                 <span class="text-danger" id="sub-commandes-valides">0</span> 
                                 
                             </small>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
                 </div>
             </div>
         </div>
+
+
+
+        <div class="card p-4 rounded-0" style="border-bottom: 2px solid rgb(28, 247, 39);">
+            <div class="card-header bg-white">
+                <h2 class="font-weight-bold">Nos Commandes</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 bg-white table-sm table-hover" id="table_id">
+                        <thead>
+                            <tr>
+                                <th>#Ref</th>
+                                <th>Nom Client</th>
+                                <th>Contact(s)</th>
+                                <th>Montant</th>
+                                <th>Etat</th>
+                                <th>Date</th>
+                                <th>Operations</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-left">
+                            <tr>
+                                <td>#GFEGDFH66ZE65</td>
+                                <th>Yasin Junior</td>
+                                    <th>junioressoh98@gmail.com / +225 07 79 09 54 47</td>
+                                        <th>56.000 F CFA</td>
+                                            <th><span class="badge bg-gradient-warning text-white p-2">En cours</span></td>
+                                                <th>15/09/2023 18:50</td>
+                                                    <th>
+                                                        <a rel="autre" class="btn btn-link btn-sm px-1 mr-1 text-center  text-dark detail_cat"><i class="fas fa-eye-slash fa-2x"></i></a>
+                                                        <a rel="update" class="btn btn-link btn-sm px-1 text-primary mr-2 update"><i class="fas fa-pen fa-2x"></i></a>
+                                                        <a rel="delete" class="btn btn-link btn-sm px-1 text-danger delete"><i class="fas fa-trash fa-2x"></i></a>
+                                                        </td>
+                            </tr>
+
+                        </tbody>
+                        <tfoot>
+                            <th>#Ref</th>
+                            <th>Nom Client</th>
+                            <th>Contact(s)</th>
+                            <th>Montant</th>
+                            <th>Etat</th>
+                            <th>Date</th>
+                            <th>Operations</th>
+                        </tfoot>
+                    </table>
+                    <!-- /.table-->
+                </div>
+            </div>
+            <div class="card-header bg-white">
+                <h6 class="font-weight-bold">20 Commandes</h6>
+            </div>
         </div>
 
-        
 
-                <div class="card p-4 rounded-0" style="border-bottom: 2px solid rgb(28, 247, 39);">
-                    <div class="card-header bg-white">
-                        <h2 class="font-weight-bold">Nos Commandes</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table align-middle mb-0 bg-white table-sm table-hover" id="table_id">
-                                <thead>
-                                    <tr>
-                                        <th>#Ref</th>
-                                        <th>Nom Client</th>
-                                        <th>Contact(s)</th>
-                                        <th>Montant</th>
-                                        <th>Etat</th>
-                                        <th>Date</th>
-                                        <th>Operations</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-left">
-                                    <tr>
-                                        <td>#GFEGDFH66ZE65</td>
-                                        <th>Yasin Junior</td>
-                                        <th>junioressoh98@gmail.com / +225 07 79 09 54 47</td>
-                                        <th>56.000 F CFA</td>
-                                        <th><span class="badge bg-gradient-warning text-white p-2">En cours</span></td>
-                                        <th>15/09/2023 18:50</td>
-                                        <th>
-                                                <a rel="autre" class="btn btn-link btn-sm px-1 mr-1 text-center  text-dark detail_cat"><i class="fas fa-eye-slash fa-2x"></i></a>
-                                                <a rel="update" class="btn btn-link btn-sm px-1 text-primary mr-2 update"><i class="fas fa-pen fa-2x"></i></a>
-                                                <a rel="delete" class="btn btn-link btn-sm px-1 text-danger delete"><i class="fas fa-trash fa-2x"></i></a>
-                                        </td>
-                                    </tr>
-                                        
-                                </tbody>
-                                <tfoot>
-                                    <th>#Ref</th>
-                                    <th>Nom Client</th>
-                                    <th>Contact(s)</th>
-                                    <th>Montant</th>
-                                    <th>Etat</th>
-                                    <th>Date</th>
-                                    <th>Operations</th>
-                                </tfoot>
-                            </table>
-                            <!-- /.table-->
-                        </div>
-                    </div>
-                    <div class="card-header bg-white">
-                        <h6 class="font-weight-bold">20 Commandes</h6>
-                    </div>
-                </div>
-                
-        
 
 
 
@@ -201,28 +188,201 @@
 </div>
 <!-- EXEMPLE DE CONTENUE -->
 
+<!-- DataTable -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<!-- AXIOS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js" integrity="sha512-u9akINsQsAkG9xjc1cnGF4zw5TFDwkxuc9vUp5dltDWYCSmyd0meygbvgXrlc/z7/o4a19Fb5V0OUE58J7dcyw==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+
+
+<!-- imprimer data button -->
+<script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/fr.js"></script>
 <script>
-    $(document).ready(async function () {
-    var host = '/media/';
-    var money_format = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'XOF',
-    currencyDisplay: 'symbol',
-    });
-    moment.locale('fr');
-    axios.defaults.xsrfCookieName = "csrftoken";
-    axios.defaults.xsrfHeaderName = "X-CSRFtoken";
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 
-    const getData = await axios.post("/stats/");
-    var stats_data=getData.data ;
-   
-
-
-
-     });  
-
+    const csrftoken = getCookie('csrftoken');
 </script>
+<script>
+    jQuery.noConflict();
+    (function($) {
+        const formatMontantXOF = function(montant) {
+            const formatter = new Intl.NumberFormat('fr-FR', {
+                style: 'currency',
+                currency: 'XOF',
+                minimumFractionDigits: 0,
+            });
 
+            return formatter.format(montant);
+        };
+        // Votre code DataTable ici en utilisant $
+        $(document).ready(function() {
+            $('#table_id').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'print'
+                ],
+                deferRender: true,
+                responsive: true,
+                paging: true,
+                pageLength: 10,
+                autoWidth: false,
+                bSort: true,
+                destroy: true,
+                processing: true,
+                order: [],
+                ajax: {
+                    url: "/purchases/list_commandes/",
+                    type: 'POST',
+                    data: {
+                        'action': 'list'
+                    },
+                    dataSrc: '',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    },
+                },
+                columns: [{
+                    data: "reference"
+                }, {
+                    data: "info"
+                }, {
+
+                    data: "info"
+                }, {
+                    data: "total_amount"
+                }, {
+                    data: "etat_commande"
+                }, {
+                    data: "date_registry"
+                }, {
+                    data: "id"
+                }, ],
+                columnDefs: [{
+                    targets: [0],
+                    orderable: true,
+                    render: function(data, type, row) {
+                        return '#' + data;
+                    }
+                }, {
+                    targets: [1],
+                    orderable: true,
+                    render: function(data, type, row) {
+                        return data.nom_prenom;
+                    }
+                }, {
+                    targets: [2],
+                    orderable: true,
+                    render: function(data, type, row) {
+                        return data.contact;
+                    }
+                }, {
+                    targets: [3],
+                    orderable: true,
+                    render: function(data, type, row) {
+                        return formatMontantXOF(data);
+                    }
+                }, {
+                    targets: [4],
+                    orderable: true,
+                    render: function(data, type, row) {
+                        return data;
+                    }
+                }, {
+                    targets: [5],
+                    orderable: true,
+                    render: function(data, type, row) {
+                        var dt = moment().format("hh:mm")
+                        var datea = moment(data, "YYYYMMDDhh:mm:ss").format("DD/MM/YYYY");
+                        var datetoday = moment().format("DD/MM/YYYY");
+
+                        if (datea == datetoday) {
+                            dt = 'Auj. ' + moment(data, "YYYYMMDDhh:mm:ss").format("hh:mm");
+                        } else(
+                            dt = moment(data, "YYYYMMDDhh:mm:ss").format("DD/MM/YYYY")
+                        );
+
+
+                        return dt;
+                    }
+                }, {
+                    targets: [6],
+                    orderable: false,
+                    render: function(data, type) {
+                        var buttons =
+                            '<a rel="delete" class="btn btn-link btn-sm px-1 text-danger delete"><i class="fas fa-trash fa-2x"></i></a>';
+                        buttons +=
+                            '<a rel="detail_facture" class="btn btn-link btn-sm px-2 mr-ml-2  text-info detail_equipements"><i class="fas fa-eye fa-2x"></i></a>';
+
+                        return buttons;
+                    }
+                }, ],
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json'
+                }
+
+
+            });
+
+
+        });
+        // Sélectionnez l'élément HTML que vous souhaitez modifier par son sélecteur CSS, par exemple, en utilisant son nom de balise, son ID ou sa classe.
+        var element1 = $('#table_id_filter');
+        element1.addClass('col-md-12');
+
+
+        var childElement1 = element1.find('label');
+        childElement1.addClass('col-md-12 text-center');
+
+        var childElement2 = element1.find('input');
+        childElement2.addClass('col-md-8');
+    })(jQuery);
+</script>
+<script>
+    $(document).ready(async function() {
+        var host = '/media/';
+        var money_format = new Intl.NumberFormat('fr-FR', {
+            style: 'currency',
+            currency: 'XOF',
+            currencyDisplay: 'symbol',
+        });
+        moment.locale('fr');
+        const formatMontantXOF = function(montant) {
+            const formatter = new Intl.NumberFormat('fr-FR', {
+                style: 'currency',
+                currency: 'XOF',
+                minimumFractionDigits: 0,
+            });
+
+            return formatter.format(montant);
+        };
+
+
+
+
+    });
+</script>
 
 
 {% endblock %}
