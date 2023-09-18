@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 from graphql_auth.decorators import login_required
 from graphql_jwt.utils import get_payload
 from config.settings import GRAPHQL_JWT
+from graphql_auth.mutations import ObtainJSONWebToken
 
 REGISTER_MUTATION_FIELDS = [
     ('email', graphene.String(required=True)),
@@ -268,6 +269,27 @@ class NewsletterSubscription(graphene.Mutation):
                user.save()
 
           return NewsletterSubscription(success=True, user=user)   
+
+class CustomObtainJSONWebToken(graphene.Mutation):
+    token = graphene.String()
+    user = graphene.Field(CustomUserType)
+
+    class Arguments:
+        username = graphene.String(required=True)
+        password = graphene.String(required=True)
+
+    @classmethod
+    def mutate(cls, root, info, username, password):
+        # Appelez la mutation ObtainJSONWebToken
+        result = ObtainJSONWebToken.mutate(None, info, username=username, password=password)
+        if result.token:
+            # La mutation a réussi, renvoyez le token
+            return CustomObtainJSONWebToken(token=result.token, user=result.user)
+        else:
+            # La mutation a échoué, gérez l'erreur ici
+            raise Exception("Authentification échouée")
+
+
 class AuthMutation(graphene.ObjectType):
      newsletter_subscription = NewsletterSubscription.Field()
      register = CreateUser.Field()
@@ -286,7 +308,8 @@ class AuthMutation(graphene.ObjectType):
 
      # django-graphql-jwt authentication
      # with some extra features
-     login = mutations.ObtainJSONWebToken.Field()
+     #login = mutations.ObtainJSONWebToken.Field()
+     login =  CustomObtainJSONWebToken.Field()
      logout = mutations.RevokeToken.Field()
      verify_token = mutations.VerifyToken.Field()
      refresh_token = mutations.RefreshToken.Field()
