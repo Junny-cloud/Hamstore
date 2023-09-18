@@ -3,6 +3,7 @@ from django.utils.safestring import mark_safe
 from .models import *
 from django.urls import reverse
 from django.utils.html import format_html
+from config.admin import * 
 
 class ProduitsCommandesInline(admin.TabularInline):
     model = ProduitsCommandes
@@ -44,5 +45,5 @@ def _register(model, admin_class):
     admin.site.register(model, admin_class)
 
 
-_register(Commandes, CommandesAdmin) 
-admin.site.register(ProduitsCommandes)
+myadmin.register(Commandes, CommandesAdmin) 
+myadmin.register(ProduitsCommandes)

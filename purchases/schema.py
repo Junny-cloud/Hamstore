@@ -207,11 +207,6 @@ class AddFavoris(graphene.Mutation):
 
     def mutate(self, info, product_id):
         request = info.context.META
-        test_a =request.get('HTTP_AUTHORIZATION')
-        test_a=test_a.replace('Bearer ', '')
-        print(jwt_decode(test_a))
-        dx =jwt_decode(test_a, context=None)
-        print(dx)
         user_id =renvoyer_user(request)
         
         user = CustomUser.objects.get(id=user_id)

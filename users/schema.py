@@ -25,19 +25,12 @@ REGISTER_MUTATION_FIELDS = [
 ]
 
 def jwt_payload(user, context=None):
-     expiration = datetime.utcnow() + timedelta(minutes=60)
-     expiration = expiration.isoformat()
-     username = user.get_username()
-     payload = {
-        user.USERNAME_FIELD: username,
-        'user_id': user.id,
+     return {
+        'user_id': user.pk,
         'email': user.email,
-        'phone': user.telephone, 
-        'exp': 1632246000,
-        
-  
-     }
-     return payload
+        'is_active': user.is_active,
+        # Ajoutez d'autres champs personnalisés selon vos besoins
+    }
 
 def renvoyer_user(request):
 
@@ -45,6 +38,7 @@ def renvoyer_user(request):
      headers = headers.replace('Bearer ', '')
      payload = get_payload(headers)
      user_id = payload["user_id"]
+     print(user_id)
      return user_id
 
 class CustomUserType(DjangoObjectType):
@@ -294,15 +288,12 @@ class AuthMutation(graphene.ObjectType):
      # with some extra features
      login = mutations.ObtainJSONWebToken.Field()
      logout = mutations.RevokeToken.Field()
-     #verify_token = mutations.VerifyToken.Field()
-     #refresh_token = mutations.RefreshToken.Field()
+     verify_token = mutations.VerifyToken.Field()
+     refresh_token = mutations.RefreshToken.Field()
      update_user_email = UpdateUserEmail.Field()
      update_user_password = UpdateUserPassword.Field()
      update_user_info = UpdateUserInfo.Field()
      
-     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
-     verify_token = graphql_jwt.Verify.Field()
-     refresh_token = graphql_jwt.Refresh.Field()
 
      
      #login = graphene.Field(AuthToken, credentials=YourInputObjectType(required=True))

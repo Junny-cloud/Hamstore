@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from .models import *
-
+from config.admin import *
 # Register your models here.
 
 
@@ -117,7 +117,7 @@ class CommentairesAdmin(admin.ModelAdmin):
  
 
 def _register(model, admin_class):
-     admin.site.register(model, admin_class)
+     myadmin.register(model, admin_class)
 
 
 _register(Category, CategoryAdmin) 

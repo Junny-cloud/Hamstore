@@ -35,7 +35,7 @@ def commandes(request):
                     tel = obj['user__email']
                     if  obj['user__telephone'] :
                          tel = obj['user__telephone'] + ' '+ obj['user__email']
-                    obj['info']= {'nom_prenom':dx, 'contact':tel}
+                    obj['info']= {'nom_prenom':dx, 'contact':tel, 'id':obj['id'], 'etat_commande':obj['etat_commande']}
                     data.append(obj) 
 
           elif action == 'update':
@@ -59,3 +59,51 @@ def commandes(request):
      except Exception as e:
           data['error'] = str(e)
      return JsonResponse(data, safe=False)
+
+
+@csrf_exempt
+def valider_commande_produit(request):
+     message = ''
+     success = False
+     data = None
+     if request.method == 'POST':
+
+          validation = json.loads(request.body.decode('utf-8')).get('valider')
+          id_commande = json.loads(request.body.decode('utf-8')).get('id')
+          
+                    
+          if validation:
+               t = Commandes.objects.get(id=id_commande)
+               t.etat_commande = validation # change field
+               t.save() 
+
+               if validation =="Valider":
+
+                    all_products = ProduitsCommandes.objects.filter(commande=t).values('id','product__id', 'variante__id', 'variante__quantite_en_stock','quantity')
+                    for obj in all_products:
+                         df = Variantes.objects.get(id=int(obj['variante__id']))
+                         df.quantite_en_stock = int(df.quantite_en_stock) - int(obj['quantity'])
+                         
+                         df.save()
+                         
+                         print(df.quantite_en_stock)
+               
+               message = 'demande bien enregistré !'
+               success = True
+
+          data = {
+               'message': message,
+               'success': success
+          }
+
+          return JsonResponse(data, safe=False)
+
+     else:
+          message = 'Erreur: Requête non autorisée !'
+          data = {
+               'message': message,
+               'success': success
+          }
+
+     return JsonResponse(data, safe=False)
+

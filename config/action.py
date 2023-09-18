@@ -252,6 +252,7 @@ def replace_prix_event():
         random_pair = random.choice(prix_event)
         
         product.price = random_pair
+        product.prix_promo =  random_pair - (random_pair/3)
         product.save()
         
         

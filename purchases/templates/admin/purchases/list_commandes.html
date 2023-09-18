@@ -1,19 +1,33 @@
-{% extends "admin/base.html" %} {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %} {% block branding %}
+{% extends "admin/base.html" %} {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}Nos Commandes{% endblock %} {% block branding %}
 <div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
 {% if user.is_anonymous %} {% include "admin/color_theme_toggle.html" %} {% endif %} {% endblock %} {% block nav-global %}{% endblock %} {% load static %} {% block extrastyle %}
 <!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<!-- CSS Files -->
+
+<!-- JQUERY -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
 <!-- highcharts -->
-<!-- JQUERY -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+
 
 <!--END-->
 <!-- DATATABLE CDN -->
-<link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+
 <!-- Inclure le support du français -->
 <style>
+    #detailsModal {
+        z-index: 1050;
+        /* ou toute valeur plus élevée que le z-index de modal-backdrop */
+    }
+    
     #table_id_filter {
         width: 100% !important;
     }
@@ -32,6 +46,10 @@
     }
 </style>
 {% endblock %} {% block content %}
+<!-- MODAL -->
+{% include 'admin/purchases/details_commande.html' %} {% include 'admin/purchases/valider_commande.html' %}
+<!-- MODAL -->
+
 <!-- EXEMPLE DE CONTENUE -->
 <div class="col-md-12" id="app">
     <div class="container-fluid">
@@ -39,7 +57,7 @@
 
 
         <!--    STATS FINANCE -->
-        <div class="col-md-12 bg-white mb-4 p-2 shadow-2-soft" style="border-bottom: 2px solid rgb(203, 19, 19);">
+        <div class="col-md-12 card bg-white mb-4 p-2 shadow-2-soft" style="border-bottom: 2px solid rgb(203, 19, 19);">
             <div class="row">
                 <div class="col-xl-3 col-sm-6 col-12 pt-2" style="border-right: 1px solid #e4e4e4;">
                     <div class="card pb-0 rounded-0  border-0 shadow-none">
@@ -49,9 +67,9 @@
                                     <i class="fas fa-recycle text-white fa-2x"></i>
                                 </div>
                                 <div class="col-md-8 p-0 text-right">
-                                    <h2 class="h3 text-primary" id="today-commandes"></h2>
+                                    <h2 class="h3 text-primary" id="today-commandes">0 F</h2>
 
-                                    <p class="h4 card-subtitle mb-2 text-muted info-1">Commandes aujourd'hui</p>
+                                    <p class="h4 card-subtitle mb-2 text-muted">Commandes aujourd'hui</p>
                                     <small class="h6 card-subtitle mb-2 text-muted"> 
                                 Montant : 
                                 <span class="text-primary h6" id="sub-today-commandes"></span> 
@@ -72,10 +90,10 @@
                                 <div class="col-md-8 p-0 text-right">
                                     <h2 class="h3 text-danger" id="commandes-valides">0 F</h2>
 
-                                    <p class="h4 card-subtitle font-weight-bold  text-muted">Commandes validées</p>
+                                    <p class="h4 card-subtitle mb-2 text-muted">Commandes validées</p>
                                     <small class="h6 card-subtitle mb-2 text-muted"> 
-                                <span class="text-danger" id="sub-commandes-valides">5</span> 
-                                commande validés pour Aujourd'hui
+                                <span class="text-danger" id="sub-commandes-valides">+5</span> 
+                                pour Aujourd'hui
                             </small>
                                 </div>
                             </div>
@@ -147,19 +165,6 @@
                             </tr>
                         </thead>
                         <tbody class="text-left">
-                            <tr>
-                                <td>#GFEGDFH66ZE65</td>
-                                <th>Yasin Junior</td>
-                                    <th>junioressoh98@gmail.com / +225 07 79 09 54 47</td>
-                                        <th>56.000 F CFA</td>
-                                            <th><span class="badge bg-gradient-warning text-white p-2">En cours</span></td>
-                                                <th>15/09/2023 18:50</td>
-                                                    <th>
-                                                        <a rel="autre" class="btn btn-link btn-sm px-1 mr-1 text-center  text-dark detail_cat"><i class="fas fa-eye-slash fa-2x"></i></a>
-                                                        <a rel="update" class="btn btn-link btn-sm px-1 text-primary mr-2 update"><i class="fas fa-pen fa-2x"></i></a>
-                                                        <a rel="delete" class="btn btn-link btn-sm px-1 text-danger delete"><i class="fas fa-trash fa-2x"></i></a>
-                                                        </td>
-                            </tr>
 
                         </tbody>
                         <tfoot>
@@ -175,9 +180,7 @@
                     <!-- /.table-->
                 </div>
             </div>
-            <div class="card-header bg-white">
-                <h6 class="font-weight-bold">20 Commandes</h6>
-            </div>
+
         </div>
 
 
@@ -188,8 +191,6 @@
 </div>
 <!-- EXEMPLE DE CONTENUE -->
 
-<!-- DataTable -->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <!-- AXIOS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js" integrity="sha512-u9akINsQsAkG9xjc1cnGF4zw5TFDwkxuc9vUp5dltDWYCSmyd0meygbvgXrlc/z7/o4a19Fb5V0OUE58J7dcyw==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 
@@ -238,6 +239,8 @@
         };
         // Votre code DataTable ici en utilisant $
         $(document).ready(function() {
+            id_demande = 0;
+            var pathname = window.location.pathname;
             $('#table_id').DataTable({
                 dom: 'Bfrtip',
                 buttons: [
@@ -307,7 +310,16 @@
                     targets: [4],
                     orderable: true,
                     render: function(data, type, row) {
-                        return data;
+                        bs = '<i class="fas fa-exclamation-circle text-warning"></i>';
+                        if (data == "En cours") {
+                            bs = '<i class="fas fa-exclamation-circle text-warning"></i>';
+                        } else if (data == "Confirmer") {
+                            bs = '<i class="fas fa-check-circle text-success"></i>';
+                        } else {
+                            bs = '<i class="far fa-times-circle text-danger"></i>';
+                        };
+
+                        return bs;
                     }
                 }, {
                     targets: [5],
@@ -333,7 +345,10 @@
                         var buttons =
                             '<a rel="delete" class="btn btn-link btn-sm px-1 text-danger delete"><i class="fas fa-trash fa-2x"></i></a>';
                         buttons +=
-                            '<a rel="detail_facture" class="btn btn-link btn-sm px-2 mr-ml-2  text-info detail_equipements"><i class="fas fa-eye fa-2x"></i></a>';
+                            '<a rel="detail_commande" class="btn btn-link btn-sm px-2 mr-ml-2  text-info detail_commande"><i class="fas fa-eye fa-2x"></i></a>';
+
+                        buttons +=
+                            '<a rel="valider" class=" x-2 text-success valider"><i class="fas fa-edit fa-2x"></i></a>';
 
                         return buttons;
                     }
@@ -344,7 +359,76 @@
 
 
             });
+            var commandes = $('#table_id').DataTable();
+            // GENERALS FUNCTIONS
 
+            $(function() {
+                modal_title = $('.modal-title');
+                commandes;
+
+                $('#table_id tbody')
+
+                // DETAILS COMMANDE
+                .on("click", 'a[rel="detail_commande"]', function() {
+                    var tr = commandes.cell($(this).closest("td, li")).index();
+                    var data = commandes.row(tr.row).data();
+
+
+                    modal_title
+                        .find("span")
+                        .html(
+                            'Détails Commande <span class="text-danger">' +
+                            data.reference +
+                            "</span>"
+                        );
+
+                    $("#myModal").css("display", "block");
+                    $("#myModal").fadeIn(500);
+                    $('.reference').text(data.reference);
+                })
+
+                .on("click", 'a[rel="valider"]', function() {
+                    var tr = commandes.cell($(this).closest("td, li")).index();
+                    var data = commandes.row(tr.row).data();
+                    id_demande = data.id;
+
+
+                    modal_title
+                        .find("span")
+                        .html(
+                            'Détails Commande <span class="text-danger">' +
+                            data.reference +
+                            "</span>"
+                        );
+
+                    $("#myModalValidation").css("display", "block");
+                    $("#myModalValidation").fadeIn(500);
+                    $('.reference').text(data.reference);
+                });
+
+                // validation demande 
+                $('#valider').click(function() {
+                    axios.defaults.cookieName = 'csrftoken'
+                    axios.defaults.headerName = 'X-CSRFToken'
+
+                    console.log(id_demande);
+                    let fnvalid = $('#status').val();
+                    console.log(fnvalid)
+                    axios.post(
+                        "{% url 'purchases:valider_commande' %}", {
+                            valider: fnvalid,
+                            id: id_demande
+                        }
+                    ).then((response) => {
+                        if (response.data.success) {
+                            window.location = pathname
+                        } else console.log(response.data.message)
+                    }).catch((e) => {
+                        console.log(e)
+                    })
+                })
+
+            });
 
         });
         // Sélectionnez l'élément HTML que vous souhaitez modifier par son sélecteur CSS, par exemple, en utilisant son nom de balise, son ID ou sa classe.

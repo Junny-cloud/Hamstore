@@ -2,6 +2,10 @@ from django.contrib.auth.views import LogoutView
 from django.urls import reverse_lazy
 from .stats import *
 from django.http import JsonResponse
+from django.shortcuts import render
+from django.contrib.admin import AdminSite
+
+
 class CustomLogoutView(LogoutView):
     next_page = reverse_lazy('login')  # Redirige vers la page de connexion après la déconnexion
 
@@ -21,3 +25,19 @@ def stats_data(request):
     
     return JsonResponse(data=data)
     
+
+def newdashboard(request):
+    # Récupérez les données que vous souhaitez afficher
+    #mes_donnees = VotreModele.objects.all()  # Remplacez par votre requête de récupération de données
+
+    context = {
+        'mes_donnees': "mes donnees",
+    }
+
+    return render(request, 'admin/base_site.html', context)
+
+
+
+
+
+

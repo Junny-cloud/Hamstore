@@ -3,8 +3,7 @@
     font-size: 14px;
 }
 
-.jazzmin-login-page,
-.app-products .content-wrapper {
+.jazzmin-login-page {
     /* background-color: #0497dbd0;  Set a background color if the image doesn't cover the entire page */
     background-image: url("https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
     background-size: cover;
@@ -113,4 +112,8 @@ brand-link navbar-success:hover {
     box-shadow: none !important;
     border: none !important;
     padding: 30px;
+}
+
+#content .float-right .addlink {
+    margin-right: 10px !important;
 }

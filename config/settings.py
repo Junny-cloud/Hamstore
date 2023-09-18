@@ -69,6 +69,8 @@ LOCAL_APPS = [
 
 INSTALLED_APPS = DJANGO_PACKAGES + DJANGO_APPS + LOCAL_APPS
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema' , # <-- Here
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
@@ -95,12 +97,11 @@ CORS_ALLOW_ALL_ORIGINS =True
 
 #CORS_ALLOWED_ORIGINS = ['*']
 
-ROOT_URLCONF = 'config.urls'
 
 ROOT_URLCONF = 'config.urls'
 LOGIN_URL = '/'
-LOGIN_REDIRECT_URL = 'app:home'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/admin/purchases/commandes/'
+LOGOUT_REDIRECT_URL = '/admin/'
 TEMPLATE_DIR = os.path.join(
     BASE_DIR, "config/templates")  # ROOT dir for templates
 
@@ -223,18 +224,18 @@ GRAPHENE = {
     ],
 }
 
-GRAPHENE_DJANGO_EXTRAS = {
+'''GRAPHENE_DJANGO_EXTRAS = {
     'DEFAULT_PAGINATION_CLASS': 'graphene_django_extras.paginations.LimitOffsetGraphqlPagination',
     'DEFAULT_PAGE_SIZE': 20,
     'MAX_PAGE_SIZE': 50,
     'CACHE_ACTIVE': True,
     'CACHE_TIMEOUT': 300    # seconds
-}
+}'''
 
 AUTHENTICATION_BACKENDS = [
     'graphql_auth.backends.GraphQLAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
-    'graphql_jwt.backends.JSONWebTokenBackend',   
+    #'graphql_jwt.backends.JSONWebTokenBackend',   
 ]
 
 
@@ -243,10 +244,10 @@ GRAPHQL_JWT = {
     'JWT_ALLOW_ARGUMENT': True,
     
     "JWT_VERIFY_EXPIRATION": True,
-    "JWT_EXPIRATION_DELTA": timedelta(minutes=60),
+    "JWT_EXPIRATION_DELTA": timedelta(minutes=5),
     # optional
-    "JWT_LONG_RUNNING_REFRESH_TOKEN": False,
-    #'JWT_PAYLOAD_HANDLER': 'users.schema.jwt_payload',
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
+    'JWT_PAYLOAD_HANDLER': 'users.schema.jwt_payload',
     "JWT_ALLOW_ANY_CLASSES": [
         "graphql_auth.mutations.Register",
         "graphql_auth.mutations.VerifyAccount",
@@ -275,7 +276,8 @@ GRAPHQL_AUTH = {
     },
     'REGISTER_MUTATION_FIELDS_OPTIONAL':['username', 'password2'],
     'LOGIN_ALLOWED_FIELDS': ['email'],
-    'UPDATE_MUTATION_FIELDS':["first_name", "last_name", "date_naissance", "telephone"]
+    'UPDATE_MUTATION_FIELDS':["first_name", "last_name", "date_naissance", "telephone"],
+    "USE_JWT_REFRESH_TOKENS": True,
 
 }
 
@@ -299,7 +301,7 @@ EMAIL_HOST_PASSWORD = "Hamed@2023"'''
 
 
 
-AUTH_USER_MODEL = 'users.CustomUser'
+
 
 JAZZMIN_SETTINGS = {
     "site_title": "Athehams",
@@ -331,7 +333,7 @@ JAZZMIN_SETTINGS = {
     # Custom icons for side menu apps/models See https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.0.2,5.0.3,5.0.4,5.0.5,5.0.6,5.0.7,5.0.8,5.0.9,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.13.0,5.12.0,5.11.2,5.11.1,5.10.0,5.9.0,5.8.2,5.8.1,5.7.2,5.7.1,5.7.0,5.6.3,5.5.0,5.4.2
     #"hide_apps": [ "auth", "refresh_token"],
     "hide_models": [],
-    "order_with_respect_to": ["banners", "newsletters", "products", "purchases", "users"],
+    "order_with_respect_to": ["banners", "newsletters", "products", "purchases", "users", "sessions"],
     "icons": {
         
         "auth": "fas fa-users-cog",
