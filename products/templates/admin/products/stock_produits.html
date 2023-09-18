@@ -1,4 +1,4 @@
-{% extends "admin/base.html" %} {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}Nos Commandes{% endblock %} {% block branding %}
+{% extends "admin/base.html" %} {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}Stock Produits{% endblock %} {% block branding %}
 <div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
 {% if user.is_anonymous %} {% include "admin/color_theme_toggle.html" %} {% endif %} {% endblock %} {% block nav-global %}{% endblock %} {% load static %} {% block extrastyle %}
 <!-- Font Awesome -->
@@ -47,7 +47,7 @@
 </style>
 {% endblock %} {% block content %}
 <!-- MODAL -->
-{% include 'admin/purchases/details_commande.html' %} {% include 'admin/purchases/valider_commande.html' %}
+{% include 'admin/products/details_produit.html' %} {% include 'admin/products/add_stock_produit.html' %}
 <!-- MODAL -->
 
 <!-- EXEMPLE DE CONTENUE -->
@@ -148,33 +148,31 @@
 
         <div class="card p-4 rounded-0" style="border-bottom: 2px solid rgb(28, 247, 39);">
             <div class="card-header bg-white">
-                <h2 class="font-weight-bold">Nos Commandes</h2>
+                <h2 class="font-weight-bold">Stock des produits</h2>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table align-middle mb-0 bg-white table-sm table-hover" id="table_id">
                         <thead>
-                            <tr>
-                                <th>#Ref</th>
-                                <th>Nom Client</th>
-                                <th>Contact(s)</th>
-                                <th>Montant</th>
-                                <th>Etat</th>
-                                <th>Date</th>
-                                <th>Operations</th>
-                            </tr>
+                            <th></th>
+                            <th># Reference</th>
+                            <th>Nom produit(s)</th>
+                            <th>Variété(s)</th>
+                            <th>Prix Unitaire(s)</th>
+                            <th>Quantitée(s) en stock</th>
+                            <th>Operation</th>
                         </thead>
                         <tbody class="text-left">
 
                         </tbody>
                         <tfoot>
-                            <th>#Ref</th>
-                            <th>Nom Client</th>
-                            <th>Contact(s)</th>
-                            <th>Montant</th>
-                            <th>Etat</th>
-                            <th>Date</th>
-                            <th>Operations</th>
+                            <th></th>
+                            <th># Reference</th>
+                            <th>Nom produit(s)</th>
+                            <th>Variété(s)</th>
+                            <th>Prix Unitaire(s)</th>
+                            <th>Quantitée(s) en stock</th>
+                            <th>Operation</th>
                         </tfoot>
                     </table>
                     <!-- /.table-->
@@ -256,7 +254,7 @@
                 processing: true,
                 order: [],
                 ajax: {
-                    url: "/purchases/list_commandes/",
+                    url: "/products/stock_produits/",
                     type: 'POST',
                     data: {
                         'action': 'list'
@@ -267,18 +265,21 @@
                     },
                 },
                 columns: [{
-                    data: "reference"
+                    data: "img"
                 }, {
-                    data: "info"
+                    data: "variantes__reference"
                 }, {
 
-                    data: "info"
+                    data: "name"
                 }, {
-                    data: "total_amount"
+                    data: "variantes__name"
                 }, {
-                    data: "etat_commande"
-                }, {
-                    data: "date_registry"
+                    data: "price"
+                },{
+                    data: "variantes__quantite_en_stock"
+                },
+                 {
+                    data: "variantes__date_modification"
                 }, {
                     data: "id"
                 }, ],
@@ -286,44 +287,50 @@
                     targets: [0],
                     orderable: true,
                     render: function(data, type, row) {
-                        link ='<a rel="detail_commande" class="btn btn-link btn-sm px-2 mr-ml-2  text-info detail_commande">#'+ data +'</a>'
-                        return link;
+                        return '<img src="'+  data +'" style="height:30px; width:30px">';
                     }
                 }, {
                     targets: [1],
                     orderable: true,
                     render: function(data, type, row) {
-                        return data.nom_prenom;
+                       link ='<a rel="detail_produit" class="btn btn-link btn-sm px-2 mr-ml-2  text-info detail_produit">#'+ data +'</a>'
+                    return link;
                     }
                 }, {
                     targets: [2],
                     orderable: true,
                     render: function(data, type, row) {
-                        return data.contact;
+                        return data;
                     }
-                }, {
+                },{
                     targets: [3],
                     orderable: true,
                     render: function(data, type, row) {
-                        return formatMontantXOF(data);
+                        return data;
                     }
                 }, {
                     targets: [4],
                     orderable: true,
                     render: function(data, type, row) {
-                        bs = '<i class="fas fa-exclamation-circle text-warning"></i>';
-                        if (data == "En cours") {
-                            bs = '<i class="fas fa-exclamation-circle text-warning"></i>';
-                        } else if (data == "Confirmer") {
-                            bs = '<i class="fas fa-check-circle text-success"></i>';
+                        return formatMontantXOF(data);
+                    }
+                }, {
+                    targets: [5],
+                    orderable: true,
+                    render: function(data, type, row) {
+                        bs = '<span class="badge rounded-pill bg-gradient-primary">'+ data+'</span>';
+                        if (data <=5) {
+                            bs = '<span class="badge px-3 py-2 rounded-pill bg-gradient-danger">'+ data+'</span>';
+                        } else if (data >5 && data <=10) {
+                            bs = '<span class="badge px-3 py-2 rounded-pill bg-warning">'+ data+'</span>';
                         } else {
-                            bs = '<i class="far fa-times-circle text-danger"></i>';
+                            bs =  '<span class="badge px-3 py-2 rounded-pill bg-success">'+ data+'</span>'; 
                         };
 
                         return bs;
                     }
                 }, {
-                    targets: [5],
+                    targets: [6],
                     orderable: true,
                     render: function(data, type, row) {
                         var dt = moment().format("hh:mm")
@@ -340,15 +347,10 @@
                         return dt;
                     }
                 }, {
-                    targets: [6],
+                    targets: [7],
                     orderable: false,
                     render: function(data, type) {
-                        var buttons =
-                            '<a rel="delete" class="btn btn-link btn-sm px-1 pr-4 text-danger delete"><i class="fas fa-trash fa-2x"></i></a>';
-                        
-                        buttons +=
-                            '<a rel="valider" class=" x-2 text-success valider"><i class="fas fa-edit fa-2x"></i></a>';
-
+                        var buttons = '<a rel="ajouter_stock" class=" x-2 text-success ajouter_stock"><i class="fas fa-edit "></i></a>';
                         return buttons;
                     }
                 }, ],
@@ -358,85 +360,21 @@
 
 
             });
-            var commandes = $('#table_id').DataTable();
+            var stock_produits = $('#table_id').DataTable();
             // GENERALS FUNCTIONS
 
             $(function() {
                 modal_title = $('.modal-title');
-                commandes;
+                stock_produits;
 
                 $('#table_id tbody')
 
                 // DETAILS COMMANDE
-                .on("click", 'a[rel="detail_commande"]', function() {
-                    var tr = commandes.cell($(this).closest("td, li")).index();
-                    var data = commandes.row(tr.row).data();
-                    id_demande = data.demande;
-                    var dt = moment().format("hh:mm")
-                    var datea = moment(data.date_registry, "YYYYMMDDhh:mm:ss").format("DD/MM/YYYY");
-                    var datetoday = moment().format("DD/MM/YYYY");
+                .on("click", 'a[rel="detail_produit"]', function() {
+                    var tr = stock_produits.cell($(this).closest("td, li")).index();
+                    var data = stock_produits.row(tr.row).data();
 
-                    if (datea == datetoday) {
-                        dt = 'Auj. ' + moment(data.date_registry, "YYYYMMDDhh:mm:ss").format("hh:mm");
-                    } else(
-                        dt = moment(data.date_registry, "YYYYMMDDhh:mm:ss").format("DD/MM/YYYY")
-                    );
-                    console.log(id_demande)
-                    modal_title.find('span').html(
-                        'Détails demande equipement <span class="text-danger">' + data
-                        .demande__titre + '</span>');
-                    $('.montant-total').text(formatMontantXOF(data.total_amount));
-                    $('.name-client').text(data.info.nom_prenom);
-                    $('.date-commande').text(dt);
-                    $('#detailCommandeProduitsAll').dataTable({
-                        deferRender: true,
-                        responsive: true,
-                        paging: true,
-                        pageLength: 10,
-                        autoWidth: false,
-                        bSort: true,
-                        destroy: true,
-                        processing: true,
-                        order: [],
-                        ajax: {
-                            url: "/purchases/list_commandes/",
-                            type: 'POST',
-                            data: {
-                                'action': 'details',
-                                'id': data.id
-                            },
-                            dataSrc: '',
-                            headers: {
-                                'X-CSRFToken': csrftoken
-                            },
 
-                        },
-                        columns: [{
-                                "data": "variante__reference"
-                            }, {
-                                "data": "product__name"
-                            }, {
-                                "data": "variante__name"
-                            },{
-                                "data": "quantity"
-                            }, {
-                                "data": "product__price"
-                            },{
-                                "data": "subtotal"
-                            },
-
-                        ],
-
-                        "language": {
-                            url: '{% static "assets/lib/datatables/datatables-1.12.1/fr-FR.json"%}',
-                        },
-                        initComplete: function(settings, json) {
-                            var table = $('#detailCommandeProduitsAll').DataTable();
-                            var table_length = table.data().count();
-                            $("#total-produits").html(table_length);
-                        }
-                    });
-                 
                     modal_title
                         .find("span")
                         .html(
@@ -448,19 +386,20 @@
                     $("#myModal").css("display", "block");
                     $("#myModal").fadeIn(500);
                     $('.reference').text(data.reference);
+                   
                 })
 
-                .on("click", 'a[rel="valider"]', function() {
-                    var tr = commandes.cell($(this).closest("td, li")).index();
-                    var data = commandes.row(tr.row).data();
-                    id_demande = data.id;
+                .on("click", 'a[rel="ajouter_stock"]', function() {
+                    var tr = stock_produits.cell($(this).closest("td, li")).index();
+                    var data = stock_produits.row(tr.row).data();
+                     id_demande = data.variantes__id;
 
 
                     modal_title
                         .find("span")
                         .html(
-                            'Détails Commande <span class="text-danger">' +
-                            data.reference +
+                            'Ajouter quantité  <span class="text-danger">' +
+                            data.variantes__reference +
                             "</span>"
                         );
 
@@ -475,11 +414,11 @@
                     axios.defaults.headerName = 'X-CSRFToken'
 
                     console.log(id_demande);
-                    let fnvalid = $('#status').val();
+                    let fnvalid = $('#stock_quantite').val();
                     console.log(fnvalid)
                     axios.post(
-                        "{% url 'purchases:valider_commande' %}", {
-                            valider: fnvalid,
+                        "{% url 'products:ajouter_stock' %}", {
+                            quantite: fnvalid,
                             id: id_demande
                         }
                     ).then((response) => {

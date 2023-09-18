@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from .models import *
 from config.admin import *
+from django.urls import reverse
+from django.utils.html import format_html
 # Register your models here.
 
 
@@ -29,13 +31,22 @@ class SubCategoryAdmin(admin.ModelAdmin):
      def images_view(self, obj):
           return mark_safe('<img src="{url}" style="height:50px; width:100px">'.format(url=obj.category.image.url)) 
 
-class VariantesAdmin(admin.ModelAdmin):
+'''class VariantesAdmin(admin.ModelAdmin):
      list_display = ('reference','name', 'date_registry','status')
      list_filter = ('name', 'date_registry','status')
      search_fields =  ('name', 'reference','status')
      list_display_links = ['name']
      list_per_page = 25
-     fieldsets = [('Info Variantes', {'fields': [ 'name', 'status']}),  ]
+     fieldsets = [('Info Variantes', {'fields': [ 'name', 'status']}),  ]'''
+     
+class VariantesAdmin(admin.ModelAdmin):
+    change_list_template = "admin/products/stock_produits.html"
+
+    def ma_page_link(self):
+        link = reverse("/")
+        return format_html(f'<a href="{link}">Stock Produits</a>')
+
+    ma_page_link.short_description = "Lien vers Stock Produits"
      
 class DescriptionPreciseAdmin(admin.ModelAdmin):
      list_display = ('name', 'valeur','date_registry','status')

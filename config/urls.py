@@ -31,6 +31,7 @@ urlpatterns = [
     path('admin/banners/', include("banners.urls")),
     path('stats/', stats_data, name='stats-data'),
     path('purchases/', include("purchases.urls")),
+    path('products/', include("products.urls")),
 
 ]
 

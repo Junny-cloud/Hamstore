@@ -35,57 +35,48 @@
                 <i class="fas fa-times text-danger btn-close fa-2x"></i>
             </div>
             <div class="modal-body">
+                
+                <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5> Nom & Prenoms Client : <span class="name-client"></span></h4>
+                        </div>
+                        <div class="col-md-6">
+                            <h5> Date de Commande : <span class="date-commande"></span></h4>
+                        </div>
+                    </div>
                 <div class="container-fluid">
                     <div class="table-responsive">
-                        <table class="table align-middle mb-0 bg-white table-sm table-hover" id="detailCommandesProduits">
+                        <table class="table align-middle mb-0 bg-white table-sm table-hover" id="detailCommandeProduitsAll">
                             <thead>
-
+                                <th></th>
                                 <th>Produit(s)</th>
                                 <th>Variante(s)</th>
                                 <th>Quantité(s)</th>
+                                <th>Prix Unitaire(s)</th>
                                 <th>Prix Total</th>
 
                             </thead>
                             <tbody>
                             </tbody>
                             <tfoot>
+                                <th></th>
                                 <th>Produit(s)</th>
                                 <th>Variante(s)</th>
                                 <th>Quantité(s)</th>
+                                <th>Prix Unitaire(s)</th>
                                 <th>Prix Total</th>
                             </tfoot>
                         </table>
                         <!-- /.table-->
                     </div>
-                </div>
-                <div class="row">
-                    <div class="row">
+                    <div class="row mt-4">
                         <div class="col-md-6">
-                            <h4> Nom & Prenoms Client :</h4>
+                            <h4> Montant total :  <span class="montant-total text-danger"></span></h4> 
                         </div>
-                        <div class="col-md-6">
-                            <h4> Date de Commande :</h4>
-                        </div>
-                    </div>
-
-
-                    <div class="col-md-12">
-                        <div class="mb-4">
-                            <h2 class="text-bold data-titre">Titre : <span class="text-primary"></span></h2>
-                        </div>
-                        <div class="mb-4">
-                            <h3 class="text-bold data-date ">Date : <span class="text-primary"></span> </h3>
-
-                        </div>
-                        <div class="mb-4">
-                            <h3 class="text-bold data-prix">Prix d'achat effectué : <span class="text-primary"></span></h3>
-                        </div>
-                        <div class="text-bold data-details mb-4">
-                            <h3 class="text-primary">Details :</h3>
-                            <p class="text-bold data-details"></p>
-                        </div>
+                        
                     </div>
                 </div>
+                
 
 
             </div>

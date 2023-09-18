@@ -1,0 +1,80 @@
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+    
+    .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+</style>
+<div id="myModalValidation" class="modal">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" id="exampleModalLabel"> <span></span> </h6>
+                <i class="fas fa-times text-danger btn-close fa-2x"></i>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <form method="post" action="." autocomplete="off" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label">Quantité A ajouter</label>
+                            <input type="number" class="form-control" id="stock_quantite" name="stock_quantite" placeholder="00.00">
+                            </div>
+                            <div class="col-md-12 pt-4">
+                                <button class="btn btn-info mr-mt-2 me-md-4 ml-2 text-capitalize btn-disabled" id="valider"><i class="fas fa-save fa-lg mr-1"></i>
+                                             Valider</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+            <div class="modal-footer"></div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+
+
+        // Fermer le modal lorsque le bouton de fermeture est cliqué
+        $(".btn-close").click(function() {
+            $("#myModalValidation").css("display", "none");
+            $("#myModalValidation").fadeOut(500);
+        });
+
+        // Fermer le modal lorsque l'arrière-plan est cliqué
+        $(".modal").click(function(event) {
+            if (event.target === this) {
+                $(this).css("display", "none");
+                $("#myModalValidation").fadeOut(500);
+            }
+        });
+    });
+</script>

@@ -100,8 +100,8 @@ class Variantes(models.Model):
      status = models.BooleanField(default=True, verbose_name='Etat')
      
      class Meta:
-          verbose_name = "Variante"
-          verbose_name_plural = "Variantes"
+          verbose_name = "Stock produit"
+          verbose_name_plural = "Stock Produits"
           ordering = ['-id']
      
      def save(self, *args, **kwargs):
