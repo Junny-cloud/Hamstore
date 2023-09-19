@@ -18,7 +18,7 @@ class BannersInput(graphene.InputObjectType):
 class BannersType(DjangoObjectType):
     class Meta:
         model = Banners
-        fields = ("id", "title", "description", "sub_title", "category","images")
+        fields = ("id", "title",'slug',"sub_title", "event","images")
 
 class CreateBanners(graphene.Mutation):
      class Arguments:
@@ -76,3 +76,15 @@ class UpdateBanners(graphene.Mutation):
           banners.delete()
 
           return DeleteBanners(success=True)'''
+          
+          
+class Query(graphene.ObjectType):
+     
+     banners = graphene.List(BannersType)
+     banner = graphene.Field(BannersType, slug=graphene.String(required=True))
+     
+     def resolve_banners(self, info):
+          return Banners.objects.all()
+
+     def resolve_banner(self, info, slug):
+           return Banners.objects.get(slug=slug)

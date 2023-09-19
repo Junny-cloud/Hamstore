@@ -17,6 +17,7 @@ from products.schema import *
 from newsletters.schema import Query as NewslettersQuery
 from products.schema import Query as productsQuery, Mutation as productsMutation
 from purchases.schema import Mutation as purchasesMutation, Query as purchasesQuery
+from banners.schema import  Query as bannersQuery
 from django.core.exceptions import FieldDoesNotExist
 from graphene import relay
 from .stats import *
@@ -55,7 +56,7 @@ class ProductListType(graphene.ObjectType):
     total_count = graphene.Int()
     products = graphene.List(ProductType) 
     
-class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery, graphene.ObjectType):
+class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery, bannersQuery, graphene.ObjectType):
     user_connected =graphene.Field(CustomUserType, token=graphene.String())
     categories = graphene.List(CategoryType)
     category = graphene.Field(CategoryType, slug=graphene.String(required=True))

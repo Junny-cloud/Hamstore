@@ -51,7 +51,7 @@ def envoie_de_mail_commande(commande, **kwargs):
     message = EmailMultiAlternatives(
         subject = subject, 
         body = plain_message,
-        from_email = from_email ,
+        from_email = None ,
         to= ['junioressoh98@gmail.com',]
     )
 
