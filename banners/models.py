@@ -31,7 +31,7 @@ class Banners(models.Model):
      sub_title = models.CharField(max_length=200, null=True, blank=True, verbose_name="sous titre banner")
      description = models.TextField( null=True, blank=True, verbose_name="description evenement")
      images = models.ImageField(upload_to=image_banners, null=True, blank=True, verbose_name="Image")
-     event = models.ForeignKey(Event, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Nom categorie")
+     event = models.ForeignKey(Event, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Evenement")
 
      user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="Administrateur")
      date_registry = models.DateTimeField( auto_now_add=True,verbose_name="Date d'enregistrement")

@@ -318,13 +318,13 @@
                     targets: [5],
                     orderable: true,
                     render: function(data, type, row) {
-                        bs = '<span class="badge rounded-pill bg-gradient-primary">'+ data+'</span>';
+                        bs = '<span class="badge rounded-pill alert-primary">'+ data+'</span>';
                         if (data <=5) {
-                            bs = '<span class="badge px-3 py-2 rounded-pill bg-gradient-danger">'+ data+'</span>';
+                            bs = '<span class="badge px-3 py-2 rounded-pill alert-danger">'+ data+'</span>';
                         } else if (data >5 && data <=10) {
-                            bs = '<span class="badge px-3 py-2 rounded-pill bg-warning">'+ data+'</span>';
+                            bs = '<span class="badge px-3 py-2 rounded-pill alert-warning">'+ data+'</span>';
                         } else {
-                            bs =  '<span class="badge px-3 py-2 rounded-pill bg-success">'+ data+'</span>'; 
+                            bs =  '<span class="badge px-3 py-2 rounded-pill alert-success">'+ data+'</span>'; 
                         };
 
                         return bs;

@@ -215,7 +215,7 @@
 														<tr>
 															<td class="pad" style="padding-bottom:5px;padding-left:5px;padding-right:5px;">
 																<div style="color:#8f9496;direction:ltr;font-family:'neue-haas-grotesk-display','Lato';font-size:14px;font-weight:400;letter-spacing:1px;line-height:180%;text-align:center;mso-line-height-alt:25.2px;">
-																	<p style="margin: 0;">Commande #{{produits_commandes.reference}} </p>
+																	<p style="margin: 0;">Commande #{{instance.reference}} </p>
 																</div>
 															</td>
 														</tr>
@@ -242,47 +242,8 @@
 							</tr>
 						</tbody>
 					</table>
-					<table class="row row-5" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-						<tbody>
-							<tr>
-								<td>
-									<table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000; width: 600px; margin: 0 auto;" width="600">
-										<tbody>
-											<tr>
-												<td class="column column-1" width="50%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: middle; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
-													<table class="image_block block-1" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-														<tr>
-															<td class="pad" style="padding-bottom:10px;padding-left:50px;padding-right:15px;padding-top:10px;width:100%;">
-																<div class="alignment" align="center" style="line-height:10px"><img src="https://d1oco4z2z1fhwp.cloudfront.net/templates/default/8071/bff10769-71b1-4f05-8e78-d2dba07e92f5.jpg" style="display: block; height: auto; border: 0; max-width: 235px; width: 100%;" width="235" alt="I'm an image" title="I'm an image"></div>
-															</td>
-														</tr>
-													</table>
-												</td>
-												<td class="column column-2" width="50%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: middle; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
-													<table class="heading_block block-1" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
-														<tr>
-															<td class="pad" style="padding-bottom:10px;padding-left:50px;padding-right:50px;padding-top:10px;text-align:center;width:100%;">
-																<h2 style="margin: 0; color: #00171f; direction: ltr; font-family: 'neue-haas-grotesk-display','Lato'; font-size: 20px; font-weight: 700; letter-spacing: 1px; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0;"><span class="tinyMce-placeholder">Glow Balm</span></h2>
-															</td>
-														</tr>
-													</table>
-													<table class="paragraph_block block-2" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
-														<tr>
-															<td class="pad" style="padding-bottom:5px;padding-left:50px;padding-right:5px;padding-top:5px;">
-																<div style="color:#8f9496;direction:ltr;font-family:'neue-haas-grotesk-display','Lato';font-size:14px;font-weight:400;letter-spacing:1px;line-height:180%;text-align:left;mso-line-height-alt:25.2px;">
-																	<p style="margin: 0;">Quantité :&nbsp; 2<br>Total :<strong> 20.000 F CFA</strong></p>
-																</div>
-															</td>
-														</tr>
-													</table>
-												</td>
-											</tr>
-										</tbody>
-									</table>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					
+					{% for obj in produits_commandes %}
 					<table class="row row-6" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 						<tbody>
 							<tr>
@@ -290,11 +251,14 @@
 									<table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000; width: 600px; margin: 0 auto;" width="600">
 										<tbody>
 											<tr>
+												
+												
+												
 												<td class="column column-1" width="50%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: middle; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
 													<table class="image_block block-1" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 														<tr>
 															<td class="pad" style="padding-bottom:10px;padding-left:50px;padding-right:15px;padding-top:10px;width:100%;">
-																<div class="alignment" align="center" style="line-height:10px"><img src="https://d1oco4z2z1fhwp.cloudfront.net/templates/default/8071/42a73801-280c-492e-a117-4b2a3b867340.jpg" style="display: block; height: auto; border: 0; max-width: 235px; width: 100%;" width="235" alt="I'm an image" title="I'm an image"></div>
+																<div class="alignment" align="center" style="line-height:10px"><img src="{{ obj.image }}" style="display: block; height: auto; border: 0; max-width: 235px; width: 100%;" width="235" alt="I'm an image" title="I'm an image"></div>
 															</td>
 														</tr>
 													</table>
@@ -303,7 +267,7 @@
 													<table class="heading_block block-1" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 														<tr>
 															<td class="pad" style="padding-bottom:10px;padding-left:50px;padding-right:50px;padding-top:10px;text-align:center;width:100%;">
-																<h3 style="margin: 0; color: #7747FF; direction: ltr; font-family: Arial, Helvetica, sans-serif; font-size: 19px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0;"><span class="tinyMce-placeholder" style="color: #000000;">Vitamin Sea Creme</span></h3>
+																<h4 style="margin: 0; color: #7747FF; direction: ltr; font-family: Arial, Helvetica, sans-serif; font-size: 18px; font-weight: 600; letter-spacing: normal; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0;"><span class="tinyMce-placeholder" style="color: #000000;">{{ obj.product__name}}</span></h4>
 															</td>
 														</tr>
 													</table>
@@ -311,7 +275,7 @@
 														<tr>
 															<td class="pad" style="padding-bottom:5px;padding-left:50px;padding-right:5px;padding-top:5px;">
 																<div style="color:#8f9496;direction:ltr;font-family:'neue-haas-grotesk-display','Lato';font-size:14px;font-weight:400;letter-spacing:1px;line-height:180%;text-align:left;mso-line-height-alt:25.2px;">
-																	<p style="margin: 0;">Quantité: 1<br>Total : 5.000 F CFA</p>
+																	<p style="margin: 0;">Reference: #{{obj.variante__reference}} <br>Quantité: {{obj.quantity}} <br>Total : {{ obj.subtotal }} F CFA</p>
 																</div>
 															</td>
 														</tr>
@@ -322,8 +286,9 @@
 									</table>
 								</td>
 							</tr>
-						</tbody>
+						<!-- </tbody> -->
 					</table>
+					{% endfor %}
 					<table class="row row-7" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
 						<tbody>
 							<tr>
@@ -380,15 +345,7 @@
 															</td>
 														</tr>
 													</table>
-													<table class="paragraph_block block-2" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
-														<tr>
-															<td class="pad" style="padding-bottom:5px;padding-left:50px;padding-right:5px;padding-top:5px;">
-																<div style="color:#8f9496;direction:ltr;font-family:'neue-haas-grotesk-display','Lato';font-size:14px;font-weight:400;letter-spacing:1px;line-height:180%;text-align:left;mso-line-height-alt:25.2px;">
-																	<p style="margin: 0;">TVA</p>
-																</div>
-															</td>
-														</tr>
-													</table>
+											
 													<table class="paragraph_block block-3" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
 														<tr>
 															<td class="pad" style="padding-bottom:5px;padding-left:50px;padding-right:5px;padding-top:5px;">
@@ -413,25 +370,17 @@
 														<tr>
 															<td class="pad" style="padding-bottom:5px;padding-left:5px;padding-right:50px;padding-top:5px;">
 																<div style="color:#8f9496;direction:ltr;font-family:'neue-haas-grotesk-display','Lato';font-size:14px;font-weight:400;letter-spacing:1px;line-height:180%;text-align:right;mso-line-height-alt:25.2px;">
-																	<p style="margin: 0;">25.000 F CFA</p>
+																	<p style="margin: 0;">{{ instance.total_amount }} F CFA</p>
 																</div>
 															</td>
 														</tr>
 													</table>
-													<table class="paragraph_block block-2" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
-														<tr>
-															<td class="pad" style="padding-bottom:5px;padding-left:5px;padding-right:50px;padding-top:5px;">
-																<div style="color:#8f9496;direction:ltr;font-family:'neue-haas-grotesk-display','Lato';font-size:14px;font-weight:400;letter-spacing:1px;line-height:180%;text-align:right;mso-line-height-alt:25.2px;">
-																	<p style="margin: 0;">1.500 F CFA</p>
-																</div>
-															</td>
-														</tr>
-													</table>
+													
 													<table class="paragraph_block block-3" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
 														<tr>
 															<td class="pad" style="padding-bottom:5px;padding-left:5px;padding-right:50px;padding-top:5px;">
 																<div style="color:#8f9496;direction:ltr;font-family:'neue-haas-grotesk-display','Lato';font-size:14px;font-weight:400;letter-spacing:1px;line-height:180%;text-align:right;mso-line-height-alt:25.2px;">
-																	<p style="margin: 0;">2.000 F CFA</p>
+																	<p style="margin: 0;">{{montant_livraison}} F CFA</p>
 																</div>
 															</td>
 														</tr>
@@ -440,7 +389,7 @@
 														<tr>
 															<td class="pad" style="padding-bottom:5px;padding-left:5px;padding-right:50px;padding-top:5px;">
 																<div style="color:#8f9496;direction:ltr;font-family:'neue-haas-grotesk-display','Lato';font-size:14px;font-weight:400;letter-spacing:1px;line-height:180%;text-align:right;mso-line-height-alt:25.2px;">
-																	<p style="margin: 0;">28.500 F CFA</p>
+																	<p style="margin: 0;"> {{instance.total_amount|add:2000 }}F CFA</p>
 																</div>
 															</td>
 														</tr>
@@ -478,7 +427,7 @@
 														<tr>
 															<td class="pad">
 																<div class="alignment" align="center"><!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" style="height:36px;width:228px;v-text-anchor:middle;" arcsize="20%" stroke="false" fillcolor="#0085ff"><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center style="color:#ffffff; font-family:sans-serif; font-size:13px"><![endif]-->
-																	<div style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#0085ff;border-radius:7px;width:auto;border-top:0px solid transparent;font-weight:400;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:5px;padding-bottom:5px;font-family:'neue-haas-grotesk-display','Lato';font-size:13px;text-align:center;mso-border-alt:none;word-break:keep-all;"><span style="padding-left:25px;padding-right:25px;font-size:13px;display:inline-block;letter-spacing:2px;"><span style="word-break: break-word; line-height: 26px;">VALIDER LA COMMANDE</span></span></div><!--[if mso]></center></v:textbox></v:roundrect><![endif]-->
+																	<div style="text-decoration:none;display:inline-block;color:#ffffff;background-color:#0085ff;border-radius:7px;width:auto;border-top:0px solid transparent;font-weight:400;border-right:0px solid transparent;border-bottom:0px solid transparent;border-left:0px solid transparent;padding-top:5px;padding-bottom:5px;font-family:'neue-haas-grotesk-display','Lato';font-size:13px;text-align:center;mso-border-alt:none;word-break:keep-all;"><span style="padding-left:25px;padding-right:25px;font-size:13px;display:inline-block;letter-spacing:2px;"><span style="word-break: break-word; line-height: 26px;"><a href="{{ link }}" style="text-decoration: none;">VALIDER LA COMMANDE</a></span></span></div><!--[if mso]></center></v:textbox></v:roundrect><![endif]-->
 																</div>
 															</td>
 														</tr>

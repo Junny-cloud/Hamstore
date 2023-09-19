@@ -100,11 +100,11 @@ class FavoriteProducts(models.Model):
         ordering = ['-id']
     
   
-'''@receiver(post_save, sender=Commandes)
-def envoie_de_mail_commande(sender, created, instance, **kwargs):
-     if created:
+#@receiver(post_save, sender=Commandes)
+'''def envoie_de_mail_commande(sender, created, instance, **kwargs):
+     if instance.pk and instance._state.fields_changed:
           
-          # SEND MAIL CONFIG
+           # SEND MAIL CONFIG
           html_content = render_to_string('purchases/email_commande.html', {
           'title': 'Commande de produits',
           'nom_entreprise': 'Athehams',
@@ -130,10 +130,22 @@ def envoie_de_mail_commande(sender, created, instance, **kwargs):
           link = "https://athehams.com"
           subject = "NOUVELLE COMMANDE"
           recipient_list =[obj['email'] for obj in CustomUser.objects.values('email').filter(is_superuser=True)]
-          produits_commandes= Commandes.objects.select_related('user').prefetch_related('products').get(id=instance.id)
+          produits_commandes =[]
+          montant_livraison="2.000"
+          data1 = [ obj for obj in ProduitsCommandes.objects.filter(commande=instance).values('quantity', 'subtotal', 'price_unitaire', 'variante__name', 'variante__reference', 'product__name', 'product','commande__id')]
+          for obj in data1:
+               print(obj)
+               img = Image.objects.filter(product=obj['product']).first()
+               
+               obj['image']= img.image.url
+               produits_commandes.append(obj)
+               
+          from_email ='contact@athehams.com'
           context = {
             "link": link,
             "produits_commandes":produits_commandes,
+            "instance":instance,
+            "montant_livraison":montant_livraison,
           }
             
           #print(my_recipient)
@@ -143,12 +155,13 @@ def envoie_de_mail_commande(sender, created, instance, **kwargs):
           message = EmailMultiAlternatives(
                subject = subject, 
                body = plain_message,
-               from_email = None ,
+               from_email = from_email ,
                to= ['junioressoh98@gmail.com',]
           )
 
           message.attach_alternative(html_message, "text/html")
-          message.send()'''
+          message.send()
+          print('ok message envoyé')'''
 
        
           

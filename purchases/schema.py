@@ -13,8 +13,51 @@ from products.models import *
 from django.contrib.auth.models import User
 from users.models import *
 from users.schema import renvoyer_user, jwt_payload
+# Email
+from django.core.mail import  EmailMultiAlternatives, send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+import random
+import string
 
+def envoie_de_mail_commande(commande, **kwargs):
+    
+          # ----------------- NEW EMAIL SENDER -----------------------------
+    link = "https://athehams.com"
+    subject = "NOUVELLE COMMANDE"
+    recipient_list =[obj['email'] for obj in CustomUser.objects.values('email').filter(is_superuser=True)]
+    produits_commandes =[]
+    montant_livraison="2.000"
+    data1 = [ obj for obj in ProduitsCommandes.objects.filter(commande=commande).values('quantity', 'subtotal', 'price_unitaire', 'variante__name', 'variante__reference', 'product__name', 'product','commande__id')]
+    for obj in data1:
+        print(obj)
+        img = Image.objects.filter(product=obj['product']).first()
+        
+        obj['image']= img.image.url
+        produits_commandes.append(obj)
+        
+    from_email ='contact@athehams.com'
+    context = {
+    "link": link,
+    "produits_commandes":produits_commandes,
+    "instance":commande,
+    "montant_livraison":montant_livraison,
+    }
 
+    #print(my_recipient)
+    html_message = render_to_string("purchases/email.html", context=context)
+    plain_message = strip_tags(html_message)
+
+    message = EmailMultiAlternatives(
+        subject = subject, 
+        body = plain_message,
+        from_email = from_email ,
+        to= ['junioressoh98@gmail.com',]
+    )
+
+    message.attach_alternative(html_message, "text/html")
+    message.send()
+    print('ok message envoyé')
 class CommandesType(DjangoObjectType):
     class Meta:
         model = Commandes
@@ -108,10 +151,10 @@ class CreateCommande(graphene.Mutation):
         request = info.context.META
         user_id = renvoyer_user(request)
         user = CustomUser.objects.get(id=user_id)
-        commande = Commandes.objects.create(user=user)
+        total =0
+        commande =Commandes(user=user, total_amount=total)
         
-        total_amount = 0
-        
+        commande.save()
         for ligne in products_commandes:
             produit = Products.objects.get(slug=ligne.produit_slug)
             quantite = ligne.quantite or 1
@@ -124,24 +167,24 @@ class CreateCommande(graphene.Mutation):
                     
                     price = produit.prix_promo 
                 else:
-                    price=10
+                    price=produit.price
             else:
                 price = produit.price
             variante = Variantes.objects.get(pk=ligne.variante_id)
-            variante_name =variante.name
+            
             ProduitsCommandes.objects.create(
                 commande=commande,
                 product=produit,
                 quantity=quantite,
                 price_unitaire=price,
                 subtotal=price * quantite,
-                variante = variante_name
+                variante = variante
             )
-            total_amount += price * quantite
+            total += price * quantite
         
-        commande.total_amount = total_amount
+        commande.total_amount = total
         commande.save()
-        
+        envoie_de_mail_commande(commande)
         return CreateCommande(commande=commande)
 
 class DeleteCommande(graphene.Mutation):

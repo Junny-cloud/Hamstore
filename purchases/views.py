@@ -49,7 +49,7 @@ def commandes(request):
                     form = CommandesForm()
 
           elif action == 'details':
-               data = [obj for obj in ProduitsCommandes.objects.filter(commande=request.POST['id']).values('product__name', 'product__price', 'quantity', 'variante__name', 'variante__reference','subtotal')]
+               data = [obj for obj in ProduitsCommandes.objects.filter(commande=request.POST['id']).values('product__name', 'product__price', 'quantity', 'variante__name', 'price_unitaire','variante__reference','subtotal')]
                 
           elif action == 'delete':
                obj = Commandes.objects.get(pk=request.POST['id'])

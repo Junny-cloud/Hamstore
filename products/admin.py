@@ -9,7 +9,7 @@ from django.utils.html import format_html
 
 class CategoryAdmin(admin.ModelAdmin):
      list_display = ('images_view','name', 'slug','date_registry', 'status')
-     list_filter = ('image','name', 'date_registry', 'status')
+     list_filter = ('name',)
      list_display_links = ['name']
      search_fields =  ('name',)
      list_per_page = 25
@@ -22,8 +22,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class SubCategoryAdmin(admin.ModelAdmin):
      list_display = ('images_view','name', 'slug','category', 'date_registry','status')
-     list_filter =('name', 'category', 'date_registry','status')
-     search_fields =  ('name', 'category', 'date_registry','status')
+     list_filter =('category',)
+     search_fields =  ('name', 'category',)
      list_display_links = ['name']
      list_per_page = 25
      fieldsets = [('Info sous Categorie', {'fields': [ 'name', 'category', 'status']}),  ]
@@ -58,8 +58,8 @@ class DescriptionPreciseAdmin(admin.ModelAdmin):
 
 class EventAdmin(admin.ModelAdmin):
      list_display = ('images_view','title', 'subtitle','slug','date_limite', 'user','status')
-     list_filter =('title', 'date_limite', 'user','status')
-     search_fields =  ('title', 'date_limite', 'user')
+     list_filter =('title', 'date_limite',)
+     search_fields =  ('title',)
      list_display_links = ['title']
      list_per_page = 25
      fieldsets = [('Info sous Categorie', {'fields': [ 'title', 'subtitle','contenu', 'date_limite']}),
