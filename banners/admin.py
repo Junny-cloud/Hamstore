@@ -31,7 +31,7 @@ class CustomAdminSite(AdminSite):
 
 class BannersAdmin(admin.ModelAdmin):
      list_display = ('images_view','title', 'event','status')
-     list_filter =('title','status')
+     list_filter =('title','event','status')
      search_fields =  ('title',)
      list_display_links = ['title']
      list_per_page = 10

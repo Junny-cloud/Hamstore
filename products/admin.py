@@ -9,7 +9,7 @@ from django.utils.html import format_html
 
 class CategoryAdmin(admin.ModelAdmin):
      list_display = ('images_view','name', 'slug','date_registry', 'status')
-     list_filter = ('name',)
+     list_filter = ('name','date_registry', 'status')
      list_display_links = ['name']
      search_fields =  ('name',)
      list_per_page = 25
@@ -22,7 +22,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class SubCategoryAdmin(admin.ModelAdmin):
      list_display = ('images_view','name', 'slug','category', 'date_registry','status')
-     list_filter =('category',)
+     list_filter =('name','category','status')
      search_fields =  ('name', 'category',)
      list_display_links = ['name']
      list_per_page = 25
@@ -58,7 +58,7 @@ class DescriptionPreciseAdmin(admin.ModelAdmin):
 
 class EventAdmin(admin.ModelAdmin):
      list_display = ('images_view','title', 'subtitle','slug','date_limite', 'user','status')
-     list_filter =('title', 'date_limite',)
+     list_filter =('title', 'date_limite','status')
      search_fields =  ('title',)
      list_display_links = ['title']
      list_per_page = 25
@@ -89,7 +89,7 @@ class ProductsAdmin(admin.ModelAdmin):
      display_first_image.allow_tags = True
 
      list_display = ('display_first_image','name','slug','sub_category','get_variantes',  'price', 'prix_promo','date_registry','status')
-     list_filter = ('sub_category', 'event')
+     list_filter = ('sub_category', 'event', 'name',)
      search_fields =  ('name',)
      list_display_links = ['name']
      list_per_page = 25
@@ -117,7 +117,7 @@ class ProductsAdmin(admin.ModelAdmin):
 
 class CommentairesAdmin(admin.ModelAdmin):
      list_display = ('client','contenu','note', 'product', 'status','date_registry')
-     list_filter = ('client','note', 'product', 'date_registry')
+     list_filter = ('client', 'product', 'date_registry')
      list_display_links = ['client']
      list_per_page = 25
      search_fields =  ('client', 'product')
