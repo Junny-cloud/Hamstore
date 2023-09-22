@@ -26,6 +26,7 @@ def stock_produits(request):
     
     try:
         action = request.POST['action']
+        
         if action == 'list':
             data =[]
             data1 =[obj for obj in Products.objects.all().select_related('variantes').values('id','name','variantes__id', 'variantes__reference', 'variantes__name','price', 'variantes__quantite_en_stock', 'variantes__date_modification','sub_category')]
@@ -33,9 +34,9 @@ def stock_produits(request):
                 img = Image.objects.filter(product__id=obj['id']).first()
                 obj['img']= img.image.url
                 data.append(obj) 
-
         elif action == 'details':
-            data = [obj for obj in Products.objects.filter(id=request.POST['id']).values()]
+           
+           pass
             
         elif action == 'delete':
             obj = Products.objects.get(pk=request.POST['id'])
@@ -83,3 +84,34 @@ def ajouter_stock(request):
 
     return JsonResponse(data, safe=False)
 
+@csrf_exempt
+def details_stock(request):
+    message = ''
+    success = False
+    data = None
+    if request.method == 'POST':
+
+        variante =int( json.loads(request.body.decode('utf-8')).get('variante'))
+        id = json.loads(request.body.decode('utf-8')).get('id')
+        print(variante)
+                
+        if id and variante:
+            data =[]
+            td = Products.objects.prefetch_related('description_precise').prefetch_related('images').get(variantes__id=variante)
+            tx = Products.objects.get(variantes__id=variante).select_related('variantes').prefetch_related('images').values('id','name','sub_category','extras', 'price','prix_promo', 'description','variantes__id', 'variantes__reference', 'variantes__name', 'variantes__quantite_en_stock', 'variantes__date_modification')
+            data1 =Products.objects.get(id=id, variantes__id=variante).select_related('variantes').values('id','name','sub_category','extras', 'price','prix_promo', 'description','variantes__id', 'variantes__reference', 'variantes__name', 'variantes__quantite_en_stock', 'variantes__date_modification')
+            for obj in data1:
+                img =[obj.image.url for obj in Image.objects.get(product__id=obj['id'])]
+                obj['img']=img
+                data.append(obj) 
+
+        return JsonResponse(data, safe=False)
+
+    else:
+        message = 'Erreur: Requête non autorisée !'
+        data = {
+            'message': message,
+            'success': success
+        }
+
+    return JsonResponse(data, safe=False)
