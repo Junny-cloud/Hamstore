@@ -91,7 +91,7 @@ class SubCategory(models.Model):
 
      
 class Variantes(models.Model):
-     name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom sous-categorie")
+     name = models.CharField(max_length=200, null=True, blank=True, verbose_name="Nom variante")
      reference = models.CharField(max_length=8, unique=True,  null=True, blank=True)
      quantite_en_stock = models.IntegerField(default=0, null=True, blank=True, verbose_name="quantité en stock")
 

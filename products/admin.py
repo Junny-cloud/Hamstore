@@ -40,13 +40,15 @@ class SubCategoryAdmin(admin.ModelAdmin):
      fieldsets = [('Info Variantes', {'fields': [ 'name', 'status']}),  ]'''
      
 class VariantesAdmin(admin.ModelAdmin):
-    change_list_template = "admin/products/stock_produits.html"
+     fieldsets = [('Info Variantes', {'fields': [ 'name', 'quantite_en_stock','status']}),  ]
+     change_list_template = "admin/products/stock_produits.html"
 
-    def ma_page_link(self):
-        link = reverse("/")
-        return format_html(f'<a href="{link}">Stock Produits</a>')
+     def ma_page_link(self):
+          
+          link = reverse("/")
+          return format_html(f'<a href="{link}">Stock Produits</a>')
 
-    ma_page_link.short_description = "Lien vers Stock Produits"
+     ma_page_link.short_description = "Lien vers Stock Produits"
      
 class DescriptionPreciseAdmin(admin.ModelAdmin):
      list_display = ('name', 'valeur','date_registry','status')
@@ -54,7 +56,6 @@ class DescriptionPreciseAdmin(admin.ModelAdmin):
      search_fields =  ('name', 'date_registry','status')
      list_display_links = ['name']
      list_per_page = 25
-     fieldsets = [('Info Variantes', {'fields': [ 'name', 'valeur' ,'status']}),  ]
 
 class EventAdmin(admin.ModelAdmin):
      list_display = ('images_view','title', 'subtitle','slug','date_limite', 'user','status')
@@ -136,6 +137,6 @@ _register(SubCategory, SubCategoryAdmin)
 _register(Variantes, VariantesAdmin) 
 _register(Event, EventAdmin) 
 _register(Products, ProductsAdmin) 
-#_register(DescriptionPrecise, DescriptionPreciseAdmin) 
+_register(DescriptionPrecise, DescriptionPreciseAdmin) 
 _register(Commentaires, CommentairesAdmin) 
 

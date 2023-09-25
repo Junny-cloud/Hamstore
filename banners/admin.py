@@ -35,7 +35,7 @@ class BannersAdmin(admin.ModelAdmin):
      search_fields =  ('title',)
      list_display_links = ['title']
      list_per_page = 10
-     fieldsets = [('Info Banners', {'fields': [ 'title', 'images','status']}),
+     fieldsets = [('Info Banners', {'fields': [ 'title', 'images','event', 'status']}),
                    
                     ]
 
