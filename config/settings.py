@@ -343,6 +343,13 @@ JAZZMIN_SETTINGS = {
         "products.category":"fas fa-tags",
         "products.products":"fas fa-shopping-cart",
         "products.event":"fas  fa-universal-access",
+        "products.commentaires":"fas fa-comment",
+        "products.subcategory":"fas fa-tag",
+        "products.variantes":"fas fa-store",
+        "banners.banners":"fas fa-bullhorn",
+        "purchases.commandes":"fas fa-chart-bar",
+        "purchases.produitscommandes":"fas fa-calendar-check",
+
     },
     # for the full list of 5.13.0 free icon classes
     # # Icons that are used when one is not manually specified

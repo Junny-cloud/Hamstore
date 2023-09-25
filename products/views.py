@@ -92,18 +92,27 @@ def details_stock(request):
     if request.method == 'POST':
 
         variante =int( json.loads(request.body.decode('utf-8')).get('variante'))
-        id = json.loads(request.body.decode('utf-8')).get('id')
+        id_produit = json.loads(request.body.decode('utf-8')).get('id')
         print(variante)
                 
-        if id and variante:
-            data =[]
-            td = Products.objects.prefetch_related('description_precise').prefetch_related('images').get(variantes__id=variante)
-            tx = Products.objects.get(variantes__id=variante).select_related('variantes').prefetch_related('images').values('id','name','sub_category','extras', 'price','prix_promo', 'description','variantes__id', 'variantes__reference', 'variantes__name', 'variantes__quantite_en_stock', 'variantes__date_modification')
-            data1 =Products.objects.get(id=id, variantes__id=variante).select_related('variantes').values('id','name','sub_category','extras', 'price','prix_promo', 'description','variantes__id', 'variantes__reference', 'variantes__name', 'variantes__quantite_en_stock', 'variantes__date_modification')
-            for obj in data1:
-                img =[obj.image.url for obj in Image.objects.get(product__id=obj['id'])]
-                obj['img']=img
-                data.append(obj) 
+       
+        data =[]
+        dt = Products.objects.prefetch_related('description_precise').prefetch_related('images').get(variantes__id=variante)
+
+        tx =[obj for obj in Products.objects.filter(variantes__id=variante).all().values('id','name','sub_category','extras', 'price','prix_promo', 'description','variantes__id', 'variantes__reference', 'variantes__name', 'variantes__quantite_en_stock', 'variantes__date_modification')]
+        print(tx)
+        data = tx[0]
+        img =[]
+        for obj in dt.images.all():
+            img.append(obj.image.url)
+
+        dp =[]
+        for obj in dt.description_precise.all().values('name', 'valeur'):
+            dp.append(obj)
+        data['description_precise']=dp
+        data['images']=img
+            
+
 
         return JsonResponse(data, safe=False)
 

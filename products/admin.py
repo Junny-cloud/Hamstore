@@ -136,6 +136,6 @@ _register(SubCategory, SubCategoryAdmin)
 _register(Variantes, VariantesAdmin) 
 _register(Event, EventAdmin) 
 _register(Products, ProductsAdmin) 
-_register(DescriptionPrecise, DescriptionPreciseAdmin) 
+#_register(DescriptionPrecise, DescriptionPreciseAdmin) 
 _register(Commentaires, CommentairesAdmin) 
 

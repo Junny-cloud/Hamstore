@@ -275,10 +275,9 @@
                     data: "variantes__name"
                 }, {
                     data: "price"
-                },{
+                }, {
                     data: "variantes__quantite_en_stock"
-                },
-                 {
+                }, {
                     data: "variantes__date_modification"
                 }, {
                     data: "id"
@@ -287,14 +286,14 @@
                     targets: [0],
                     orderable: true,
                     render: function(data, type, row) {
-                        return '<img src="'+  data +'" style="height:30px; width:30px">';
+                        return '<img src="' + data + '" style="height:30px; width:30px">';
                     }
                 }, {
                     targets: [1],
                     orderable: true,
                     render: function(data, type, row) {
-                       link ='<a rel="detail_produit" class="btn btn-link btn-sm px-2 mr-ml-2  text-info detail_produit">#'+ data +'</a>'
-                    return link;
+                        link = '<a rel="detail_produit" class="btn btn-link btn-sm px-2 mr-ml-2  text-info detail_produit">#' + data + '</a>'
+                        return link;
                     }
                 }, {
                     targets: [2],
@@ -302,7 +301,7 @@
                     render: function(data, type, row) {
                         return data;
                     }
-                },{
+                }, {
                     targets: [3],
                     orderable: true,
                     render: function(data, type, row) {
@@ -318,13 +317,13 @@
                     targets: [5],
                     orderable: true,
                     render: function(data, type, row) {
-                        bs = '<span class="badge rounded-pill alert-primary">'+ data+'</span>';
-                        if (data <=5) {
-                            bs = '<span class="badge px-3 py-2 rounded-pill alert-danger">'+ data+'</span>';
-                        } else if (data >5 && data <=10) {
-                            bs = '<span class="badge px-3 py-2 rounded-pill alert-warning">'+ data+'</span>';
+                        bs = '<span class="badge rounded-pill alert-primary">' + data + '</span>';
+                        if (data <= 5) {
+                            bs = '<span class="badge px-3 py-2 rounded-pill alert-danger">' + data + '</span>';
+                        } else if (data > 5 && data <= 10) {
+                            bs = '<span class="badge px-3 py-2 rounded-pill alert-warning">' + data + '</span>';
                         } else {
-                            bs =  '<span class="badge px-3 py-2 rounded-pill alert-success">'+ data+'</span>'; 
+                            bs = '<span class="badge px-3 py-2 rounded-pill alert-success">' + data + '</span>';
                         };
 
                         return bs;
@@ -373,8 +372,22 @@
                 .on("click", 'a[rel="detail_produit"]', function() {
                     var tr = stock_produits.cell($(this).closest("td, li")).index();
                     var data = stock_produits.row(tr.row).data();
-                    
+                    variante = data.variantes__id;
+                    console.log(id_demande);
+                    axios.defaults.cookieName = 'csrftoken'
+                    axios.defaults.headerName = 'X-CSRFToken'
+                    axios.post(
+                        "{% url 'products:details' %}", {
+                            variante: variante,
+                            id: data.id
+                        }
+                    ).then((response) => {
 
+                        console.log(response.data.price);
+
+                    }).catch((e) => {
+                        console.log(e)
+                    })
                     modal_title
                         .find("span")
                         .html(
@@ -386,21 +399,22 @@
                     $("#myModal").css("display", "block");
                     $("#myModal").fadeIn(500);
                     $('.reference').text(data.reference);
-                   
+
                 })
 
                 .on("click", 'a[rel="ajouter_stock"]', function() {
                     var tr = stock_produits.cell($(this).closest("td, li")).index();
                     var data = stock_produits.row(tr.row).data();
-                     id_demande = data.variantes__id;
+                    id_demande = data.variantes__id;
+
 
 
                     modal_title
                         .find("span")
                         .html(
                             'Ajouter quantité  <span class="text-danger">' +
-                            data.variantes__reference +
-                            "</span>"
+                            data.name + ' ( ' + data.variantes__name +
+                            ") </span>"
                         );
 
                     $("#myModalValidation").css("display", "block");
