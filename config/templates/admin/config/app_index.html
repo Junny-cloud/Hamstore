@@ -6,6 +6,10 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
 <!-- highcharts -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
 <!-- JQUERY -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <!-- AXIOS -->
@@ -199,12 +203,13 @@
                 <div class="card rounded-0">
                     <div class="card-body shadow-4-soft" style="border-bottom: 2px solid rgb(245, 241, 0);">
                         <div class="row">
-                            <div class="align-self-center bg-opacity-10 bg-danger  ml-2">
-                                <i class="fas fa-users text-white fa-2x p-4" style="font-size: 35px !important;"></i>
+                            <div class="align-self-center bg-opacity-10 bg-yellow  ml-2">
+                                <i class="fas fa-store text-white fa-2x p-4" style="font-size: 35px !important;"></i>
+
                             </div>
                             <div class="col-sm-8 text-right">
                                 <h2 class="h3 text-yellow" id="total-produits"></h2>
-                                <p class="h4 card-subtitle mb-2 text-muted">Total produits</p>
+                                <p class="h4  card-subtitle mb-2 text-muted">Total produits</p>
                             </div>
                         </div>
                     </div>
@@ -229,8 +234,9 @@
                 <div class="card rounded-0">
                     <div class="card-body shadow-4-soft" style="border-bottom: 2px solid rgba(218, 2, 2, 0.959);">
                         <div class="row">
-                            <div class="align-self-center bg-opacity-10 bg-danger  ml-2">
-                                <i class="fas fa-users text-white fa-2x p-4" style="font-size: 35px !important;"></i>
+                            <div class="align-self-center bg-opacity-10 bg-orange  ml-2">
+                                <i class="fas fa-comment text-white fa-2x p-4" style="font-size: 35px !important;"></i>
+
                             </div>
                             <div class="col-sm-8 text-right">
                                 <h2 class="h3 text-danger" id="total-comments"></h2>
@@ -244,8 +250,9 @@
                 <div class="card rounded-0">
                     <div class="card-body shadow-4-soft" style="border-bottom: 2px solid rgb(0, 167, 8);">
                         <div class="row">
-                            <div class="align-self-center bg-opacity-10 bg-danger  ml-2">
-                                <i class="fas fa-users text-white fa-2x p-4" style="font-size: 35px !important;"></i>
+                            <div class="align-self-center bg-opacity-10 bg-green  ml-2">
+                                <i class="fas fa-users-cog text-white fa-2x p-4" style="font-size: 35px !important;"></i>
+
                             </div>
                             <div class="col-sm-8 text-right">
                                 <h2 class="h3 text-green" id="total-admin"></h2>
@@ -424,7 +431,7 @@
                 var date_commande = objet.date_registry
                 date_commande = moment(date_commande, 'YYYYMMDDHHmm').format('LLL');
                 console.log(date_commande);
-                 etat = '<i class="fas fa-exclamation-circle text-warning"></i>';
+                etat = '<i class="fas fa-exclamation-circle text-warning"></i>';
                 if (objet.etat_commande == "En cours") {
                     etat = '<i class="fas fa-exclamation-circle text-warning"></i>';
                 } else if (objet.etat_commande == "Confirmer") {
@@ -432,7 +439,7 @@
                 } else {
                     etat = '<i class="far fa-times-circle text-danger"></i>';
                 };
-                
+
 
                 if (objet.user__last_name !== "" || objet.user__first_name !== "") {
                     fullName = objet.user__first_name + ' ' + objet.user__last_name;
