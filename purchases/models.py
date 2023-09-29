@@ -101,6 +101,7 @@ class FavoriteProducts(models.Model):
     
   
 #@receiver(post_save, sender=Commandes)
+
 '''def envoie_de_mail_commande(sender, created, instance, **kwargs):
      if instance.pk and instance._state.fields_changed:
           

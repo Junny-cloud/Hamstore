@@ -36,7 +36,7 @@ def envoie_de_mail_commande(commande, **kwargs):
         obj['image']= img.image.url
         produits_commandes.append(obj)
         
-    from_email ='contact@athehams.com'
+    from_email ='contact@cabinetfirdaws.org'
     context = {
     "link": link,
     "produits_commandes":produits_commandes,
@@ -51,11 +51,13 @@ def envoie_de_mail_commande(commande, **kwargs):
     message = EmailMultiAlternatives(
         subject = subject, 
         body = plain_message,
-        from_email = None ,
-        to= ['junioressoh98@gmail.com',]
+        from_email = from_email ,
+        to= recipient_list
     )
-
+    from_name = "ATHEHAMS"
+    message.from_name=from_name
     message.attach_alternative(html_message, "text/html")
+    
     message.send()
     print('ok message envoyé')
 class CommandesType(DjangoObjectType):

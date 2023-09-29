@@ -285,11 +285,11 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_TIMEOUT = 20
 EMAIL_USE_TLS = True
 #EMAIL_USE_SSL = True
-EMAIL_HOST = 'mail.athehams.com'
-EMAIL_HOST_USER = 'contact@athehams.com'
-EMAIL_HOST_PASSWORD = 'Hamed@2023'
+EMAIL_HOST = 'mail.cabinetfirdaws.org'
+EMAIL_HOST_USER = 'contact@cabinetfirdaws.org'
+EMAIL_HOST_PASSWORD = 'Abdelakim8810@'
 EMAIL_PORT =  587
-EMAIL_SUBJECT_PREFIX = 'Athehams Boutique :'
+EMAIL_SUBJECT_PREFIX = 'Athehams : '
 #---------------------- EMAIL CONFIG ----------------------
 '''EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST ='mail.athehams.com'
