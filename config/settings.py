@@ -271,7 +271,8 @@ GRAPHQL_AUTH = {
     'first_name': "String",
     'last_name': "String",
     'date_naissance': "String",
-    'abonnes_newsletters':'Boolean',
+    'telephone': "String",
+    #'abonnes_newsletters':'Boolean',
     
     },
     'REGISTER_MUTATION_FIELDS_OPTIONAL':['username', 'password2'],

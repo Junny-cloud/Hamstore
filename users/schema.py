@@ -21,6 +21,7 @@ REGISTER_MUTATION_FIELDS = [
     ('first_name', graphene.String(required=True)),
     ('last_name', graphene.String(required=True)),
     ('date_naissance', graphene.String(required=True)),
+    ('telephone', graphene.String(required=True)),
     ('abonnes_newsletters', graphene.Boolean()),
     ('password', graphene.String(required=True)),
 ]
@@ -69,6 +70,7 @@ class UserInput(graphene.InputObjectType):
      email = graphene.String(required=True)
      firstname = graphene.String(required=True)
      lastname = graphene.String(required=True)
+     telephone = graphene.String(required=True)
      date_naissance = graphene.Date(required=True)
      abonnes_newsletters = graphene.Boolean(required=True)
      password = graphene.String(required=True)
@@ -103,6 +105,7 @@ class CreateUser(graphene.Mutation):
           lastname = input.lastname
           date_naissance = input.date_naissance
           abonnes_newsletters = input.abonnes_newsletters
+          telephone = input.telephone
           username = input.email
           password = input.password
           # Check if email is already used
@@ -116,6 +119,7 @@ class CreateUser(graphene.Mutation):
                last_name=lastname,
                date_naissance=date_naissance,
                abonnes_newsletters=abonnes_newsletters,
+               telephone=telephone
           )
           user.set_password(password)
           
