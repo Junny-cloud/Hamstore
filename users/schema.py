@@ -89,6 +89,7 @@ class UpdateUserInfoInput(graphene.InputObjectType):
      last_name = graphene.String()
      date_naissance = graphene.Date()
      telephone = graphene.String()
+     abonnes_newsletters= graphene.Boolean()
 
 class CreateUser(graphene.Mutation):
      class Arguments:
@@ -155,26 +156,46 @@ class CustomRegister(mutations.Register):
 
 class UpdateUserEmail(graphene.Mutation):
      class Arguments:
-          email_input = UpdateUserEmailInput(required=True)
+
+          new_email = graphene.String(required=True)
           
 
      success = graphene.Boolean()
 
      @staticmethod
-     def mutate(self, info, email_input):
+     def mutate(self, info, new_email):
           User = get_user_model()
           request = info.context.META
           user_id =renvoyer_user(request)
           try:
-               user = User.objects.get(pk=user_id ,email=email_input.old_email)
+               user = User.objects.get(pk=user_id)
           except User.DoesNotExist:
                raise Exception("User not found")
 
-          user.email = email_input.new_email
-          user.username = email_input.new_email
+          user.email = new_email
+          user.username = new_email
           user.save()
 
           return UpdateUserEmail(success=True)
+
+class CloseAccount(graphene.Mutation):
+
+     success = graphene.Boolean()
+
+     @staticmethod
+     def mutate(self, info):
+          User = get_user_model()
+          request = info.context.META
+          user_id =renvoyer_user(request)
+          try:
+               user = User.objects.get(pk=user_id)
+          except User.DoesNotExist:
+               raise Exception("User not found")
+
+          user.is_active=False
+          user.save()
+
+          return CloseAccount(success=True)
 
 class UpdateUserPassword(graphene.Mutation):
 
@@ -228,9 +249,11 @@ class UpdateUserInfo(graphene.Mutation):
                user.date_naissance =info_input.date_naissance
           if info_input.telephone is not None and info_input.telephone != "":
                user.telephone =info_input.telephone
+          if info_input.abonnes_newsletters is not None and info_input.abonnes_newsletters != "":
+               user.abonnes_newsletters =info_input.abonnes_newsletters
 
           user.save()
-
+          
           return UpdateUserInfo(success=True)
 
 class YourInputObjectType(graphene.InputObjectType):
@@ -321,6 +344,7 @@ class AuthMutation(graphene.ObjectType):
      update_user_email = UpdateUserEmail.Field()
      update_user_password = UpdateUserPassword.Field()
      update_user_info = UpdateUserInfo.Field()
+     close_account = CloseAccount.Field()
      
 
      
