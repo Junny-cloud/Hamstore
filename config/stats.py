@@ -55,7 +55,7 @@ def vente_data():
         total = Commandes.objects.filter(Q(date_registry__year=year, date_registry__month=m)).aggregate(somme_prix=Coalesce(Sum('total_amount'), 0))['somme_prix']
         data_month_all[x_month][1]=total
         data_month.append(int(total))
-    return data_month
+    return data_month_all
     
 
 
@@ -66,8 +66,9 @@ month_commandes_count =Commandes.objects.filter(Q(date_registry__year=year, date
 month_commandes_total =Commandes.objects.filter(Q(date_registry__year=year, date_registry__month=month)).aggregate(somme_prix=Coalesce(Sum('total_amount'), 0))['somme_prix']
 
 year_commandes_valide_count = Commandes.objects.filter(Q(date_registry__year=year, status=True)).count() 
+commandes_non_validees_count = Commandes.objects.exclude(etat_commande='Terminé').count()
 today_commandes_valide_count = Commandes.objects.filter(Q(date_registry=date.today(), status=True)).count() 
-year_commandes_count = Commandes.objects.filter(Q(date_registry__year=year, status=True)).count() 
+year_commandes_count = Commandes.objects.filter(Q(date_registry__year=year)).count() 
 year_commandes_total = Commandes.objects.filter(Q(date_registry__year=year, status=True)).aggregate(somme_prix=Coalesce(Sum('total_amount'), 0))['somme_prix']
 
 montant_vente_per_month = vente_data()
@@ -99,7 +100,7 @@ stats_json = {
     
      "year_commandes_valide_count":year_commandes_valide_count,
      "today_commandes_valide_count":today_commandes_valide_count,
-     "today_commandes_valide":today_commandes_valide_count,
+     "commandes_non_validees":commandes_non_validees_count,
     "year_commandes_count": year_commandes_count,
      "year_commandes_total": year_commandes_total,
     
