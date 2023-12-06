@@ -16,7 +16,7 @@ import os
 import requests
 import random
 import string
-
+from tinymce import models as tinymce_models
 User = settings.AUTH_USER_MODEL
 
 # CUSTOM IMAGE CATEGORIES AND PRODUITS
@@ -181,7 +181,7 @@ class Products(models.Model):
      price = models.IntegerField( null=True, blank=True, verbose_name="Prix")
      prix_promo = models.IntegerField( null=True, blank=True, verbose_name="Prix evenement")
      images = models.ManyToManyField('Image')
-     description = models.TextField( null=True, blank=True, verbose_name="description produit")
+     description = tinymce_models.HTMLField( null=True, blank=True, verbose_name="description produit")
      description_precise = models.ManyToManyField(DescriptionPrecise, blank=True, verbose_name="description precise")
      variantes = models.ManyToManyField(Variantes, blank=True, verbose_name="les variantes")
 

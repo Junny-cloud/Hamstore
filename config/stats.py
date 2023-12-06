@@ -66,7 +66,7 @@ month_commandes_count =Commandes.objects.filter(Q(date_registry__year=year, date
 month_commandes_total =Commandes.objects.filter(Q(date_registry__year=year, date_registry__month=month)).aggregate(somme_prix=Coalesce(Sum('total_amount'), 0))['somme_prix']
 
 year_commandes_valide_count = Commandes.objects.filter(Q(date_registry__year=year, status=True)).count() 
-commandes_non_validees_count = Commandes.objects.exclude(etat_commande='Terminé').count()
+commandes_non_validees_count = Commandes.objects.exclude(etat_commande='Terminee').count()
 today_commandes_valide_count = Commandes.objects.filter(Q(date_registry=date.today(), status=True)).count() 
 year_commandes_count = Commandes.objects.filter(Q(date_registry__year=year)).count() 
 year_commandes_total = Commandes.objects.filter(Q(date_registry__year=year, status=True)).aggregate(somme_prix=Coalesce(Sum('total_amount'), 0))['somme_prix']

@@ -40,6 +40,26 @@ class ProduitsCommandesAdmin(admin.ModelAdmin):
     search_fields =  ('commande', 'product','date_registry', 'status')
 
     fieldsets = [('Produits Commandes', {'fields': [ 'product', 'quantity']}),]
+    
+
+
+class TransactionsAdmin(admin.ModelAdmin):
+    change_list_template = "admin/purchases/list_transactions.html"
+
+    def ma_page_link(self):
+        link = reverse("/")
+        return format_html(f'<a href="{link}">Transactions</a>')
+
+    ma_page_link.short_description = "Lien vers ma page personnalisée"
+    
+'''class TransactionsAdmin(admin.ModelAdmin):
+    list_display = ('transaction_id','commande', 'amount','currency', 'payment_method','payment_date', 'status')
+    list_filter = ('payment_date', 'status')
+    list_display_links = ['transaction_id']
+    list_per_page = 25
+    search_fields = ('payment_date', 'status')'''
+
+    
 
 def _register(model, admin_class):
     admin.site.register(model, admin_class)
@@ -47,3 +67,4 @@ def _register(model, admin_class):
 
 myadmin.register(Commandes, CommandesAdmin) 
 myadmin.register(ProduitsCommandes)
+myadmin.register(Transactions, TransactionsAdmin) 

@@ -337,7 +337,6 @@
                                     <tr>
                                         <th># Reference</th>
                                         <th>Nom & Prenoms Client</th>
-                                        <th>Contact</th>
                                         <th>Coût Total</th>
                                         <th>Etat de la commande</th>
                                         <th>Date</th>
@@ -495,13 +494,7 @@
                     fullName = "Inconnu"
                 };
 
-                if (objet.user__telephone !== null) {
-                    contact = objet.user__telephone;
-                } else {
-                    contact = "00-00-00-00-00"
-                };
-
-                var dt = '<tr><td>' + objet.reference + '</td><td>' + fullName + '</td><td>' + contact + '</td><td>' + money_format.format(objet.total_amount) + '</td><td style="text-align:center">' + etat + '</td><td>' + date_commande + '</td></tr>';
+                var dt = '<tr><td>' + objet.reference + '</td><td>' + fullName + '</td><td>' + money_format.format(objet.total_amount) + '</td><td style="text-align:center">' + etat + '</td><td>' + date_commande + '</td></tr>';
                 liste.append(dt);
             });
         };

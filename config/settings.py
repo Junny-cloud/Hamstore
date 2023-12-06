@@ -45,6 +45,7 @@ DJANGO_PACKAGES = [
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "graphql_auth",
     "django_filters",
+    'tinymce',
    
 ]
 
@@ -76,6 +77,8 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
 
 }
+
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -201,6 +204,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'config/../config/static/'),
 )
+#TINYMCE_JS_URL = os.path.join(STATIC_URL, "path/to/tiny_mce/tiny_mce.js")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -350,6 +354,7 @@ JAZZMIN_SETTINGS = {
         "banners.banners":"fas fa-bullhorn",
         "purchases.commandes":"fas fa-chart-bar",
         "purchases.produitscommandes":"fas fa-calendar-check",
+         "purchases.transactions":"fas fa-chart-line",
 
     },
     # for the full list of 5.13.0 free icon classes

@@ -1,4 +1,4 @@
-{% extends "admin/base.html" %} {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}Stock Produits{% endblock %} {% block branding %}
+{% extends "admin/base.html" %} {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}Nos Transactions{% endblock %} {% block branding %}
 <div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
 {% if user.is_anonymous %} {% include "admin/color_theme_toggle.html" %} {% endif %} {% endblock %} {% block nav-global %}{% endblock %} {% load static %} {% block extrastyle %}
 <!-- Font Awesome -->
@@ -14,7 +14,6 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
 <!-- highcharts -->
-
 
 
 
@@ -70,7 +69,7 @@
 </style>
 {% endblock %} {% block content %}
 <!-- MODAL -->
-{% include 'admin/products/details_produit.html' %} {% include 'admin/products/add_stock_produit.html' %}
+{% include 'admin/purchases/details_commande.html' %} {% include 'admin/purchases/valider_commande.html' %}
 <!-- MODAL -->
 
 <!-- EXEMPLE DE CONTENUE -->
@@ -80,7 +79,9 @@
 
 
         <!--    STATS FINANCE -->
-        <div class="col-md-12 card bg-white mb-4 p-2 shadow-2-soft" style="border-bottom: 2px solid rgb(203, 19, 19);">
+
+
+     <div class="col-md-12 card bg-white mb-4 p-2 shadow-2-soft" style="border-bottom: 2px solid rgb(203, 19, 19);">
             <div class="row">
                 <div class="col-xl-3 col-sm-6 col-12 pt-2" style="border-right: 1px solid #e4e4e4;">
                     <div class="card pb-0 rounded-0  border-0 shadow-none">
@@ -148,35 +149,33 @@
             </div>
         </div>
 
-
-
         <div class="card p-4 rounded-0" style="border-bottom: 2px solid rgb(28, 247, 39);">
             <div class="card-header bg-white">
-                <h2 class="font-weight-bold">Stock des produits</h2>
+                <h2 class="font-weight-bold">Nos Commandes</h2>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table align-middle mb-0 bg-white table-sm table-hover" id="table_id">
                         <thead>
-                            <th></th>
-                            <th># Reference</th>
-                            <th>Nom produit(s)</th>
-                            <th>Variété(s)</th>
-                            <th>Prix Unitaire(s)</th>
-                            <th>Quantitée(s) en stock</th>
-                            <th>Operation</th>
+                            <tr>
+                                <th>Code Transaction</th>
+                                <th>Ref. Commandes</th>
+                                <th>Montant</th>
+                                <th>Methode payment</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
                         </thead>
                         <tbody class="text-left">
 
                         </tbody>
                         <tfoot>
-                            <th></th>
-                            <th># Reference</th>
-                            <th>Nom produit(s)</th>
-                            <th>Variété(s)</th>
-                            <th>Prix Unitaire(s)</th>
-                            <th>Quantitée(s) en stock</th>
-                            <th>Operation</th>
+                            <th>Code Transaction</th>
+                            <th>Ref. Commandes</th>
+                            <th>Montant</th>
+                            <th>Methode payment</th>
+                            <th>Date</th>
+                            <th>Status </th>
                         </tfoot>
                     </table>
                     <!-- /.table-->
@@ -239,7 +238,6 @@
 
             return formatter.format(montant);
         };
-        
         // Votre code DataTable ici en utilisant $
         $(document).ready(async function() {
             axios.defaults.xsrfCookieName = "csrftoken";
@@ -247,7 +245,7 @@
 
             const getData = await axios.post("/stats/");
             var stats_data = getData.data;
-            console.log('stats_data');
+            
         $("#today-commandes").text(stats_data.today_commandes_count);
         $("#sub-today-commandes").text(formatMontantXOF(stats_data.today_commandes_total));
         $("#commandes-valides").text(stats_data.year_commandes_valide_count);
@@ -260,7 +258,6 @@
         $("#total-user").text(stats_data.client_count);
         $("#total-comments").text(stats_data.commentaires_count);
         $("#total-admin").text(stats_data.admin_count);
-
             id_demande = 0;
             var pathname = window.location.pathname;
             $('#table_id').DataTable({
@@ -278,7 +275,7 @@
                 processing: true,
                 order: [],
                 ajax: {
-                    url: "/products/stock_produits/",
+                    url: "/purchases/list_transactions/",
                     type: 'POST',
                     data: {
                         'action': 'list'
@@ -289,41 +286,37 @@
                     },
                 },
                 columns: [{
-                    data: "img"
-                }, {
-                    data: "variantes__reference"
+                    data: "transaction_id"
                 }, {
 
-                    data: "name"
+                    data: "commande__reference"
                 }, {
-                    data: "variantes__name"
+                    data: "amount"
                 }, {
-                    data: "price"
+                    data: "payment_method"
                 }, {
-                    data: "variantes__quantite_en_stock"
+                    data: "payment_date"
                 }, {
-                    data: "variantes__date_modification"
-                }, {
-                    data: "id"
+                    data: "status"
                 }, ],
                 columnDefs: [{
                     targets: [0],
                     orderable: true,
                     render: function(data, type, row) {
-                        return '<img src="' + data + '" style="height:30px; width:30px">';
+                        link ='<a rel="detail_commande" class="btn btn-link btn-sm px-2 mr-ml-2  text-info detail_commande">#'+ data +'</a>'
+                        return link;
                     }
                 }, {
                     targets: [1],
                     orderable: true,
                     render: function(data, type, row) {
-                        link = '<a rel="detail_produit" class="btn btn-link btn-sm px-2 mr-ml-2  text-info detail_produit">#' + data + '</a>'
-                        return link;
+                        return data;
                     }
                 }, {
                     targets: [2],
                     orderable: true,
                     render: function(data, type, row) {
-                        return data;
+                         return formatMontantXOF(data);
                     }
                 }, {
                     targets: [3],
@@ -331,29 +324,8 @@
                     render: function(data, type, row) {
                         return data;
                     }
-                }, {
+                },  {
                     targets: [4],
-                    orderable: true,
-                    render: function(data, type, row) {
-                        return formatMontantXOF(data);
-                    }
-                }, {
-                    targets: [5],
-                    orderable: true,
-                    render: function(data, type, row) {
-                        bs = '<span class="badge rounded-pill alert-primary">' + data + '</span>';
-                        if (data <= 5) {
-                            bs = '<span class="badge px-3 py-2 rounded-pill alert-danger">' + data + '</span>';
-                        } else if (data > 5 && data <= 10) {
-                            bs = '<span class="badge px-3 py-2 rounded-pill alert-warning">' + data + '</span>';
-                        } else {
-                            bs = '<span class="badge px-3 py-2 rounded-pill alert-success">' + data + '</span>';
-                        };
-
-                        return bs;
-                    }
-                }, {
-                    targets: [6],
                     orderable: true,
                     render: function(data, type, row) {
                         var dt = moment().format("hh:mm")
@@ -370,11 +342,17 @@
                         return dt;
                     }
                 }, {
-                    targets: [7],
-                    orderable: false,
-                    render: function(data, type) {
-                        var buttons = '<a rel="ajouter_stock" class=" x-2 text-success ajouter_stock"><i class="fas fa-edit "></i></a>';
-                        return buttons;
+                    targets: [5],
+                    orderable: true,
+                    render: function(data, type, row) {
+                        bs = '<i class="fas fa-exclamation-circle text-warning"></i>';
+                       if (data == "SUCCESS") {
+                            bs = '<i class="fas fa-check-circle text-success"></i>';
+                        } else {
+                            bs = '<i class="far fa-times-circle text-danger"></i>';
+                        };
+
+                        return bs;
                     }
                 }, ],
                 language: {
@@ -383,107 +361,27 @@
 
 
             });
-            var stock_produits = $('#table_id').DataTable();
+            var transactions = $('#table_id').DataTable();
             // GENERALS FUNCTIONS
 
             $(function() {
                 modal_title = $('.modal-title');
-                stock_produits;
+                transactions;
 
                 $('#table_id tbody')
 
-                // DETAILS COMMANDE
-                .on("click", 'a[rel="detail_produit"]', function() {
-                    var tr = stock_produits.cell($(this).closest("td, li")).index();
-                    var data = stock_produits.row(tr.row).data();
-                    variante = data.variantes__id;
-                    console.log(id_demande);
-                    axios.defaults.cookieName = 'csrftoken'
-                    axios.defaults.headerName = 'X-CSRFToken'
-                    axios.post(
-                        "{% url 'products:details' %}", {
-                            variante: variante,
-                            id: data.id
-                        }
-                    ).then((response) => {
-
-                        console.log(response.data.price);
-                        data =response.data;
-                        $('.name-product').text(data.name);
-                        $('.quantite').text(data.variantes__quantite_en_stock);
-                        $('.price').text(formatMontantXOF(data.price));
-                        $('.variante-name').text(data.variantes__name);
-                        $('.description').text(data.description);
-                        modal_title
-                        .find("span")
-                        .html(
-                            'Détails Produit : <span class="text-danger">' +
-                            data.name + ' ( '+ data.variantes__name +
-                            ')</span>'
-                        );
-                       var listeImages = data.images;
-                       var monDiv1 = $('.img-autres');
-                       var monDiv2 = $('.img-principale');
-
-                        // Videz son contenu (y compris les balises HTML)
-                        monDiv1.empty();
-                        monDiv2.empty();
-                       // Parcourez la liste d'images et créez des éléments d'image pour chaque lien
-                        $.each(listeImages, function(index, lienImage) {
-                            dt = '<img src="'+ lienImage +'" class="d-block w-100" alt="...">';
-                            if (index==0) {
-                                dt = '<img src="'+ lienImage +'" class="d-block w-100" alt="...">';
-                                 $('.img-principale').append(dt);
-                            } else {
-                                dt= '<div class="col-md-5" style="border: 1px solid rgb(223, 223, 223);"><img src="'+ lienImage +'" class="d-block w-100" alt="..."></div>';
-                                $('.img-autres').append(dt);
-                            }
-                           
-                        });
-                       
-
-                    }).catch((e) => {
-                        console.log(e)
-                    })
-                    
-
-                    $("#myModal").css("display", "block");
-                    $("#myModal").fadeIn(500);
-                    $('.reference').text(data.reference);
-
-                })
-
-                .on("click", 'a[rel="ajouter_stock"]', function() {
-                    var tr = stock_produits.cell($(this).closest("td, li")).index();
-                    var data = stock_produits.row(tr.row).data();
-                    id_demande = data.variantes__id;
-
-
-
-                    modal_title
-                        .find("span")
-                        .html(
-                            'Ajouter quantité  <span class="text-danger">' +
-                            data.name + ' ( ' + data.variantes__name +
-                            ") </span>"
-                        );
-
-                    $("#myModalValidation").css("display", "block");
-                    $("#myModalValidation").fadeIn(500);
-                    $('.reference').text(data.reference);
-                });
-
+             
                 // validation demande 
                 $('#valider').click(function() {
                     axios.defaults.cookieName = 'csrftoken'
                     axios.defaults.headerName = 'X-CSRFToken'
 
                     console.log(id_demande);
-                    let fnvalid = $('#stock_quantite').val();
+                    let fnvalid = $('#status').val();
                     console.log(fnvalid)
                     axios.post(
-                        "{% url 'products:ajouter_stock' %}", {
-                            quantite: fnvalid,
+                        "{% url 'purchases:valider_commande' %}", {
+                            valider: fnvalid,
                             id: id_demande
                         }
                     ).then((response) => {
@@ -511,12 +409,9 @@
     })(jQuery);
 </script>
 <script>
-     jQuery.noConflict();
-  $(document).ready( function() {
-
-           
-        var pathname = window.location.pathname;
+    $(document).ready(async function() {
         var host = '/media/';
+        
         var money_format = new Intl.NumberFormat('fr-FR', {
             style: 'currency',
             currency: 'XOF',
@@ -532,8 +427,6 @@
 
             return formatter.format(montant);
         };
-
-
 
 
     });

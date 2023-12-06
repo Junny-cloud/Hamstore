@@ -65,6 +65,11 @@ class CommandesType(DjangoObjectType):
         model = Commandes
         fields = "__all__"
         
+class TransactionsType(DjangoObjectType):
+    class Meta:
+        model = Transactions
+        fields = "__all__"
+        
 class CommandesFilterInput(graphene.InputObjectType):
     # Ajoutez les champs que vous souhaitez filtrer
     date_commande = graphene.Date()
@@ -94,6 +99,9 @@ class Query(graphene.ObjectType):
     
     produitscommandes = graphene.List(ProduitsCommandesType)
     produitscommande = graphene.Field(ProduitsCommandesType, id=graphene.ID(required=True))
+    
+    transactions =graphene.List(TransactionsType)
+    transaction = graphene.Field(TransactionsType, id=graphene.ID(required=True))
     
     def resolve_commandes(self, info, filter=None):
         commandes = Commandes.objects.all()
@@ -189,6 +197,63 @@ class CreateCommande(graphene.Mutation):
         envoie_de_mail_commande(commande)
         return CreateCommande(commande=commande)
 
+"""class CreateCommande(graphene.Mutation):
+    class Arguments:
+        products_commandes = graphene.List(ProductsCommandesInput)
+
+    commande = graphene.Field(lambda: CommandesType)
+    message = graphene.String()
+
+    @classmethod
+    def mutate(cls, root, info, products_commandes):
+        request = info.context.META
+        user_id = renvoyer_user(request)
+        user = CustomUser.objects.get(id=user_id)
+        total = 0
+        commande = Commandes(user=user, total_amount=total)
+        valider = True
+        msg = ''
+
+        commande.save()
+        for ligne in products_commandes:
+            produit = Products.objects.get(slug=ligne.produit_slug)
+            variante = Variantes.objects.get(pk=ligne.variante_id)
+            quantite = ligne.quantite or 1
+
+            if quantite > variante.quantite_en_stock:
+                valider = False
+                msg = f"Le produit {produit.name} est disponible en quantité de {variante.quantite_en_stock}"
+                break  # Sortir de la boucle si la condition est vraie
+
+            price = 10
+            if produit.event:
+                if produit.prix_promo:
+                    price = produit.prix_promo
+                else:
+                    price = produit.price
+            else:
+                price = produit.price
+
+            ProduitsCommandes.objects.create(
+                commande=commande,
+                product=produit,
+                quantity=quantite,
+                price_unitaire=price,
+                subtotal=price * quantite,
+                variante=variante
+            )
+            total += price * quantite
+
+        if not valider:
+            # Annuler la commande si la validation a échoué
+            commande.delete()
+            return CreateCommande(commande=None, message=msg)
+
+        commande.total_amount = total
+        commande.save()
+        envoie_de_mail_commande(commande)
+        return cls(commande=commande, message='success')
+"""
 class DeleteCommande(graphene.Mutation):
     class Arguments:
         commandes_id = graphene.ID(required=True)
@@ -304,6 +369,79 @@ class DeleteAllFavoris(graphene.Mutation):
         return DeleteAllFavoris(success=True)  
 
 
+
+    
+    
+class CreateTransaction(graphene.Mutation):
+    class Arguments:
+        commande_reference = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    transaction = graphene.Field(TransactionsType)
+
+    def mutate(self, info, commande_reference):
+        status = "EN COURS"
+        commande = Commandes.objects.get(reference=commande_reference)
+        transaction = Transactions(commande=commande, status=status)
+        transaction.save()
+        return CreateTransaction(success=True, transaction=transaction)
+
+
+class UpdateTransactionInput(graphene.InputObjectType):
+    amount = graphene.String()
+    currency = graphene.String()
+    status = graphene.String()
+    payment_method = graphene.String()
+    description = graphene.String()
+    metadata = graphene.String()
+    operator_id = graphene.String()
+    payment_date = graphene.String()
+   
+    
+class UpdateTransaction(graphene.Mutation):
+    
+    class Arguments:
+        transaction_id = graphene.String(required=True)
+        transaction_data = UpdateTransactionInput(required=True)
+
+    transaction = graphene.Field(TransactionsType)
+    success = graphene.Boolean()
+    
+    def mutate(self, info, transaction_id, transaction_data=None):
+        try:
+            transaction = Transactions.objects.get(transaction_id=transaction_id)
+        except Transactions.DoesNotExist:
+            raise Exception("La transaction initiée n'existe pas")
+        
+        amount = transaction_data.amount
+        currency = transaction_data.currency
+        status = transaction_data.status
+        payment_method = transaction_data.payment_method
+        description = transaction_data.description
+        metadata = transaction_data.metadata
+        operator_id = transaction_data.operator_id
+        payment_date = transaction_data.payment_date
+        
+        if amount is not None:
+            transaction.amount = amount
+        if currency is not None:
+            transaction.currency = currency
+        if status is not None:
+            transaction.status = status
+        if payment_method is not None:
+            transaction.payment_method = payment_method
+        if description is not None:
+            transaction.description = description
+        if metadata is not None:
+            transaction.metadata = metadata
+        if operator_id is not None:
+            transaction.operator_id = operator_id
+        if payment_date is not None:
+            transaction.payment_date = payment_date
+
+        transaction.save()
+        return UpdateTransaction(transaction=transaction, success=True)
+       
 class Mutation(graphene.ObjectType):
     create_commande = CreateCommande.Field()
     delete_commande = DeleteCommande.Field()
@@ -311,6 +449,9 @@ class Mutation(graphene.ObjectType):
     add_favoris = AddFavoris.Field()
     delete_favoris = DeleteFavoris.Field()
     delete_all_favoris = DeleteAllFavoris.Field()
+    
+    create_transaction = CreateTransaction.Field()
+    update_transaction = UpdateTransaction.Field()
     
     
 #schema = graphene.Schema(query=Query, mutation=Mutation)
