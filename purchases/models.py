@@ -34,7 +34,7 @@ class Commandes(models.Model):
      etat_commande = models.CharField(max_length=200, default="En cours",null=True, blank=True, verbose_name="etat de la commande")
      date_registry = models.DateTimeField(default=timezone.now,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
-     status = models.BooleanField(default=False, verbose_name='Etat')
+     status = models.BooleanField(default=True, verbose_name='Etat')
      
      class Meta:
           verbose_name = "Commande"

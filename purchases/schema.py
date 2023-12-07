@@ -19,6 +19,8 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import random
 import string
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+
 
 def envoie_de_mail_commande(commande, **kwargs):
     
@@ -104,7 +106,7 @@ class Query(graphene.ObjectType):
     transaction = graphene.Field(TransactionsType, id=graphene.ID(required=True))
     
     def resolve_commandes(self, info, filter=None):
-        commandes = Commandes.objects.all()
+        commandes = Commandes.objects.filter(status=True)
         total_count = commandes.count()
         
         if filter:
@@ -151,7 +153,7 @@ class ProductsCommandesInput(graphene.InputObjectType):
     
 
 
-class CreateCommande(graphene.Mutation):
+'''class CreateCommande(graphene.Mutation):
     class Arguments:
         products_commandes = graphene.List(ProductsCommandesInput)
 
@@ -195,9 +197,9 @@ class CreateCommande(graphene.Mutation):
         commande.total_amount = total
         commande.save()
         envoie_de_mail_commande(commande)
-        return CreateCommande(commande=commande)
+        return CreateCommande(commande=commande)'''
 
-"""class CreateCommande(graphene.Mutation):
+class CreateCommande(graphene.Mutation):
     class Arguments:
         products_commandes = graphene.List(ProductsCommandesInput)
 
@@ -222,7 +224,7 @@ class CreateCommande(graphene.Mutation):
 
             if quantite > variante.quantite_en_stock:
                 valider = False
-                msg = f"Le produit {produit.name} est disponible en quantité de {variante.quantite_en_stock}"
+                message = f"Le produit {produit.name} est disponible en quantité({variante.quantite_en_stock}) insuffisante"
                 break  # Sortir de la boucle si la condition est vraie
 
             price = 10
@@ -247,28 +249,64 @@ class CreateCommande(graphene.Mutation):
         if not valider:
             # Annuler la commande si la validation a échoué
             commande.delete()
-            return CreateCommande(commande=None, message=msg)
+            return CreateCommande(commande=None, message=message)
 
         commande.total_amount = total
         commande.save()
         envoie_de_mail_commande(commande)
-        return cls(commande=commande, message='success')
-"""
+        
+        return  cls(commande=commande,  message='success')
+
+class VerifiedCommande(graphene.Mutation):
+    class Arguments:
+        commande_reference = graphene.String()
+
+    commande = graphene.Field(lambda: CommandesType)
+    message = graphene.String()
+    success = graphene.Boolean()
+
+    @classmethod
+    def mutate(cls, root, info, commande_reference):
+        request = info.context.META
+        user_id = renvoyer_user(request)
+        user = CustomUser.objects.get(id=user_id)
+        total = 0
+        try:
+            products_commandes = ProduitsCommandes.objects.all().values('variante__quantite_en_stock', 'quantity', 'product__name', 'variante__name').filter(commande__reference =commande_reference)
+        
+        except ProduitsCommandes.DoesNotExist:
+            raise Exception("la commande n'existe pas")
+       
+        for ligne in products_commandes:
+            quantity_order = ligne['quantity']
+            quantity_stock = ligne['variante__quantite_en_stock']
+            name_product = ligne['product__name']
+
+            if quantity_order > quantity_stock:
+                success = False
+                msg = f"Le produit {name_product} est disponible en quantité insuffisante({quantity_stock})."
+                
+                return  cls(success=False,  message=msg)
+            # Sortir de la boucle si la condition est vraie
+ 
+        
+        return  cls(success=True,  message='Tout c\'est bien passé')
+
 class DeleteCommande(graphene.Mutation):
     class Arguments:
         commandes_id = graphene.ID(required=True)
 
     success = graphene.Boolean()
-
+    error = graphene.Boolean()
     @staticmethod
     def mutate(root, info, commandes_id):
         try:
             commandes = Commandes.objects.get(pk=commandes_id)
         except Commandes.DoesNotExist:
-            raise Exception("Subcategory not found")
+            raise Exception("la commande n'existe plus")
 
-        commandes.delete()
-
+        commandes.status=False
+        commandes.save()
         return DeleteCommande(success=True)
 
 '''class CommandesInput(graphene.InputObjectType):
@@ -380,6 +418,13 @@ class CreateTransaction(graphene.Mutation):
     transaction = graphene.Field(TransactionsType)
 
     def mutate(self, info, commande_reference):
+        try:
+            request = info.context.META
+            user_id = renvoyer_user(request)
+            user = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
+            raise Exception("aucun utilisateur n'est connecté")
+        
         status = "EN COURS"
         commande = Commandes.objects.get(reference=commande_reference)
         transaction = Transactions(commande=commande, status=status)
@@ -445,6 +490,7 @@ class UpdateTransaction(graphene.Mutation):
 class Mutation(graphene.ObjectType):
     create_commande = CreateCommande.Field()
     delete_commande = DeleteCommande.Field()
+    verifier_commande = VerifiedCommande.Field()
 
     add_favoris = AddFavoris.Field()
     delete_favoris = DeleteFavoris.Field()
