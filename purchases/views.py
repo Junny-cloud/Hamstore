@@ -180,9 +180,77 @@ def cinetpay_notification(request):
 
           # Mettez à jour votre base de données en fonction de la réponse de CinetPay
           print(verification_result)
+          transaction = Transactions.objects.all().first()
           # Livrez le service si le paiement est réussi
           if verification_result.get("code") == "00":
-               pass
+               transaction_data = verification_result.get("data")
+               try:
+                    transaction = Transactions.objects.get(transaction_id=cpm_trans_id)
+               except Transactions.DoesNotExist:
+                    raise Exception("La transaction initiée n'existe pas")
+               
+               amount = transaction_data['amount'] 
+               currency = transaction_data['currency']
+               status = transaction_data['status']
+               payment_method = transaction_data['payment_method']
+               description = transaction_data['description']
+               metadata = transaction_data['metadata']
+               operator_id = transaction_data['operator_id']
+               payment_date = transaction_data['payment_date']
+               
+               if amount is not None:
+                    transaction.amount = amount
+               if currency is not None:
+                    transaction.currency = currency
+               if status is not None:
+                    transaction.status = status
+               if payment_method is not None:
+                    transaction.payment_method = payment_method
+               if description is not None:
+                    transaction.description = description
+               if metadata is not None:
+                    transaction.metadata = metadata
+               if operator_id is not None:
+                    transaction.operator_id = operator_id
+               if payment_date is not None:
+                    transaction.payment_date = payment_date
+
+               transaction.save()
+          elif  verification_result.get("code")=="627":
+               transaction_data = verification_result.get("data")
+               try:
+                    transaction = Transactions.objects.get(transaction_id=cpm_trans_id)
+               except Transactions.DoesNotExist:
+                    raise Exception("La transaction initiée n'existe pas")
+               
+               amount = transaction_data['amount'] 
+               currency = transaction_data['currency']
+               status = transaction_data['status']
+               payment_method = transaction_data['payment_method']
+               description = transaction_data['description']
+               metadata = transaction_data['metadata']
+               operator_id = transaction_data['operator_id']
+               payment_date = transaction_data['payment_date']
+               
+               if amount is not None:
+                    transaction.amount = amount
+               if currency is not None:
+                    transaction.currency = currency
+               if status is not None:
+                    transaction.status = status
+               if payment_method is not None:
+                    transaction.payment_method = payment_method
+               if description is not None:
+                    transaction.description = description
+               if metadata is not None:
+                    transaction.metadata = metadata
+               if operator_id is not None:
+                    transaction.operator_id = operator_id
+               if payment_date is not None:
+                    transaction.payment_date = payment_date
+
+               transaction.save()
+               
                # Livrez le service et mettez à jour votre base de données
 
           return JsonResponse({"success": True}, status=200)
