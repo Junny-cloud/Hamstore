@@ -111,6 +111,38 @@ def valider_commande_produit(request):
 
      return JsonResponse(data, safe=False)
 
+@csrf_exempt
+def delete_commande_produit(request):
+     message = ''
+     success = False
+     data = None
+     if request.method == 'POST':
+
+          id_commande = json.loads(request.body.decode('utf-8')).get('id')
+          
+                    
+          if id_commande:
+               obj = Commandes.objects.get(pk=id_commande)
+               obj.delete()
+              
+               message = 'commande supprimé avec success !'
+               success = True
+
+          data = {
+               'message': message,
+               'success': success
+          }
+
+          return JsonResponse(data, safe=False)
+
+     else:
+          message = 'Erreur: Requête non autorisée !'
+          data = {
+               'message': message,
+               'success': success
+          }
+
+     return JsonResponse(data, safe=False)
 
 @method_decorator(csrf_exempt)
 def transactions(request):
@@ -121,10 +153,10 @@ def transactions(request):
           action = request.POST['action']
           if action == 'list':
               
-               data = [obj for obj in Transactions.objects.all().values('id','transaction_id','commande__reference', 'amount', 'currency','payment_method', 'metadata','operator_id', 'payment_date','status') ]
+               data = [obj for obj in TransactionsCommandes.objects.all().values('id','transaction_id','commande__reference', 'amount', 'currency','payment_method', 'payment_date','status', 'description') ]
                
           elif action == 'delete':
-               obj = Transactions.objects.get(pk=request.POST['id'])
+               obj = TransactionsCommandes.objects.get(pk=request.POST['id'])
                obj.delete()
           else:
                data['error'] = 'Pas de données'
@@ -180,76 +212,10 @@ def cinetpay_notification(request):
 
           # Mettez à jour votre base de données en fonction de la réponse de CinetPay
           print(verification_result)
-          transaction = Transactions.objects.all().first()
+          transaction = TransactionsCommandes.objects.all().first()
           # Livrez le service si le paiement est réussi
           if verification_result.get("code") == "00":
-               transaction_data = verification_result.get("data")
-               try:
-                    transaction = Transactions.objects.get(transaction_id=cpm_trans_id)
-               except Transactions.DoesNotExist:
-                    raise Exception("La transaction initiée n'existe pas")
-               
-               amount = transaction_data['amount'] 
-               currency = transaction_data['currency']
-               status = transaction_data['status']
-               payment_method = transaction_data['payment_method']
-               description = transaction_data['description']
-               metadata = transaction_data['metadata']
-               operator_id = transaction_data['operator_id']
-               payment_date = transaction_data['payment_date']
-               
-               if amount is not None:
-                    transaction.amount = amount
-               if currency is not None:
-                    transaction.currency = currency
-               if status is not None:
-                    transaction.status = status
-               if payment_method is not None:
-                    transaction.payment_method = payment_method
-               if description is not None:
-                    transaction.description = description
-               if metadata is not None:
-                    transaction.metadata = metadata
-               if operator_id is not None:
-                    transaction.operator_id = operator_id
-               if payment_date is not None:
-                    transaction.payment_date = payment_date
-
-               transaction.save()
-          elif  verification_result.get("code")=="627":
-               transaction_data = verification_result.get("data")
-               try:
-                    transaction = Transactions.objects.get(transaction_id=cpm_trans_id)
-               except Transactions.DoesNotExist:
-                    raise Exception("La transaction initiée n'existe pas")
-               
-               amount = transaction_data['amount'] 
-               currency = transaction_data['currency']
-               status = transaction_data['status']
-               payment_method = transaction_data['payment_method']
-               description = transaction_data['description']
-               metadata = transaction_data['metadata']
-               operator_id = transaction_data['operator_id']
-               payment_date = transaction_data['payment_date']
-               
-               if amount is not None:
-                    transaction.amount = amount
-               if currency is not None:
-                    transaction.currency = currency
-               if status is not None:
-                    transaction.status = status
-               if payment_method is not None:
-                    transaction.payment_method = payment_method
-               if description is not None:
-                    transaction.description = description
-               if metadata is not None:
-                    transaction.metadata = metadata
-               if operator_id is not None:
-                    transaction.operator_id = operator_id
-               if payment_date is not None:
-                    transaction.payment_date = payment_date
-
-               transaction.save()
+              pass
                
                # Livrez le service et mettez à jour votre base de données
 

@@ -1,0 +1,29 @@
+{% block content %}
+<form method="post" action="">
+    {% csrf_token %}
+    <div class="modal-header">
+        <h6 class="modal-title">{{title}}</h6>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <i class="fas fa-exclamation-triangle bi flex-shrink-0 me-2" width="24" height="24"></i>
+                    <div>
+                        {{ title }} <strong>{{ object.type }}</strong> ?
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 mt-2">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-secondary me-md-2 text-capitalize disabled-btn"><i class="fas fa-exclamation-triangle fa-lg mr-1"></i> Supprimer</button>
+                    <button type="button" class="btn btn-danger text-capitalize" data-bs-dismiss="modal"><i class="fas fa-times fa-lg mr-1"></i> Annuler</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock content %}

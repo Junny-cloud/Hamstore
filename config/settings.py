@@ -181,7 +181,8 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+DATE_FORMAT = 'Y-m-d'
+TIME_FORMAT = 'H:i:s'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 

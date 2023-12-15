@@ -333,11 +333,9 @@
                     orderable: true,
                     render: function(data, type, row) {
                         bs = '<i class="fas fa-exclamation-circle text-warning"></i>';
-                        if (data == "En cours") {
+                        if (data == "EN COURS") {
                             bs = '<i class="fas fa-exclamation-circle text-warning"></i>';
-                        } else if (data == "Confirmé") {
-                            bs = '<i class="fas fa-check-circle text-success"></i>';
-                        } else if (data == "Terminé") {
+                        }else if (data == "TERMINE") {
                             bs = '<i class="fas fa-check-circle text-primary"></i>';
                         }else {
                             bs = '<i class="far fa-times-circle text-danger"></i>';
@@ -490,6 +488,29 @@
                     $("#myModalValidation").css("display", "block");
                     $("#myModalValidation").fadeIn(500);
                     $('.reference').text(data.reference);
+                })
+                .on("click", 'a[rel="delete"]', function() {
+                    var tr = commandes.cell($(this).closest("td, li")).index();
+                    var data = commandes.row(tr.row).data();
+                    id_demande = data.id;
+
+                    axios.defaults.cookieName = 'csrftoken'
+                    axios.defaults.headerName = 'X-CSRFToken'
+
+                    console.log(id_demande);
+                    
+                    axios.post(
+                        "{% url 'purchases:delete_commande' %}", {
+                            id: id_demande
+                        }
+                    ).then((response) => {
+                        if (response.data.success) {
+                            window.location = pathname
+                        } else console.log(response.data.message)
+                    }).catch((e) => {
+                        console.log(e)
+                    })
+                    $('#table_id').DataTable().ajax.reload()
                 });
 
                 // validation demande 
