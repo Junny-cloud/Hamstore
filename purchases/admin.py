@@ -67,4 +67,4 @@ def _register(model, admin_class):
 
 myadmin.register(Commandes, CommandesAdmin) 
 myadmin.register(ProduitsCommandes)
-myadmin.register(Transactions, TransactionsAdmin) 
+myadmin.register(TransactionsCommandes, TransactionsAdmin) 

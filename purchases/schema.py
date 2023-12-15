@@ -69,7 +69,7 @@ class CommandesType(DjangoObjectType):
         
 class TransactionsType(DjangoObjectType):
     class Meta:
-        model = Transactions
+        model = TransactionsCommandes
         fields = "__all__"
         
 class CommandesFilterInput(graphene.InputObjectType):
@@ -427,7 +427,7 @@ class CreateTransaction(graphene.Mutation):
         
         status = "EN COURS"
         commande = Commandes.objects.get(reference=commande_reference)
-        transaction = Transactions(commande=commande, status=status)
+        transaction = TransactionsCommandes(commande=commande, status=status)
         transaction.save()
         return CreateTransaction(success=True, transaction=transaction)
 
@@ -452,10 +452,11 @@ class UpdateTransaction(graphene.Mutation):
     transaction = graphene.Field(TransactionsType)
     success = graphene.Boolean()
     
-    def mutate(self, info, transaction_id, transaction_data=None):
+    def mutate(self, info, transaction_id, transaction_data):
         try:
-            transaction = Transactions.objects.get(transaction_id=transaction_id)
-        except Transactions.DoesNotExist:
+            transaction = TransactionsCommandes.objects.get(transaction_id=transaction_id)
+            cmd_update = Commandes.objects.get(reference=transaction.commande.reference)
+        except TransactionsCommandes.DoesNotExist:
             raise Exception("La transaction initiée n'existe pas")
         
         amount = transaction_data.amount
@@ -467,12 +468,15 @@ class UpdateTransaction(graphene.Mutation):
         operator_id = transaction_data.operator_id
         payment_date = transaction_data.payment_date
         
+        
         if amount is not None:
             transaction.amount = amount
         if currency is not None:
             transaction.currency = currency
         if status is not None:
             transaction.status = status
+            if status == "ACCEPTED":
+                cmd_update.etat_commande = "TERMINE"
         if payment_method is not None:
             transaction.payment_method = payment_method
         if description is not None:
@@ -485,6 +489,7 @@ class UpdateTransaction(graphene.Mutation):
             transaction.payment_date = payment_date
 
         transaction.save()
+        cmd_update.save()
         return UpdateTransaction(transaction=transaction, success=True)
        
 class Mutation(graphene.ObjectType):

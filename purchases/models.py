@@ -31,7 +31,7 @@ class Commandes(models.Model):
      user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, verbose_name="client")
      total_amount = models.PositiveIntegerField(default=0, verbose_name="prix commande")
      date_commande = models.DateField(auto_now_add=True)
-     etat_commande = models.CharField(max_length=200, default="En cours",null=True, blank=True, verbose_name="etat de la commande")
+     etat_commande = models.CharField(max_length=200, default="EN COURS",null=True, blank=True, verbose_name="etat de la commande")
      date_registry = models.DateTimeField(default=timezone.now,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=True, verbose_name='Etat')
@@ -104,15 +104,15 @@ class Transactions(models.Model):
      transaction_id = models.CharField(max_length=12, unique=True, verbose_name="transaction ID")
      commande = models.ForeignKey(Commandes, null=True, blank=True, on_delete=models.CASCADE, verbose_name="commande concerné")
      
-     amount = models.PositiveIntegerField(default=0 , verbose_name="prix Commande")
+     amount = models.CharField(max_length=200,default="0" , verbose_name="prix Commande")
      currency =  models.CharField(max_length=200, default="XOF", null=True, blank=True, verbose_name="Devise de la monnaie")
    
      payment_method = models.CharField(max_length=200,null=True, blank=True, verbose_name="Methode de payement")
-     description = models.CharField(max_length=200, null=True, blank=True, verbose_name="description de la transaction")
+     description = models.CharField( max_length=200, null=True, blank=True, verbose_name="description de la transaction")
      metadata = models.CharField(max_length=200, default="ABIDJAN",null=True, blank=True, verbose_name="Autre info de payment")
      operator_id = models.CharField(max_length=200, null=True, blank=True, verbose_name="ID Operator")
-     payment_date = models.DateTimeField( auto_now_add=True,verbose_name="Date de payement")
-     status = models.CharField(max_length=20,  null=True, blank=True, verbose_name="Satus Transaction")
+     payment_date = models.CharField(max_length=200, null=True, blank=True, verbose_name="Date de payement")
+     status = models.CharField(max_length=20, default="EN COURS", null=True, blank=True, verbose_name="Satus Transaction")
      
      class Meta:
         verbose_name = "Transaction"
@@ -130,6 +130,34 @@ class Transactions(models.Model):
           super().save(*args, **kwargs)
      
 
+class TransactionsCommandes(models.Model):
+     transaction_id = models.CharField(max_length=12, unique=True, verbose_name="transaction ID")
+     commande = models.ForeignKey(Commandes, null=True, blank=True, on_delete=models.CASCADE, verbose_name="commande concerné")
+     
+     amount = models.CharField(max_length=200,default="0" , verbose_name="prix Commande")
+     currency =  models.CharField(max_length=200, default="XOF", null=True, blank=True, verbose_name="Devise de la monnaie")
+   
+     payment_method = models.CharField(max_length=200,null=True, blank=True, verbose_name="Methode de payement")
+     description = models.CharField( max_length=200, null=True, blank=True, verbose_name="description de la transaction")
+     metadata = models.CharField(max_length=200, default="ABIDJAN",null=True, blank=True, verbose_name="Autre info de payment")
+     operator_id = models.CharField(max_length=200, null=True, blank=True, verbose_name="ID Operator")
+     payment_date = models.CharField(max_length=200, null=True, blank=True, verbose_name="Date de payement")
+     status = models.CharField(max_length=20, default="EN COURS", null=True, blank=True, verbose_name="Satus Transaction")
+     
+     class Meta:
+        verbose_name = "Transaction"
+        verbose_name_plural = "Transactions"
+        ordering = ['-id']
+        
+     def save(self, *args, **kwargs):
+          if not self.transaction_id:
+               # Générer un code unique aléatoire de 8 caractères
+               unique_code = ''.join(random.choices(string.digits, k=12))
+               # Assurez-vous que le code généré est vraiment unique
+               while Transactions.objects.filter(transaction_id=unique_code).exists():
+                    unique_code = ''.join(random.choices(string.digits, k=12))
+               self.transaction_id = unique_code
+          super().save(*args, **kwargs)
 #@receiver(post_save, sender=Commandes)
 
 '''def envoie_de_mail_commande(sender, created, instance, **kwargs):
