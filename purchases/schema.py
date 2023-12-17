@@ -456,6 +456,9 @@ class UpdateTransaction(graphene.Mutation):
         try:
             transaction = TransactionsCommandes.objects.get(transaction_id=transaction_id)
             cmd_update = Commandes.objects.get(reference=transaction.commande.reference)
+            all_products_commande = ProduitsCommandes.objects.filter(commande=cmd_update).values('variante__id','quantity' )
+            
+            
         except TransactionsCommandes.DoesNotExist:
             raise Exception("La transaction initiée n'existe pas")
         
@@ -488,6 +491,10 @@ class UpdateTransaction(graphene.Mutation):
         if payment_date is not None:
             transaction.payment_date = payment_date
 
+        for variante in all_products_commande:
+            x = Variantes.objects.get(pk=variante['variante__id'])
+            x.quantite_en_stock -=int(variante['quantity'])
+            x.save()
         transaction.save()
         cmd_update.save()
         return UpdateTransaction(transaction=transaction, success=True)
