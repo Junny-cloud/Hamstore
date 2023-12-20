@@ -301,12 +301,9 @@ EMAIL_SUBJECT_PREFIX = 'Athehams : '
 EMAIL_HOST ='mail.athehams.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True 
-DEFAULT_FROM_EMAIL = "Athehams Boutique" 
+DEFAULT_FROM_EMAIL = "ATHEHAMS" 
 EMAIL_HOST_USER =  "contact@athehams.com"
 EMAIL_HOST_PASSWORD = "Hamed@2023"'''
-
-
-
 
 
 JAZZMIN_SETTINGS = {

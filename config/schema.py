@@ -60,6 +60,7 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery,
     user_connected =graphene.Field(CustomUserType, token=graphene.String())
     categories = graphene.List(CategoryType)
     category = graphene.Field(CategoryType, slug=graphene.String(required=True))
+    subcategory_group =graphene.List(CategoryType)
 
     subcategories = graphene.List(SubCategoryType, filter=SubCategoryFilterInput())
     subcategory = graphene.Field(SubCategoryType, slug=graphene.String(required=True))
@@ -74,7 +75,10 @@ class Query(UserQuery, MeQuery, productsQuery, purchasesQuery, NewslettersQuery,
 
     def resolve_categories(self, info):
         return Category.objects.all()
-
+    
+    def resolve_subcategory_group(self, info):
+        return Category.objects.prefetch_related('subcategory_set').all()
+    
     def resolve_category(self, info, slug):
         return Category.objects.get(slug=slug)
 

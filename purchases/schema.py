@@ -29,26 +29,38 @@ def envoie_de_mail_commande(commande, **kwargs):
     subject = "NOUVELLE COMMANDE"
     recipient_list =[obj['email'] for obj in CustomUser.objects.values('email').filter(is_superuser=True)]
     produits_commandes =[]
-    montant_livraison="2.000"
+    montant_livraison="Frais d'expedition"
+    mode_payment ="A la livraison"
+    img_url = "https://hamstore.cabinetfirdaws.org/media/produits_images/"
+    if commande.localisation:
+       montant_livraison= "2 000"
+ 
+        
+    email_client = commande.user.email
     data1 = [ obj for obj in ProduitsCommandes.objects.filter(commande=commande).values('quantity', 'subtotal', 'price_unitaire', 'variante__name', 'variante__reference', 'product__name', 'product','commande__id')]
     for obj in data1:
         print(obj)
         img = Image.objects.filter(product=obj['product']).first()
         
-        obj['image']= img.image.url
+        obj['image']= img.image.name
         produits_commandes.append(obj)
         
-    from_email ='contact@cabinetfirdaws.org'
+    from_email ='"ATHEHAMS" <contact@cabinetfirdaws.org>'
     context = {
     "link": link,
     "produits_commandes":produits_commandes,
     "instance":commande,
     "montant_livraison":montant_livraison,
+    "img_url":img_url
+   
     }
 
     #print(my_recipient)
     html_message = render_to_string("purchases/email.html", context=context)
+    html_message_client = render_to_string("purchases/new_mail.html", context=context)
+    
     plain_message = strip_tags(html_message)
+    plain_message_client = strip_tags(html_message_client)
 
     message = EmailMultiAlternatives(
         subject = subject, 
@@ -61,6 +73,18 @@ def envoie_de_mail_commande(commande, **kwargs):
     message.attach_alternative(html_message, "text/html")
     
     message.send()
+    
+    message_client = EmailMultiAlternatives(
+        subject = subject, 
+        body = plain_message_client,
+        from_email = from_email ,
+        to= [email_client,]
+    )
+    
+    message_client.from_name=from_name
+    message_client.attach_alternative(html_message_client, "text/html")
+    
+    message_client.send()
     print('ok message envoyé')
 class CommandesType(DjangoObjectType):
     class Meta:
@@ -202,17 +226,18 @@ class ProductsCommandesInput(graphene.InputObjectType):
 class CreateCommande(graphene.Mutation):
     class Arguments:
         products_commandes = graphene.List(ProductsCommandesInput)
+        localisation = graphene.Boolean()
 
     commande = graphene.Field(lambda: CommandesType)
     message = graphene.String()
 
     @classmethod
-    def mutate(cls, root, info, products_commandes):
+    def mutate(cls, root, info, products_commandes, localisation):
         request = info.context.META
         user_id = renvoyer_user(request)
         user = CustomUser.objects.get(id=user_id)
         total = 0
-        commande = Commandes(user=user, total_amount=total)
+        commande = Commandes(user=user, total_amount=total, localisation=localisation)
         valider = True
         msg = ''
 

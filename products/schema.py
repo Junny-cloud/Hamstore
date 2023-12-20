@@ -23,7 +23,8 @@ class CommentsFilterInput(graphene.InputObjectType):
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
-        fields = ("id", "name", "image", "slug")
+        fields ="__all__"
+
 
 class SubCategoryType(DjangoObjectType):
     class Meta:

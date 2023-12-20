@@ -81,7 +81,7 @@ def valider_commande_produit(request):
                t.etat_commande = validation # change field
                t.save() 
 
-               if validation =="Valider":
+               if validation =="TERMINE":
 
                     all_products = ProduitsCommandes.objects.filter(commande=t).values('id','product__id', 'variante__id', 'variante__quantite_en_stock','quantity')
                     for obj in all_products:

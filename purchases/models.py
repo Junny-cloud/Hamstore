@@ -35,6 +35,7 @@ class Commandes(models.Model):
      date_registry = models.DateTimeField(default=timezone.now,verbose_name="Date d'enregistrement")
      date_modification = models.DateTimeField(auto_now=True, verbose_name="Date de modification")
      status = models.BooleanField(default=True, verbose_name='Etat')
+     localisation =models.BooleanField(default=True, verbose_name='Localisation')
      
      class Meta:
           verbose_name = "Commande"
