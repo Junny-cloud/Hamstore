@@ -42,7 +42,7 @@ def envoie_de_mail_commande(commande, **kwargs):
         print(obj)
         img = Image.objects.filter(product=obj['product']).first()
         
-        obj['image']= img.image.name
+        obj['image']=img_url + img.image.name
         produits_commandes.append(obj)
         
     from_email ='"ATHEHAMS" <contact@cabinetfirdaws.org>'
